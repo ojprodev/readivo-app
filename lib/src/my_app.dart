@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:readivo_app/src/features/library/presentation/screens/library_home_screen.dart';
 
 class MyApp extends StatelessWidget{
   const MyApp({super.key});
@@ -8,6 +9,7 @@ class MyApp extends StatelessWidget{
     return const MaterialApp(
       title: 'Readivo',
       debugShowCheckedModeBanner: false,
+      home: LibraryHomeScreen(),
     );
   }
 }
