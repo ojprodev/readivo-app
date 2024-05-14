@@ -40,11 +40,13 @@ dependencies:
   flutter_bloc: ^8.1.5
   get_it: ^7.7.0
   equatable: ^2.0.5
-  flutter_native_splash: ^2.4.0
 
 dev_dependencies:
   flutter_test:
     sdk: flutter
+
+  flutter_native_splash: ^2.4.0
+  flutter_launcher_icons: ^0.13.1
 
   # The "flutter_lints" package below contains a set of recommended lints to
   # encourage good coding practices. The lint set provided by the package is
