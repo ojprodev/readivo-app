@@ -10,15 +10,12 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MultiBlocProvider(
-      providers: [
-        BlocProvider<AppCubit>(create: (context) => AppCubit())
-      ],
+      providers: [BlocProvider<AppCubit>(create: (context) => AppCubit())],
       child: MaterialApp(
         title: 'Readivo',
-        debugShowCheckedModeBanner: false,
         home: BlocConsumer<AppCubit, AppStates>(
-          builder: (context, state) => _buildContent(context, state),
-          listener: (context, state) => _handleStateChange(context, state),
+          builder: _buildContent,
+          listener: _handleStateChange,
         ),
       ),
     );
@@ -28,7 +25,7 @@ class MyApp extends StatelessWidget {
     return const LibraryHomeScreen();
   }
 
-  void _handleStateChange(BuildContext context, AppStates state) {
+  void _handleStateChange(BuildContext context, state) {
     // handle screen change
     if (state is AppScreenChangedState) {
       Navigator.push(
