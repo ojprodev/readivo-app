@@ -2,7 +2,6 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:readivo_app/src/core/constants/colors.dart';
 import 'package:readivo_app/src/core/constants/constants.dart';
 
 /// Widget representing a book box cover.
@@ -19,8 +18,11 @@ class BookBox extends StatelessWidget {
   // Cover height
   final double? height;
 
-  // COver width
+  // Cover width
   final double? width;
+
+  // Empty Book Cover Background
+  final Color? background;
 
   /// Constructor for BookBoxCover.
   const BookBox({
@@ -30,6 +32,7 @@ class BookBox extends StatelessWidget {
     this.rating,
     this.height = 200.0,
     this.width = 150.0,
+    this.background = Colors.white,
   });
 
   @override
@@ -91,7 +94,7 @@ class BookBox extends StatelessWidget {
     return Container(
       height: height,
       width: width,
-      color: AppColors.lightGrey,
+      color: background,
       child: Center(
         child: SvgPicture.asset(
           AppIcons.photo,
