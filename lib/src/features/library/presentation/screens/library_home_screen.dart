@@ -3,7 +3,6 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:readivo_app/src/core/bloc/app_cubit.dart';
 import 'package:readivo_app/src/core/bloc/app_states.dart';
 import 'package:readivo_app/src/core/layouts/basic_layout.dart';
-import 'package:readivo_app/src/features/settings/presentation/screens/settings_screen.dart';
 
 class LibraryHomeScreen extends StatefulWidget {
   const LibraryHomeScreen({super.key});
@@ -31,16 +30,11 @@ class _LibraryHomeScreenState extends State<LibraryHomeScreen> {
   }
 
   Widget _buildHomeScreen(BuildContext context, state) {
-    return BasicLayout(
-      title: 'Good Evening',
+    return const BasicLayout(
+      title: 'Good morning',
       showBackButton: false,
       body: Center(
-        child: TextButton(
-          child: const Text('Settings'),
-          onPressed: () {
-            appCubit.changeScreen(screen: const SettingsScreen());
-          },
-        ),
+        child: Text('Library'),
       ),
     );
   }
