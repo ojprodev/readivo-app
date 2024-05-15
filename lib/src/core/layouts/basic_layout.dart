@@ -11,6 +11,7 @@ class BasicLayout extends StatelessWidget {
   final bool? centerTitle;
   final bool showBackButton;
   final bool isPinned;
+  final Color? appBarBackground;
 
   const BasicLayout({
     super.key,
@@ -23,6 +24,7 @@ class BasicLayout extends StatelessWidget {
     this.leading,
     this.showBackButton = true,
     this.isPinned = true,
+    this.appBarBackground = Colors.white,
   });
 
   @override
@@ -37,7 +39,7 @@ class BasicLayout extends StatelessWidget {
               SliverAppBar(
                 forceMaterialTransparency: false,
                 elevation: 0.0,
-                backgroundColor: Colors.white,
+                backgroundColor: appBarBackground,
                 automaticallyImplyLeading: showBackButton,
                 leading: leading,
                 pinned: isPinned,
