@@ -11,8 +11,11 @@ class AppInitState extends AppStates {}
 
 class AppScreenChangedState extends AppStates {
   static Widget nextScreen = const LibraryHomeScreen();
+  static Widget previousScreen = const LibraryHomeScreen();
 
   AppScreenChangedState(Widget screen) {
+    previousScreen = nextScreen;
     nextScreen = screen;
   }
 }
+

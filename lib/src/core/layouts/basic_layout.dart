@@ -1,5 +1,6 @@
 import 'package:conditional_builder_null_safety/conditional_builder_null_safety.dart';
 import 'package:flutter/material.dart';
+import 'package:readivo_app/src/core/constants/colors.dart';
 
 class BasicLayout extends StatelessWidget {
   final String title;
@@ -12,6 +13,8 @@ class BasicLayout extends StatelessWidget {
   final bool showBackButton;
   final bool isPinned;
   final Color? appBarBackground;
+  final Widget? floatingActionButton;
+  final FloatingActionButtonLocation? floatingActionButtonLocation;
 
   const BasicLayout({
     super.key,
@@ -25,6 +28,8 @@ class BasicLayout extends StatelessWidget {
     this.showBackButton = true,
     this.isPinned = true,
     this.appBarBackground = Colors.white,
+    this.floatingActionButton,
+    this.floatingActionButtonLocation,
   });
 
   @override
@@ -44,8 +49,9 @@ class BasicLayout extends StatelessWidget {
                 leading: leading,
                 pinned: isPinned,
                 primary: true,
-                surfaceTintColor: Colors.white,
+                surfaceTintColor: AppColors.white,
                 forceElevated: innerBoxIsScrolled,
+                leadingWidth: 40,
                 title: ConditionalBuilder(
                   condition: titleWidget == null,
                   builder: (context) => Text(
@@ -64,6 +70,8 @@ class BasicLayout extends StatelessWidget {
           },
           body: body,
         ),
+        floatingActionButton: floatingActionButton,
+        floatingActionButtonLocation: floatingActionButtonLocation,
       ),
     );
   }

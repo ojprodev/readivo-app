@@ -5,10 +5,15 @@ import 'package:percent_indicator/linear_percent_indicator.dart';
 
 import 'package:readivo_app/src/core/bloc/app_cubit.dart';
 import 'package:readivo_app/src/core/bloc/app_states.dart';
+import 'package:readivo_app/src/core/constants/colors.dart';
 import 'package:readivo_app/src/core/constants/constants.dart';
 import 'package:readivo_app/src/core/layouts/basic_layout.dart';
-import 'package:readivo_app/src/core/widgets/book_box.dart';
+import 'package:readivo_app/src/features/library/presentation/widgets/book_box.dart';
+import 'package:readivo_app/src/core/widgets/bottom_sheet.dart';
 import 'package:readivo_app/src/core/widgets/custom_button.dart';
+import 'package:readivo_app/src/core/widgets/partials/bottom_sheet_item.dart';
+import 'package:readivo_app/src/features/library/presentation/screens/library_search_screen.dart';
+import 'package:readivo_app/src/features/library/presentation/widgets/book_grid_item.dart';
 
 class LibraryHomeScreen extends StatefulWidget {
   const LibraryHomeScreen({super.key});
@@ -65,13 +70,50 @@ class _LibraryHomeScreenState extends State<LibraryHomeScreen> {
   Widget _buildAddButton() {
     return CustomButton(
       text: 'Library Add Button',
-      onPressed: () {},
       styleType: ButtonStyleType.ghost,
       width: 40,
       height: 40,
       borderRadius: 20,
       child: SvgPicture.asset(AppIcons.add),
+      onPressed: () {
+        CustomBottomSheet.show(
+          context: context,
+          bottomSheetItems: homeScreenBottomSheetItems(),
+        );
+      },
     );
+  }
+
+  List<BottomSheetItem> homeScreenBottomSheetItems() {
+    // List of bottom sheet items
+    return [
+      BottomSheetItem(
+        icon: Icons.search,
+        label: 'Search',
+        onTap: () {
+          // close the bottom sheet
+          Navigator.pop(context);
+
+          // redirect to the Search Screen
+          appCubit.changeScreen(screen: const LibrarySearchScreen());
+        },
+      ),
+      BottomSheetItem(
+        icon: Icons.qr_code_scanner_outlined,
+        label: 'Scan ISBN',
+        onTap: () {
+          // close the bottom sheet
+          Navigator.pop(context);
+        },
+      ),
+      BottomSheetItem(
+        icon: Icons.edit_note_outlined,
+        label: 'Add manually',
+        onTap: () {
+          // Handle add manually
+        },
+      ),
+    ];
   }
 
   Widget _buildContinueReadingSection() {
@@ -199,95 +241,24 @@ class _LibraryHomeScreenState extends State<LibraryHomeScreen> {
   }
 
   Widget _buildSuggestionsList() {
-    return Padding(
-      padding: const EdgeInsets.only(left: 6.0),
+    return const Padding(
+      padding: EdgeInsets.only(left: 6.0),
       child: SingleChildScrollView(
         scrollDirection: Axis.horizontal,
         child: Row(
           mainAxisAlignment: MainAxisAlignment.start,
           children: [
-            _buildReadNextSectionItem(),
-            _buildReadNextSectionItem(),
-            _buildReadNextSectionItem(),
-            _buildReadNextSectionItem(),
-            _buildReadNextSectionItem(),
+            BookGridItem(),
+            BookGridItem(),
+            BookGridItem(),
+            BookGridItem(),
+            BookGridItem(),
           ],
         ),
       ),
     );
   }
 
-  Widget _buildReadNextSectionItem() {
-    return Container(
-      width: 130,
-      padding: const EdgeInsets.symmetric(horizontal: 8.0),
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          _buildBookBoxWithRating(),
-          const SizedBox(height: 4.0),
-          const Text(
-            'Book Title',
-            maxLines: 2,
-            softWrap: true,
-            overflow: TextOverflow.ellipsis,
-            style: TextStyle(
-              fontWeight: FontWeight.w600,
-              fontSize: 14,
-            ),
-          ),
-          const Text(
-            'Author Name',
-            maxLines: 1,
-            overflow: TextOverflow.ellipsis,
-            style: TextStyle(
-              fontWeight: FontWeight.w400,
-              fontSize: 12,
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildBookBoxWithRating() {
-    return Stack(
-      alignment: AlignmentDirectional.topEnd,
-      children: [
-        BookBox(
-          width: 130,
-          height: 170,
-          background: AppColors.lightGrey,
-        ),
-        Container(
-          margin: const EdgeInsets.only(top: 16.0),
-          width: 60,
-          height: 24,
-          decoration: BoxDecoration(
-            color: AppColors.white,
-            borderRadius: const BorderRadius.only(
-              topLeft: Radius.circular(12.0),
-              bottomLeft: Radius.circular(12.0),
-            ),
-          ),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-            children: [
-              SvgPicture.asset(
-                AppIcons.microStar,
-                colorFilter: ColorFilter.mode(
-                  AppColors.goldenYellow,
-                  BlendMode.srcIn,
-                ),
-              ),
-              const Text('4.3/5'),
-            ],
-          ),
-        )
-      ],
-    );
-  }
 
   Widget _buildCollectionsSection() {
     return Column(
