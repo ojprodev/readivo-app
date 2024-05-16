@@ -336,17 +336,13 @@ class _LibraryHomeScreenState extends State<LibraryHomeScreen> {
       width: 180,
       height: 100,
       margin: const EdgeInsets.symmetric(horizontal: 6.0),
-      decoration: BoxDecoration(
-        gradient: const LinearGradient(
+      decoration: const BoxDecoration(
+        gradient: LinearGradient(
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
           colors: [Color(0xFFff930f), Color(0xFFfff95b)],
         ),
-        borderRadius: const BorderRadius.all(Radius.circular(8.0)),
-        border: Border.all(
-          width: 2,
-          color: AppColors.lightGrey,
-        ),
+        borderRadius: BorderRadius.all(Radius.circular(8.0)),
       ),
       child: Stack(
         children: [
@@ -395,7 +391,7 @@ class _LibraryHomeScreenState extends State<LibraryHomeScreen> {
       child: Container(
         padding: const EdgeInsets.all(8.0),
         decoration: BoxDecoration(
-            color: AppColors.lightGreen.withOpacity(0.2),
+            color: AppColors.lightGrey.withOpacity(0.2),
             borderRadius: const BorderRadius.all(Radius.circular(100))),
         child: const Icon(
           Icons.currency_bitcoin,
