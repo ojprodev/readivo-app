@@ -29,7 +29,7 @@ class CustomListItem extends StatelessWidget {
     this.appendIcon,
     this.iconBackground = Colors.transparent,
     this.textStyle,
-    this.padding = const EdgeInsets.symmetric(vertical: 16.0, horizontal: 18.0),
+    this.padding = const EdgeInsets.symmetric(vertical: 4.0, horizontal: 6.0),
     this.margin = const EdgeInsets.symmetric(vertical: 4.0),
     this.mainAxisAlignment = MainAxisAlignment.center,
     this.crossAxisAlignment = CrossAxisAlignment.center,

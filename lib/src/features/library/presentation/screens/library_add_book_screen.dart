@@ -30,7 +30,8 @@ class _LibraryAddBookScreenState extends State<LibraryAddBookScreen> {
   DateTime? finishDate;
   List<String> bookTypes = ['paper book', 'e-book', 'audio book'];
   String selectedBookType = 'paper book';
-  List<String> selectedCollections = [];
+  List<Map<String, dynamic>> selectedCollections = [];
+  List<Map<String, dynamic>> tempSelectedCollections = [];
   List<Map<String, dynamic>> collectionsSearchResult = [];
   final List<Map<String, dynamic>> collectionsList = [
     {'text': 'Chip 1', 'icon': Icons.star, 'color': Colors.blue},
@@ -52,7 +53,8 @@ class _LibraryAddBookScreenState extends State<LibraryAddBookScreen> {
   final TextEditingController publishedAtController = TextEditingController();
   final TextEditingController descriptionController = TextEditingController();
   final TextEditingController reviewController = TextEditingController();
-  final TextEditingController searchCollectionsController = TextEditingController();
+  final TextEditingController searchCollectionsController =
+      TextEditingController();
 
   // handle scroll change
   final ScrollController _scrollController = ScrollController();
@@ -164,7 +166,7 @@ class _LibraryAddBookScreenState extends State<LibraryAddBookScreen> {
             children: [
               _buildInputLabel('Add tags'),
               CustomButton(
-                text: 'Add to a Collection',
+                text: 'Add Tags',
                 width: 30,
                 height: 30,
                 styleType: ButtonStyleType.ghost,
@@ -221,7 +223,6 @@ class _LibraryAddBookScreenState extends State<LibraryAddBookScreen> {
   }
 
   Widget _buildAddToCollectionSection() {
-
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16.0),
       child: Column(
@@ -232,11 +233,13 @@ class _LibraryAddBookScreenState extends State<LibraryAddBookScreen> {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              _buildInputLabel('Add to a Collection'),
+              _buildInputLabel('Add to a Collections'),
               _buildAddToCollectionButton(),
             ],
           ),
-          _buildCollectionsContainer(collectionsList),
+          selectedCollections.isNotEmpty
+              ? _buildCollectionsContainer(selectedCollections)
+              : const SizedBox(),
         ],
       ),
     );
@@ -250,9 +253,16 @@ class _LibraryAddBookScreenState extends State<LibraryAddBookScreen> {
       styleType: ButtonStyleType.ghost,
       borderRadius: 15,
       onPressed: () {
+        // fill the temp list with the already selected collections
+        tempSelectedCollections = selectedCollections;
+
+        // show the bottom sheet
         _showAddToCollectionBottomSheet(context);
       },
-      child: const Icon(Icons.create_new_folder),
+      child: const Icon(
+        Icons.create_new_folder,
+        color: AppColors.goldenYellow,
+      ),
     );
   }
 
@@ -285,7 +295,15 @@ class _LibraryAddBookScreenState extends State<LibraryAddBookScreen> {
           CustomButton(
             width: 80,
             text: 'Add',
-            onPressed: () {},
+            onPressed: () {
+              setState(() {
+                // fill the selectedCollections list
+                selectedCollections = tempSelectedCollections;
+
+                // close the bottom sheet
+                Navigator.of(context).pop();
+              });
+            },
           ),
         ],
       ),
@@ -330,7 +348,7 @@ class _LibraryAddBookScreenState extends State<LibraryAddBookScreen> {
               size: 18,
             ),
             onPressed: () {
-              setState((){
+              setState(() {
                 searchCollectionsController.clear();
                 collectionsSearchResult = [];
               });
@@ -365,7 +383,7 @@ class _LibraryAddBookScreenState extends State<LibraryAddBookScreen> {
           itemCount: collections.length,
           itemBuilder: (context, index) {
             bool isSelected =
-                selectedCollections.contains(collections[index]['text']);
+                tempSelectedCollections.contains(collections[index]);
             return Container(
               margin: const EdgeInsets.symmetric(horizontal: 8.0),
               child: CustomListItem(
@@ -403,11 +421,11 @@ class _LibraryAddBookScreenState extends State<LibraryAddBookScreen> {
                 ],
                 onTap: () {
                   setState(() {
-                    if (!selectedCollections
-                        .contains(collections[index]['text'])) {
-                      selectedCollections.add(collections[index]['text']);
+                    if (!tempSelectedCollections.contains(collections[index])) {
+                      tempSelectedCollections.add(collections[index]);
                     } else {
-                      selectedCollections.remove(collections[index]['text']);
+                      print(3);
+                      tempSelectedCollections.remove(collections[index]);
                     }
                   });
                 },
@@ -424,7 +442,7 @@ class _LibraryAddBookScreenState extends State<LibraryAddBookScreen> {
       width: double.infinity,
       padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 2.0),
       decoration: BoxDecoration(
-        color: Colors.grey[100],
+        color: Colors.grey[50],
         borderRadius: BorderRadius.circular(4.0),
         border: Border.all(
           color: AppColors.lightGrey,
