@@ -2,17 +2,31 @@
 
 import 'package:flutter/material.dart';
 import 'package:readivo_app/src/core/constants/colors.dart';
+import 'package:readivo_app/src/core/constants/constants.dart';
+import 'package:readivo_app/src/core/widgets/custom_list_item.dart';
 
 /// Model for an item in the bottom sheet.
 class BottomSheetItem {
-  final IconData icon;
+  final Widget? icon;
   final String label;
   final VoidCallback onTap;
+  final Color backgroundColor;
+  final double borderRadius;
+  final Color borderColor;
+  final Color? textColor;
+  final double textSize;
+  final Widget? appendIcon;
 
   const BottomSheetItem({
-    required this.icon,
+    this.icon,
     required this.label,
     required this.onTap,
+    this.backgroundColor = Colors.white,
+    this.borderColor = AppColors.lightGrey,
+    this.borderRadius = 6.0,
+    this.textColor = Colors.black,
+    this.textSize = 16.0,
+    this.appendIcon,
   });
 }
 
@@ -20,38 +34,22 @@ class BottomSheetItem {
 class BottomSheetItemWidget extends StatelessWidget {
   final BottomSheetItem item;
 
-  const BottomSheetItemWidget({super.key, required this.item});
+  const BottomSheetItemWidget({
+    super.key,
+    required this.item,
+  });
 
   @override
   Widget build(BuildContext context) {
-    return GestureDetector(
+    return CustomListItem(
       onTap: item.onTap,
-      child: Container(
-        padding: const EdgeInsets.symmetric(vertical: 16.0, horizontal: 18.0),
-        child: Row(
-          mainAxisSize: MainAxisSize.max,
-          mainAxisAlignment: MainAxisAlignment.center,
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            Icon(
-              item.icon,
-              size: 18.0,
-            ),
-            const SizedBox(width: 10.0),
-            Expanded(
-              child: Text(
-                item.label,
-                style: const TextStyle(color: Colors.black87),
-              ),
-            ),
-            Icon(
-              Icons.arrow_forward_ios,
-              color: AppColors.lightGrey,
-              size: 18.0,
-            ),
-          ],
-        ),
-      ),
+      backgroundColor: item.backgroundColor,
+      borderColor: item.borderColor,
+      borderRadius: item.borderRadius,
+      icon: item.icon,
+      label: item.label,
+      appendIcon: item.appendIcon,
+      textStyle: TextStyle(color: item.textColor, fontSize: item.textSize),
     );
   }
 }

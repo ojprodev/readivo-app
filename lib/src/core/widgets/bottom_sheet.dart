@@ -23,11 +23,13 @@ class CustomBottomSheet {
       ),
       backgroundColor: AppColors.white,
       builder: (BuildContext context) {
-        return _container(
-          bottomSheetItems: bottomSheetItems,
-          child: child,
-          height: height,
-          topPadding: topPadding,
+        return StatefulBuilder(
+          builder: (BuildContext context, StateSetter setState) => _container(
+            bottomSheetItems: bottomSheetItems,
+            child: child,
+            height: height,
+            topPadding: topPadding,
+          ),
         );
       },
     );
@@ -43,18 +45,23 @@ class CustomBottomSheet {
       width: double.infinity,
       height: height,
       padding: EdgeInsets.only(top: topPadding ?? 0.0),
-      margin: child != null ? const EdgeInsets.all(0) : const EdgeInsets.only(bottom: 8.0, left: 12.0, right: 12.0),
+      margin: child != null
+          ? const EdgeInsets.all(0)
+          : const EdgeInsets.only(bottom: 8.0, left: 12.0, right: 12.0),
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(12.0),
         color: AppColors.white,
       ),
-      child: child ?? Column(
-        mainAxisSize: MainAxisSize.min,
-        children: List.generate(
-          bottomSheetItems!.length,
-              (index) => BottomSheetItemWidget(item: bottomSheetItems[index]),
-        ),
-      ),
+      child: child ??
+          Column(
+            mainAxisSize: MainAxisSize.min,
+            children: List.generate(
+              bottomSheetItems!.length,
+              (index) => BottomSheetItemWidget(
+                item: bottomSheetItems[index],
+              ),
+            ),
+          ),
     );
   }
 }
