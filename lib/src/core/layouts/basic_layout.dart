@@ -1,8 +1,7 @@
 import 'package:conditional_builder_null_safety/conditional_builder_null_safety.dart';
 import 'package:flutter/material.dart';
-import 'package:readivo_app/src/core/constants/colors.dart';
 
-class BasicLayout extends StatelessWidget {
+class BasicLayout extends StatefulWidget {
   final String title;
   final Widget? titleWidget;
   final List<Widget>? actions;
@@ -15,6 +14,8 @@ class BasicLayout extends StatelessWidget {
   final Color? appBarBackground;
   final Widget? floatingActionButton;
   final FloatingActionButtonLocation? floatingActionButtonLocation;
+  final bool extendBody;
+  final bool isTransparent;
 
   const BasicLayout({
     super.key,
@@ -30,49 +31,91 @@ class BasicLayout extends StatelessWidget {
     this.appBarBackground = Colors.white,
     this.floatingActionButton,
     this.floatingActionButtonLocation,
+    this.extendBody = false,
+    this.isTransparent = false,
   });
+
+  @override
+  State<BasicLayout> createState() => _BasicLayoutState();
+}
+
+class _BasicLayoutState extends State<BasicLayout> {
 
   @override
   Widget build(BuildContext context) {
     return SafeArea(
       child: Scaffold(
-        // resizeToAvoidBottomInset: false,
-        body: NestedScrollView(
-          floatHeaderSlivers: true,
-          headerSliverBuilder: (BuildContext context, bool innerBoxIsScrolled) {
-            return <Widget>[
-              SliverAppBar(
-                forceMaterialTransparency: false,
-                elevation: 0.0,
-                backgroundColor: appBarBackground,
-                automaticallyImplyLeading: showBackButton,
-                leading: leading,
-                pinned: isPinned,
-                primary: true,
-                surfaceTintColor: AppColors.white,
-                forceElevated: innerBoxIsScrolled,
-                leadingWidth: 40,
-                title: ConditionalBuilder(
-                  condition: titleWidget == null,
-                  builder: (context) => Text(
-                    title,
-                    style: const TextStyle(
-                      fontSize: 20,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                  fallback: (context) => titleWidget ?? Text(title),
-                ),
-                centerTitle: centerTitle,
-                actions: actions,
-              )
-            ];
-          },
-          body: body,
+        extendBodyBehindAppBar: widget.extendBody,
+        appBar: widget.extendBody ? _buildNormalAppBar() : null,
+        body: ConditionalBuilder(
+          condition: widget.extendBody,
+          builder: (context) => widget.body,
+          fallback: (context) => _buildNestedAppBar(),
         ),
-        floatingActionButton: floatingActionButton,
-        floatingActionButtonLocation: floatingActionButtonLocation,
+        floatingActionButton: widget.floatingActionButton,
+        floatingActionButtonLocation: widget.floatingActionButtonLocation,
       ),
+    );
+  }
+
+  PreferredSizeWidget _buildNormalAppBar() {
+    return AppBar(
+      forceMaterialTransparency: widget.isTransparent,
+      elevation: 0.0,
+      backgroundColor: widget.appBarBackground,
+      automaticallyImplyLeading: widget.showBackButton,
+      leading: widget.leading,
+      primary: true,
+      surfaceTintColor: Colors.white,
+      leadingWidth: 40,
+      title: ConditionalBuilder(
+        condition: widget.titleWidget == null,
+        builder: (context) => Text(
+          widget.title,
+          style: const TextStyle(
+            fontSize: 20,
+            fontWeight: FontWeight.bold,
+          ),
+        ),
+        fallback: (context) => widget.titleWidget ?? Text(widget.title),
+      ),
+      centerTitle: widget.centerTitle,
+      actions: widget.actions,
+    );
+  }
+
+  Widget _buildNestedAppBar() {
+    return NestedScrollView(
+      headerSliverBuilder: (BuildContext context, bool innerBoxIsScrolled) {
+        return <Widget>[
+          SliverAppBar(
+            forceMaterialTransparency: widget.isTransparent,
+            elevation: 0.0,
+            backgroundColor: widget.appBarBackground,
+            automaticallyImplyLeading: widget.showBackButton,
+            leading: widget.leading,
+            pinned: widget.isPinned,
+            primary: true,
+            surfaceTintColor: Colors.white,
+            forceElevated: innerBoxIsScrolled,
+            leadingWidth: 40,
+            title: ConditionalBuilder(
+              condition: widget.titleWidget == null,
+              builder: (context) => Text(
+                widget.title,
+                style: const TextStyle(
+                  fontSize: 20,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+              fallback: (context) => widget.titleWidget ?? Text(widget.title),
+            ),
+            centerTitle: widget.centerTitle,
+            actions: widget.actions,
+          )
+        ];
+      },
+      body: widget.body,
     );
   }
 }
