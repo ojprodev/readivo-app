@@ -23,7 +23,7 @@ class CustomButton extends StatelessWidget {
   final Widget? child;
 
   /// The callback function invoked when the button is pressed.
-  final VoidCallback onPressed;
+  final VoidCallback? onPressed;
 
   /// The style type of the button (filled, outline, or ghost).
   final ButtonStyleType styleType;
@@ -74,7 +74,7 @@ class CustomButton extends StatelessWidget {
   const CustomButton({
     super.key,
     required this.text,
-    required this.onPressed,
+    this.onPressed,
     this.styleType = ButtonStyleType.filled,
     this.color,
     this.textColor,

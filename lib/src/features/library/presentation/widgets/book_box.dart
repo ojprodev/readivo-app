@@ -24,6 +24,12 @@ class BookBox extends StatelessWidget {
   // Empty Book Cover Background
   final Color? background;
 
+  /// Custom Empty Cover icon
+  final Widget? icon;
+
+  /// Change default icon size, default: 40.0
+  final double? iconSize;
+
   /// Constructor for BookBoxCover.
   const BookBox({
     super.key,
@@ -33,6 +39,8 @@ class BookBox extends StatelessWidget {
     this.height = 200.0,
     this.width = 150.0,
     this.background = Colors.white,
+    this.icon,
+    this.iconSize = 40.0
   });
 
   @override
@@ -96,9 +104,9 @@ class BookBox extends StatelessWidget {
       width: width,
       color: background,
       child: Center(
-        child: SvgPicture.asset(
+        child: icon ?? SvgPicture.asset(
           AppIcons.photo,
-          width: 40,
+          width: iconSize,
           colorFilter: const ColorFilter.mode(AppColors.grey, BlendMode.srcIn),
         ),
       ),
