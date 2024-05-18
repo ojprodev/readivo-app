@@ -31,8 +31,11 @@ class _LibraryAddBookScreenState extends State<LibraryAddBookScreen> {
   List<String> bookTypes = ['paper book', 'e-book', 'audio book'];
   String selectedBookType = 'paper book';
   List<Map<String, dynamic>> selectedCollections = [];
+  List<String> selectedTags = [];
+  List<String> tempSelectedTags = [];
   List<Map<String, dynamic>> tempSelectedCollections = [];
   List<Map<String, dynamic>> collectionsSearchResult = [];
+  List<String> tagsSearchResult = [];
   final List<Map<String, dynamic>> collectionsList = [
     {'text': 'Chip 1', 'icon': Icons.star, 'color': Colors.blue},
     {'text': 'Short', 'icon': Icons.ac_unit, 'color': Colors.purple},
@@ -44,6 +47,40 @@ class _LibraryAddBookScreenState extends State<LibraryAddBookScreen> {
       'color': Colors.orange
     }
   ];
+  final List<String> tagsList = [
+    'Fiction',
+    'Non-fiction',
+    'Mystery',
+    'Thriller',
+    'Romance',
+    'Science Fiction',
+    'Fantasy',
+    'Historical Fiction',
+    'Biography',
+    'Autobiography',
+    'Memoir',
+    'Self-Help',
+    'Psychology',
+    'Philosophy',
+    'Business',
+    'Leadership',
+    'Entrepreneurship',
+    'Finance',
+    'Economics',
+    'History',
+    'Travel',
+    'Cooking',
+    'Health',
+    'Fitness',
+    'Parenting',
+    'Education',
+    'Poetry',
+    'Art',
+    'Religion',
+    'Spirituality',
+  ];
+
+  double bottomSheetFullHeight = 0.0;
 
   // controllers
   final TextEditingController titleController = TextEditingController();
@@ -55,6 +92,7 @@ class _LibraryAddBookScreenState extends State<LibraryAddBookScreen> {
   final TextEditingController reviewController = TextEditingController();
   final TextEditingController searchCollectionsController =
       TextEditingController();
+  final TextEditingController searchTagsController = TextEditingController();
 
   // handle scroll change
   final ScrollController _scrollController = ScrollController();
@@ -81,6 +119,9 @@ class _LibraryAddBookScreenState extends State<LibraryAddBookScreen> {
 
   @override
   Widget build(BuildContext context) {
+    bottomSheetFullHeight = MediaQuery.sizeOf(context).height -
+        MediaQuery.paddingOf(context).top -
+        4;
     return BasicLayout(
       extendBody: true,
       appBarBackground:
@@ -153,16 +194,246 @@ class _LibraryAddBookScreenState extends State<LibraryAddBookScreen> {
     );
   }
 
+  Widget _buildBookCoverSection() {
+    return Container(
+      padding: const EdgeInsets.only(top: 36.0),
+      height: 350,
+      decoration: BoxDecoration(
+        gradient: LinearGradient(
+          begin: Alignment.topCenter,
+          end: Alignment.bottomCenter,
+          stops: const [0.0, 0.5, 0.8],
+          colors: [
+            AppColors.grey.withOpacity(0.9),
+            AppColors.lightGrey.withOpacity(0.8),
+            Colors.white,
+          ],
+        ),
+      ),
+      child: const BookCover(
+        width: 180,
+        height: 260,
+        child: BookBox(
+          iconSize: 64,
+        ),
+      ),
+    );
+  }
+
+  Widget _buildBookTypeTabs() {
+    return Container(
+      margin: const EdgeInsets.all(16.0),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          _buildInputLabel('Book Type'),
+          const SizedBox(height: 6.0),
+          Container(
+            padding: const EdgeInsets.all(6.0),
+            decoration: BoxDecoration(
+                color: AppColors.lightGrey.withOpacity(0.4),
+                borderRadius: BorderRadius.circular(8.0)),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceAround,
+              children: bookTypes
+                  .map((status) => Expanded(
+                        child: _buildTab(
+                          status,
+                          isSelected: status == selectedBookType,
+                        ),
+                      ))
+                  .toList(),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildTab(String type, {bool isSelected = false}) {
+    return GestureDetector(
+      onTap: () {
+        if (type != selectedBookType) {
+          setState(() {
+            selectedBookType = type;
+          });
+        }
+      },
+      child: Container(
+        padding: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 4.0),
+        margin: const EdgeInsets.symmetric(horizontal: 4.0),
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(6.0),
+          boxShadow: [
+            if (isSelected)
+              BoxShadow(
+                  color: AppColors.lightGrey.withOpacity(0.4),
+                  blurRadius: 4,
+                  spreadRadius: 2)
+          ],
+          color: isSelected
+              ? Colors.white
+              : Colors.transparent, // Darker background for unselected tabs
+        ),
+        child: Center(
+          child: Text(
+            type,
+            style: TextStyle(
+                color: isSelected
+                    ? Colors.black
+                    : AppColors.grey // Lighter text color for unselected tabs
+                ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildAddTagsBottomSheetList(StateSetter updateState) {
+    List<String> tags =
+        searchTagsController.text != '' ? tagsSearchResult : tagsList;
+    return Container(
+      padding: const EdgeInsets.symmetric(vertical: 8.0),
+      child: Wrap(
+        spacing: 8.0,
+        runSpacing: 4.0,
+        children: [
+          for (var tag in tags)
+            GestureDetector(
+              onTap: () {
+                updateState(() {
+                  if (!tempSelectedTags.contains(tag)) {
+                    tempSelectedTags.add(tag);
+                  } else {
+                    tempSelectedTags.remove(tag);
+                  }
+                });
+              },
+              child: CustomChip(
+                text: tag,
+                textColor: tempSelectedTags.contains(tag) ? Colors.white : null,
+                backgroundColor: tempSelectedTags.contains(tag)
+                    ? AppColors.grey
+                    : AppColors.lightGrey.withOpacity(0.4),
+                icon: Icons.local_offer_rounded,
+                iconColor: tempSelectedTags.contains(tag)
+                    ? AppColors.lightGrey
+                    : AppColors.grey.withOpacity(0.6),
+              ),
+            ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildAddTagsBottomSheetContent(StateSetter updateState) {
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        _buildSearchField(
+          controller: searchTagsController,
+          placeholder: 'Search for a tags',
+          onChanged: (value) {
+            updateState(() {
+              if (value.isEmpty) {
+                tagsSearchResult = List.from(tagsList);
+              } else {
+                tagsSearchResult = tagsList.where((tag) {
+                  String tagText = tag.toString().toLowerCase();
+                  return tagText.contains(value.toLowerCase());
+                }).toList();
+              }
+            });
+          },
+        ),
+        _buildAddTagsBottomSheetList(updateState),
+      ],
+    );
+  }
+
+  void _showAddTagsBottomSheet(BuildContext context) {
+    CustomBottomSheet.show(
+      context: context,
+      height: bottomSheetFullHeight,
+      showDragHandle: false,
+      child: StatefulBuilder(
+        builder: (context, updateState) => Column(
+          children: [
+            _buildBottomSheetHeader(
+              context: context,
+              title: 'Add Tags',
+              tempSelectedList: tempSelectedTags,
+              updateFinalSelectedList: (List<dynamic> updatedList) {
+                selectedTags = updatedList as List<String>;
+              },
+            ),
+            _buildAddTagsBottomSheetContent(updateState),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildBottomSheetHeader({
+    required BuildContext context,
+    required String title,
+    String submitTitle = 'Save',
+    required List<dynamic> tempSelectedList,
+    required Function(List<dynamic>) updateFinalSelectedList,
+  }) {
+    return Padding(
+      padding: const EdgeInsets.all(8.0),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          CustomButton(
+            width: 30,
+            text: 'Back',
+            styleType: ButtonStyleType.ghost,
+            onPressed: () {
+              Navigator.of(context).pop();
+            },
+            child: const Icon(
+              Icons.chevron_left,
+              size: 36,
+              color: Colors.black,
+            ),
+          ),
+          Text(
+            title,
+            style: const TextStyle(
+              fontSize: 18,
+              fontWeight: FontWeight.w500,
+            ),
+          ),
+          CustomButton(
+            width: 80,
+            text: submitTitle,
+            onPressed: () {
+              setState(() {
+                searchTagsController.clear();
+
+                updateFinalSelectedList(tempSelectedList);
+
+                Navigator.of(context).pop();
+              });
+            },
+          ),
+        ],
+      ),
+    );
+  }
+
   Widget _buildBookTagsSection() {
     return Container(
       margin: const EdgeInsets.symmetric(horizontal: 16.0),
       child: Column(
         mainAxisAlignment: MainAxisAlignment.start,
         crossAxisAlignment: CrossAxisAlignment.start,
-        mainAxisSize: MainAxisSize.max,
         children: [
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            mainAxisSize: MainAxisSize.max,
             children: [
               _buildInputLabel('Add tags'),
               CustomButton(
@@ -171,50 +442,70 @@ class _LibraryAddBookScreenState extends State<LibraryAddBookScreen> {
                 height: 30,
                 styleType: ButtonStyleType.ghost,
                 borderRadius: 15,
-                onPressed: () {},
+                onPressed: () {
+                  _showAddTagsBottomSheet(context);
+                },
                 child: const Icon(Icons.add),
               ),
             ],
           ),
-          Wrap(
-            spacing: 6.0,
-            children: [
-              buildCustomChip(
-                  text: 'love',
-                  icon: Icons.tag,
-                  iconColor: AppColors.grey,
-                  backgroundColor: AppColors.lightGrey),
-              buildCustomChip(
-                  text: 'business',
-                  icon: Icons.tag,
-                  iconColor: AppColors.grey,
-                  backgroundColor: AppColors.lightGrey),
-              buildCustomChip(
-                  text: 'life',
-                  icon: Icons.tag,
-                  iconColor: AppColors.grey,
-                  backgroundColor: AppColors.lightGrey),
-            ],
-          ),
+          selectedTags.isNotEmpty
+              ? Wrap(
+                  spacing: 6.0,
+                  children: [
+                    for (String tag in selectedTags)
+                      CustomChip(
+                        text: tag,
+                        icon: Icons.tag,
+                        iconColor: AppColors.grey,
+                        backgroundColor: AppColors.lightGrey,
+                        deleteIcon: CustomButton(
+                          text: 'remove $tag',
+                          borderRadius: 18,
+                          width: 20,
+                          height: 20,
+                          color: Colors.redAccent.withOpacity(0.8),
+                          child: const Icon(
+                            Icons.clear_rounded,
+                            size: 18,
+                          ),
+                        ),
+                        onDeleted: () {
+                          setState(() {
+                            if (selectedTags.contains(tag)) {
+                              selectedTags.remove(tag);
+                            }
+                          });
+                        },
+                      )
+                  ],
+                )
+              : const SizedBox(),
         ],
       ),
     );
   }
 
-  void _showAddToCollectionBottomSheet(BuildContext context) {
+  void _showAddCollectionsBottomSheet(BuildContext context) {
     CustomBottomSheet.show(
       context: context,
-      height: MediaQuery.of(context).size.height -
-          MediaQuery.of(context).padding.top -
-          4,
+      height: bottomSheetFullHeight,
       showDragHandle: false,
       child: StatefulBuilder(
-        builder: (context, setState) {
+        builder: (context, updateState) {
           return Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              _buildAddCollectionsBottomSheetHeader(context),
-              _buildAddCollectionsBottomSheetContent(context, setState),
+              _buildBottomSheetHeader(
+                context: context,
+                title: 'Add to Collections',
+                tempSelectedList: tempSelectedCollections,
+                updateFinalSelectedList: (List<dynamic> updatedList) {
+                  selectedCollections =
+                      updatedList as List<Map<String, dynamic>>;
+                },
+              ),
+              _buildAddCollectionsBottomSheetContent(context, updateState),
             ],
           );
         },
@@ -257,7 +548,7 @@ class _LibraryAddBookScreenState extends State<LibraryAddBookScreen> {
         tempSelectedCollections = selectedCollections;
 
         // show the bottom sheet
-        _showAddToCollectionBottomSheet(context);
+        _showAddCollectionsBottomSheet(context);
       },
       child: const Icon(
         Icons.create_new_folder,
@@ -266,113 +557,76 @@ class _LibraryAddBookScreenState extends State<LibraryAddBookScreen> {
     );
   }
 
-  Widget _buildAddCollectionsBottomSheetHeader(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.all(8.0),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          CustomButton(
-            width: 30,
-            text: 'Back',
-            styleType: ButtonStyleType.ghost,
-            onPressed: () {
-              Navigator.of(context).pop();
-            },
-            child: const Icon(
-              Icons.chevron_left,
-              size: 36,
-              color: Colors.black,
-            ),
-          ),
-          const Text(
-            'Add to Collections',
-            style: TextStyle(
-              fontSize: 18,
-              fontWeight: FontWeight.w500,
-            ),
-          ),
-          CustomButton(
-            width: 80,
-            text: 'Add',
-            onPressed: () {
-              setState(() {
-                // fill the selectedCollections list
-                selectedCollections = tempSelectedCollections;
-
-                // close the bottom sheet
-                Navigator.of(context).pop();
-              });
-            },
-          ),
-        ],
-      ),
-    );
-  }
-
   Widget _buildAddCollectionsBottomSheetContent(
-      BuildContext context, StateSetter setState) {
-    final collections = collectionsSearchResult.isNotEmpty
-        ? collectionsSearchResult
-        : collectionsList;
+      BuildContext context, StateSetter updateState) {
+    final List<Map<String, dynamic>> collections =
+        searchCollectionsController.text != ''
+            ? collectionsSearchResult
+            : collectionsList;
 
     return Expanded(
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          _buildAddCollectionsSearchField(setState),
-          _buildCollectionsList(context, setState, collections),
+          _buildSearchField(
+            controller: searchCollectionsController,
+            placeholder: 'Search for tags',
+            onChanged: (value) {
+              updateState(() {
+                if (value.isEmpty) {
+                  collectionsSearchResult = List.from(collectionsList);
+                } else {
+                  collectionsSearchResult = collectionsList.where((collection) {
+                    String collectionText =
+                        collection['text'].toString().toLowerCase();
+                    return collectionText.contains(value.toLowerCase());
+                  }).toList();
+                }
+              });
+            },
+          ),
+          _buildCollectionsList(context, updateState, collections),
         ],
       ),
     );
   }
 
-  Widget _buildAddCollectionsSearchField(StateSetter setState) {
+  Widget _buildSearchField({
+    required TextEditingController controller,
+    required String placeholder,
+    required Function(String) onChanged,
+  }) {
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 12.0),
+      padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 8.0),
       color: AppColors.lightGrey.withOpacity(0.2),
       child: CustomInputField(
-        controller: searchCollectionsController,
-        placeholder: 'Search for a collection',
-        borderRadius: 24,
+        controller: controller,
+        placeholder: placeholder,
+        borderRadius: 16,
         suffix: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 8.0),
           child: CustomButton(
-            text: 'clear collection search',
+            text: 'clear search',
             color: AppColors.grey.withOpacity(0.6),
             width: 24,
             height: 24,
-            borderRadius: 12,
+            borderRadius: 8,
             child: const Icon(
               Icons.clear_rounded,
               size: 18,
             ),
             onPressed: () {
-              setState(() {
-                searchCollectionsController.clear();
-                collectionsSearchResult = [];
-              });
+              controller.clear();
+              onChanged('');
             },
           ),
         ),
-        onChanged: (value) {
-          setState(() {
-            if (value.isEmpty) {
-              collectionsSearchResult = List.from(collectionsList);
-            } else {
-              collectionsSearchResult = collectionsList.where((collection) {
-                String collectionText =
-                    collection['text'].toString().toLowerCase();
-                return collectionText.contains(value.toLowerCase());
-              }).toList();
-            }
-          });
-        },
+        onChanged: onChanged,
       ),
     );
   }
 
-  Widget _buildCollectionsList(BuildContext context, StateSetter setState,
+  Widget _buildCollectionsList(BuildContext context, StateSetter updateState,
       List<Map<String, dynamic>> collections) {
     return Expanded(
       child: Container(
@@ -420,11 +674,10 @@ class _LibraryAddBookScreenState extends State<LibraryAddBookScreen> {
                   )
                 ],
                 onTap: () {
-                  setState(() {
+                  updateState(() {
                     if (!tempSelectedCollections.contains(collections[index])) {
                       tempSelectedCollections.add(collections[index]);
                     } else {
-                      print(3);
                       tempSelectedCollections.remove(collections[index]);
                     }
                   });
@@ -453,7 +706,7 @@ class _LibraryAddBookScreenState extends State<LibraryAddBookScreen> {
         spacing: 8.0,
         runSpacing: 4.0,
         children: collections.map((chip) {
-          return buildCustomChip(
+          return CustomChip(
             text: chip['text'],
             icon: chip['icon'],
             iconColor: chip['color'],
@@ -671,33 +924,6 @@ class _LibraryAddBookScreenState extends State<LibraryAddBookScreen> {
     );
   }
 
-  Widget _buildBookCoverSection() {
-    return Container(
-      padding: const EdgeInsets.only(top: 36.0),
-      height: 350,
-      decoration: BoxDecoration(
-        gradient: LinearGradient(
-          begin: Alignment.topCenter,
-          end: Alignment.bottomCenter,
-          stops: const [0.0, 0.5, 0.8],
-          colors: [
-            Colors.red.withOpacity(0.9),
-            Colors.yellow.withOpacity(0.8),
-            Colors.white,
-          ],
-        ),
-      ),
-      child: const BookCover(
-        width: 180,
-        height: 260,
-        child: BookBox(
-          coverUrl:
-              "https://booksondemand.ma/cdn/shop/products/81ioPZFMeUL-min.jpg?v=1631701482",
-        ),
-      ),
-    );
-  }
-
   List<BottomSheetItem> _buildReadingStatusBottomSheet() {
     return _buildBottomSheetItems([
       'Want to read',
@@ -843,75 +1069,6 @@ class _LibraryAddBookScreenState extends State<LibraryAddBookScreen> {
           color: Colors.grey[700],
           fontSize: 16,
           fontWeight: FontWeight.bold,
-        ),
-      ),
-    );
-  }
-
-  Widget _buildBookTypeTabs() {
-    return Container(
-      margin: const EdgeInsets.all(16.0),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          _buildInputLabel('Book Type'),
-          const SizedBox(height: 6.0),
-          Container(
-            padding: const EdgeInsets.all(6.0),
-            decoration: BoxDecoration(
-                color: AppColors.lightGrey.withOpacity(0.4),
-                borderRadius: BorderRadius.circular(8.0)),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceAround,
-              children: bookTypes
-                  .map((status) => Expanded(
-                        child: _buildTab(
-                          status,
-                          isSelected: status == selectedBookType,
-                        ),
-                      ))
-                  .toList(),
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildTab(String type, {bool isSelected = false}) {
-    return GestureDetector(
-      onTap: () {
-        if (type != selectedBookType) {
-          setState(() {
-            selectedBookType = type;
-          });
-        }
-      },
-      child: Container(
-        padding: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 4.0),
-        margin: const EdgeInsets.symmetric(horizontal: 4.0),
-        decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(6.0),
-          boxShadow: [
-            if (isSelected)
-              BoxShadow(
-                  color: AppColors.lightGrey.withOpacity(0.4),
-                  blurRadius: 4,
-                  spreadRadius: 2)
-          ],
-          color: isSelected
-              ? Colors.white
-              : Colors.transparent, // Darker background for unselected tabs
-        ),
-        child: Center(
-          child: Text(
-            type,
-            style: TextStyle(
-                color: isSelected
-                    ? Colors.black
-                    : AppColors.grey // Lighter text color for unselected tabs
-                ),
-          ),
         ),
       ),
     );
