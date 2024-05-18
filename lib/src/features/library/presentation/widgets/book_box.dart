@@ -99,7 +99,7 @@ class BookBox extends StatelessWidget {
         child: SvgPicture.asset(
           AppIcons.photo,
           width: 40,
-          colorFilter: ColorFilter.mode(AppColors.grey, BlendMode.srcIn),
+          colorFilter: const ColorFilter.mode(AppColors.grey, BlendMode.srcIn),
         ),
       ),
     );

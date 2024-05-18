@@ -43,6 +43,12 @@ class CustomButton extends StatelessWidget {
   /// The border radius
   final double borderRadius;
 
+  /// The border color
+  final Color borderColor;
+
+  /// The border width
+  final double borderWidth;
+
   /// Creates a customizable button widget.
   ///
   /// The [text] parameter is required and specifies the text displayed on the button.
@@ -60,17 +66,25 @@ class CustomButton extends StatelessWidget {
   /// The [height] parameter specifies the height of the button. Default is 40.
   ///
   /// The [borderRadius] parameter specifies the button's border radius value, Default is 8.0
-  const CustomButton(
-      {super.key,
-      required this.text,
-      required this.onPressed,
-      this.styleType = ButtonStyleType.filled,
-      this.color,
-      this.textColor,
-      this.width = 100,
-      this.height = 40,
-      this.borderRadius = 8.0,
-      this.child});
+  ///
+  /// The [borderColor] parameter specifies the button's border Color, Default is transparent
+  ///
+  /// The [borderWidth] parameter specifies the button's border width, Default is 2.0
+
+  const CustomButton({
+    super.key,
+    required this.text,
+    required this.onPressed,
+    this.styleType = ButtonStyleType.filled,
+    this.color,
+    this.textColor,
+    this.width = 100,
+    this.height = 40,
+    this.borderRadius = 4.0,
+    this.borderWidth = 2.0,
+    this.borderColor = Colors.transparent,
+    this.child,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -82,18 +96,18 @@ class CustomButton extends StatelessWidget {
       child: ElevatedButton(
         onPressed: onPressed,
         style: ButtonStyle(
-          elevation: MaterialStateProperty.all(0),
-          padding: MaterialStateProperty.all<EdgeInsets>(EdgeInsets.zero),
+          elevation: WidgetStateProperty.all(0),
+          padding: WidgetStateProperty.all<EdgeInsets>(EdgeInsets.zero),
           backgroundColor:
-              MaterialStateProperty.all<Color>(_getButtonColor(theme)),
-          foregroundColor:
-              MaterialStateProperty.all<Color>(_getTextColor(theme)),
-          shape: MaterialStateProperty.all<RoundedRectangleBorder>(
+              WidgetStateProperty.all<Color>(_getButtonColor(theme)),
+          foregroundColor: WidgetStateProperty.all<Color>(_getTextColor(theme)),
+          shape: WidgetStateProperty.all<RoundedRectangleBorder>(
             RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(borderRadius),
               side: styleType == ButtonStyleType.outline
-                  ? BorderSide(color: _getBorderColor(theme), width: 2)
-                  : BorderSide.none,
+                  ? BorderSide(
+                      color: _getBorderColor(theme), width: borderWidth)
+                  : BorderSide(color: borderColor, width: borderWidth),
             ),
           ),
         ),

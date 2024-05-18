@@ -5,7 +5,6 @@ import 'package:percent_indicator/linear_percent_indicator.dart';
 
 import 'package:readivo_app/src/core/bloc/app_cubit.dart';
 import 'package:readivo_app/src/core/bloc/app_states.dart';
-import 'package:readivo_app/src/core/constants/colors.dart';
 import 'package:readivo_app/src/core/constants/constants.dart';
 import 'package:readivo_app/src/core/layouts/basic_layout.dart';
 import 'package:readivo_app/src/features/library/presentation/widgets/book_box.dart';
@@ -27,9 +26,10 @@ class _LibraryHomeScreenState extends State<LibraryHomeScreen> {
 
   @override
   void initState() {
-    super.initState();
 
     appCubit = AppCubit.get(context);
+
+    super.initState();
   }
 
   @override
@@ -88,7 +88,7 @@ class _LibraryHomeScreenState extends State<LibraryHomeScreen> {
     // List of bottom sheet items
     return [
       BottomSheetItem(
-        icon: Icons.search,
+        icon: const Icon(Icons.search),
         label: 'Search',
         onTap: () {
           // close the bottom sheet
@@ -99,7 +99,7 @@ class _LibraryHomeScreenState extends State<LibraryHomeScreen> {
         },
       ),
       BottomSheetItem(
-        icon: Icons.qr_code_scanner_outlined,
+        icon: const Icon(Icons.qr_code_scanner_outlined),
         label: 'Scan ISBN',
         onTap: () {
           // close the bottom sheet
@@ -107,7 +107,7 @@ class _LibraryHomeScreenState extends State<LibraryHomeScreen> {
         },
       ),
       BottomSheetItem(
-        icon: Icons.edit_note_outlined,
+        icon: const Icon(Icons.edit_note_outlined),
         label: 'Add manually',
         onTap: () {
           // Handle add manually
@@ -153,7 +153,7 @@ class _LibraryHomeScreenState extends State<LibraryHomeScreen> {
       onPressed: () {},
       styleType: ButtonStyleType.ghost,
       width: 60,
-      child: Text(
+      child: const Text(
         'view all',
         style: TextStyle(
           color: AppColors.lightBlue,
@@ -258,7 +258,6 @@ class _LibraryHomeScreenState extends State<LibraryHomeScreen> {
       ),
     );
   }
-
 
   Widget _buildCollectionsSection() {
     return Column(

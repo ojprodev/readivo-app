@@ -7,4 +7,5 @@ class AppIcons {
   static const String globeAlt = "assets/images/icons/globe-alt.svg";
   static const String adjustments = "assets/images/icons/adjustments.svg";
   static const String chevronLeft = "assets/images/icons/chevron-left.svg";
+  static const String chevronUpDown = "assets/images/icons/chevron-up-down.svg";
 }

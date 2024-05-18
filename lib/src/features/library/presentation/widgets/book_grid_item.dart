@@ -66,9 +66,9 @@ class BookGridItem extends StatelessWidget {
           margin: const EdgeInsets.only(top: 12.0),
           width: 60,
           height: 24,
-          decoration: BoxDecoration(
+          decoration: const BoxDecoration(
             color: AppColors.white,
-            borderRadius: const BorderRadius.only(
+            borderRadius: BorderRadius.only(
               topLeft: Radius.circular(12.0),
               bottomLeft: Radius.circular(12.0),
             ),
@@ -78,7 +78,7 @@ class BookGridItem extends StatelessWidget {
             children: [
               SvgPicture.asset(
                 AppIcons.microStar,
-                colorFilter: ColorFilter.mode(
+                colorFilter: const ColorFilter.mode(
                   AppColors.goldenYellow,
                   BlendMode.srcIn,
                 ),

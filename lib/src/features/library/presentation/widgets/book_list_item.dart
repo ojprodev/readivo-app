@@ -51,7 +51,7 @@ class BookListItem extends StatelessWidget {
                   overflow: TextOverflow.ellipsis,
                 ),
                 const SizedBox(height: 4.0),
-                Text(
+                const Text(
                   'Author name',
                   style: TextStyle(
                     fontSize: 16.0,
@@ -59,7 +59,7 @@ class BookListItem extends StatelessWidget {
                   ),
                 ),
                 const SizedBox(height: 4.0),
-                Row(
+                const Row(
                   children: [
                     Expanded(
                         child: Row(
@@ -70,8 +70,8 @@ class BookListItem extends StatelessWidget {
                           color: AppColors.goldenYellow,
                           size: 20.0,
                         ),
-                        const SizedBox(width: 4.0),
-                        const Text(
+                        SizedBox(width: 4.0),
+                        Text(
                           '4.5',
                           style: TextStyle(fontSize: 16.0),
                         ),
@@ -117,24 +117,11 @@ class BookListItem extends StatelessWidget {
       ),
       child: Text(
         category,
-        style: TextStyle(
-          color: AppColors.grey, // Text color for badges
+        style: const TextStyle(
+          color: AppColors.grey,
           fontSize: 12.0,
         ),
       ),
     );
-  }
-
-  Widget _buildRatingStars(double rating) {
-    // Assuming rating is out of 5
-    final stars = List<Widget>.generate(
-      5,
-      (index) => Icon(
-        index < rating.floor() ? Icons.star : Icons.star_border,
-        color: AppColors.goldenYellow,
-      ),
-    );
-
-    return Row(children: stars);
   }
 }
