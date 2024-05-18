@@ -10,6 +10,7 @@ import 'package:readivo_app/src/core/widgets/custom_button.dart';
 import 'package:readivo_app/src/core/widgets/custom_input_field.dart';
 import 'package:readivo_app/src/features/library/presentation/bloc/library_cubit.dart';
 import 'package:readivo_app/src/features/library/presentation/bloc/library_states.dart';
+import 'package:readivo_app/src/features/library/presentation/screens/library_add_book_screen.dart';
 import 'package:readivo_app/src/features/library/presentation/screens/library_home_screen.dart';
 import 'package:readivo_app/src/features/library/presentation/widgets/book_grid_item.dart';
 import 'package:readivo_app/src/features/library/presentation/widgets/book_list_item.dart';
@@ -46,6 +47,8 @@ class _LibrarySearchScreenState extends State<LibrarySearchScreen> {
   Widget _buildLibrarySearchLayout(BuildContext context, state) {
     return BasicLayout(
       title: 'Search Screen',
+      appBarBackground: Colors.white,
+      isPinned: false,
       leading: CustomButton(
         text: 'back home',
         styleType: ButtonStyleType.ghost,
@@ -56,7 +59,7 @@ class _LibrarySearchScreenState extends State<LibrarySearchScreen> {
         },
       ),
       showBackButton: false,
-      titleWidget: CustomInputField(
+      titleWidget: const CustomInputField(
         placeholder: "Search for a book",
         textInputAction: TextInputAction.search,
         fillColor: AppColors.lightGrey,
@@ -79,46 +82,60 @@ class _LibrarySearchScreenState extends State<LibrarySearchScreen> {
         onRefresh: () async {
           await Future.delayed(const Duration(seconds: 2));
         },
-        child: Column(
-          children: [
-            _buildHeadSection(),
-            Expanded(
-              child: ConditionalBuilder(
-                condition: LibraryStates.searchDisplayOption ==
-                    SearchDisplayOption.grid,
-                builder: (context) {
-                  return GridView.builder(
-                    gridDelegate:
-                        const SliverGridDelegateWithMaxCrossAxisExtent(
-                      maxCrossAxisExtent: 240,
-                      mainAxisSpacing: 8.0,
-                      crossAxisSpacing: 8.0,
-                      mainAxisExtent: 300,
-                    ),
-                    padding: const EdgeInsets.all(8.0),
-                    itemCount: 24,
-                    itemBuilder: (gridContext, index) => GestureDetector(
-                      onTap: () {},
-                      child: const BookGridItem(
-                        coverWidth: 180,
-                        coverHeight: 240,
-                        titleFontSize: 16,
-                        authorFontSize: 14,
+        child: SingleChildScrollView(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              _buildHeadSection(),
+              Flexible(
+                fit: FlexFit.loose,
+                child: ConditionalBuilder(
+                  condition: LibraryStates.searchDisplayOption ==
+                      SearchDisplayOption.grid,
+                  builder: (context) {
+                    return GridView.builder(
+                      shrinkWrap: true,
+                      physics: const NeverScrollableScrollPhysics(),
+                      gridDelegate:
+                          const SliverGridDelegateWithMaxCrossAxisExtent(
+                        maxCrossAxisExtent: 240,
+                        mainAxisSpacing: 8.0,
+                        crossAxisSpacing: 8.0,
+                        mainAxisExtent: 300,
                       ),
-                    ),
-                  );
-                },
-                fallback: (context) {
-                  return ListView.builder(
-                    itemBuilder: (context, index) =>
-                        BookListItem(key: UniqueKey()),
-                    // Provide unique keys
-                    itemCount: 12,
-                  );
-                },
+                      padding: const EdgeInsets.all(8.0),
+                      itemCount: 24,
+                      itemBuilder: (gridContext, index) => GestureDetector(
+                        onTap: () {},
+                        child: const BookGridItem(
+                          coverWidth: 180,
+                          coverHeight: 240,
+                          titleFontSize: 16,
+                          authorFontSize: 14,
+                        ),
+                      ),
+                    );
+                  },
+                  fallback: (context) {
+                    return ListView.builder(
+                      shrinkWrap: true,
+                      physics: const NeverScrollableScrollPhysics(),
+                      itemBuilder: (context, index) {
+                        return GestureDetector(
+                          onTap: (){
+                            appCubit.changeScreen(screen: const LibraryAddBookScreen());
+                          },
+                          child: BookListItem(key: UniqueKey()),
+                        );
+                      },
+                      // Provide unique keys
+                      itemCount: 12,
+                    );
+                  },
+                ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );
@@ -144,7 +161,7 @@ class _LibrarySearchScreenState extends State<LibrarySearchScreen> {
             source: SearchSourceEnums.online,
             icon: SvgPicture.asset(
               AppIcons.globeAlt,
-              colorFilter: ColorFilter.mode(
+              colorFilter: const ColorFilter.mode(
                 AppColors.lightBlue,
                 BlendMode.srcIn,
               ),
@@ -159,7 +176,7 @@ class _LibrarySearchScreenState extends State<LibrarySearchScreen> {
             label: 'Local',
             source: SearchSourceEnums.local,
             append: true,
-            icon: Icon(Icons.sd_storage_rounded, color: AppColors.goldenYellow),
+            icon: const Icon(Icons.sd_storage_rounded, color: AppColors.goldenYellow),
           ),
         ],
       ),
@@ -215,12 +232,12 @@ class _LibrarySearchScreenState extends State<LibrarySearchScreen> {
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
-          Text(
+          const Text(
             'Found 12 Books',
             style: TextStyle(
                 fontWeight: FontWeight.w500,
                 fontSize: 16,
-                color: AppColors.grey),
+                color: AppColors.grey,),
           ),
           IconButton(
             onPressed: () {
