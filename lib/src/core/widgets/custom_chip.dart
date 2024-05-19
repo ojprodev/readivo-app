@@ -7,11 +7,12 @@ class CustomChip extends StatelessWidget {
   final Color? iconColor;
   final Color? textColor;
   final Color? backgroundColor;
-  final double? borderRadius;
+  final double borderRadius;
   final Widget? deleteIcon;
   final Color borderColor;
   final double borderWidth;
   final Function()? onDeleted;
+  final EdgeInsetsGeometry padding;
 
   const CustomChip({
     super.key,
@@ -20,17 +21,18 @@ class CustomChip extends StatelessWidget {
     this.iconColor,
     this.textColor,
     this.backgroundColor,
-    this.borderRadius,
+    this.borderRadius = 24.0,
     this.deleteIcon,
     this.borderColor = Colors.transparent,
     this.borderWidth = 1,
+    this.padding = const EdgeInsets.symmetric(vertical: 4.0, horizontal: 6.0),
     this.onDeleted,
   });
 
   @override
   Widget build(BuildContext context) {
     return Chip(
-      padding: const EdgeInsets.symmetric(vertical: 4.0, horizontal: 6.0),
+      padding: padding,
       label: Text(
         text,
         style: TextStyle(
@@ -39,10 +41,10 @@ class CustomChip extends StatelessWidget {
       ),
       avatar: icon != null
           ? Icon(
-        icon,
-        color: iconColor,
-        size: 22,
-      )
+              icon,
+              color: iconColor,
+              size: 22,
+            )
           : null,
       side: BorderSide(
         color: borderColor,
@@ -50,9 +52,11 @@ class CustomChip extends StatelessWidget {
       ),
       deleteIcon: deleteIcon,
       onDeleted: onDeleted,
+      visualDensity: VisualDensity.compact,
+      labelPadding: const EdgeInsetsDirectional.only(end: 2.0),
       backgroundColor: backgroundColor,
       shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(borderRadius ?? 20.0),
+        borderRadius: BorderRadius.circular(borderRadius),
         side: const BorderSide(color: Colors.transparent),
       ),
     );

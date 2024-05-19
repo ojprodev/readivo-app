@@ -1,3 +1,4 @@
+import 'package:card_swiper/card_swiper.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/flutter_svg.dart';
@@ -7,6 +8,8 @@ import 'package:readivo_app/src/core/bloc/app_cubit.dart';
 import 'package:readivo_app/src/core/bloc/app_states.dart';
 import 'package:readivo_app/src/core/constants/constants.dart';
 import 'package:readivo_app/src/core/layouts/basic_layout.dart';
+import 'package:readivo_app/src/core/widgets/custom_chip.dart';
+import 'package:readivo_app/src/core/widgets/custom_text.dart';
 import 'package:readivo_app/src/features/library/presentation/widgets/book_box.dart';
 import 'package:readivo_app/src/core/widgets/bottom_sheet.dart';
 import 'package:readivo_app/src/core/widgets/custom_button.dart';
@@ -26,7 +29,6 @@ class _LibraryHomeScreenState extends State<LibraryHomeScreen> {
 
   @override
   void initState() {
-
     appCubit = AppCubit.get(context);
 
     super.initState();
@@ -51,15 +53,14 @@ class _LibraryHomeScreenState extends State<LibraryHomeScreen> {
       ],
       body: SingleChildScrollView(
         child: Column(
+          mainAxisSize: MainAxisSize.max,
           children: [
             _buildContinueReadingSection(),
             const SizedBox(height: 12.0),
             _buildSuggestionSection(),
             const SizedBox(height: 12.0),
             _buildCollectionsSection(),
-            const SizedBox(
-              height: 12.0,
-            ),
+            const SizedBox(height: 12.0),
             _buildBooksAnalytics(),
           ],
         ),
@@ -118,7 +119,7 @@ class _LibraryHomeScreenState extends State<LibraryHomeScreen> {
 
   Widget _buildContinueReadingSection() {
     return Container(
-      color: AppColors.lightGrey,
+      color: AppColors.lightYellow,
       height: 300.0,
       child: Column(
         children: [
@@ -131,15 +132,15 @@ class _LibraryHomeScreenState extends State<LibraryHomeScreen> {
 
   Widget _buildContinueReadingHeader() {
     return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 4.0, horizontal: 8),
+      padding: const EdgeInsets.symmetric(vertical: 6.0, horizontal: 16.0),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        crossAxisAlignment: CrossAxisAlignment.center,
         children: [
-          const Text(
-            'Continue Reading',
-            style: TextStyle(
-              fontSize: 20,
-            ),
+          const CustomText(
+            text: 'Continue Reading',
+            fontSize: 20,
+            fontWeight: FontWeight.w300,
           ),
           _buildViewAllButton(),
         ],
@@ -149,66 +150,151 @@ class _LibraryHomeScreenState extends State<LibraryHomeScreen> {
 
   Widget _buildViewAllButton() {
     return CustomButton(
-      text: 'view all',
+      text: 'see all',
       onPressed: () {},
       styleType: ButtonStyleType.ghost,
       width: 60,
-      child: const Text(
-        'view all',
-        style: TextStyle(
-          color: AppColors.lightBlue,
-          decoration: TextDecoration.underline,
-          decorationColor: AppColors.lightBlue,
-        ),
+      child: const CustomText(
+        text: 'See all',
+        color: AppColors.lightBlue,
       ),
     );
   }
 
   Widget _buildContinueReadingList() {
-    return Padding(
+    return Container(
       padding: const EdgeInsets.all(4.0),
-      child: SingleChildScrollView(
-        scrollDirection: Axis.horizontal,
-        child: Row(
-          children: [
-            _buildReadingBookBox(),
-            _buildReadingBookBox(),
-            _buildReadingBookBox(),
-          ],
-        ),
+      height: 240,
+      width: MediaQuery.sizeOf(context).width,
+      child: Swiper(
+        itemCount: 3,
+        scale: 0.9,
+        itemBuilder: (context, index) {
+          return _buildReadingBookCard();
+        },
       ),
     );
   }
 
-  Widget _buildReadingBookBox() {
-    return Column(
-      children: [
-        const Padding(
-          padding: EdgeInsets.symmetric(horizontal: 8),
-          child: BookBox(),
-        ),
-        const SizedBox(height: 8),
-        LinearPercentIndicator(
-          width: 164.0,
-          lineHeight: 8.0,
-          percent: 0.35,
-          barRadius: const Radius.circular(4.0),
-          backgroundColor: AppColors.white,
-          progressColor: AppColors.grey,
-        ),
-        const SizedBox(height: 6.0),
-        const SizedBox(
-          height: 20,
-          width: 142.0,
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Text('35/230p', textAlign: TextAlign.left),
-              Text('35%', textAlign: TextAlign.right),
-            ],
+  Widget _buildReadingBookCard() {
+    List<Map<String, dynamic>> chips = [
+      {'icon': Icons.format_quote, 'label': '300 Quotes'},
+      {'icon': Icons.edit_note, 'label': '100 Note'}
+    ];
+    return Container(
+      width: 300,
+      height: 200,
+      padding: const EdgeInsets.symmetric(vertical: 6.0, horizontal: 4.0),
+      margin: const EdgeInsets.only(left: 16.0, bottom: 8.0, right: 8.0),
+      clipBehavior: Clip.none,
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(12),
+        boxShadow: [
+          BoxShadow(
+            color: AppColors.lightGrey.withOpacity(0.4),
+            blurRadius: 8,
+            offset: const Offset(0, 2),
           ),
-        ),
-      ],
+        ],
+      ),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          SizedBox(
+            width: 130,
+            child: OverflowBox(
+              alignment: Alignment.centerRight,
+              maxWidth: double.infinity,
+              minWidth: 130,
+              child: Container(
+                margin: const EdgeInsets.only(right: 12.0),
+                child: const BookBox(
+                  borderRadius: 6.0,
+                  width: 130,
+                  coverUrl:
+                      'https://m.media-amazon.com/images/I/61HAE8zahLL._AC_UF1000,1000_QL80_.jpg',
+                ),
+              ),
+            ),
+          ),
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+            children: [
+              const Column(
+                children: [
+                  CustomText(
+                    text: 'The Alchemist',
+                    fontWeight: FontWeight.w500,
+                    fontSize: 20,
+                  ),
+                  CustomText(
+                    text: 'By Paulo Coelho',
+                    color: AppColors.grey,
+                  ),
+                ],
+              ),
+              Row(
+                mainAxisSize: MainAxisSize.max,
+                children: chips.map((chip) {
+                  return Padding(
+                    padding: const EdgeInsets.only(right: 4.0),
+                    child: CustomChip(
+                      text: chip['label'],
+                      icon: chip['icon'],
+                      iconColor: AppColors.grey.withOpacity(0.4),
+                      backgroundColor: AppColors.lightGrey,
+                      textColor: AppColors.grey,
+                      padding: const EdgeInsets.all(2.0),
+                      borderRadius: 4.0,
+                    ),
+                  );
+                }).toList(),
+              ),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                mainAxisSize: MainAxisSize.max,
+                children: [
+                  LinearPercentIndicator(
+                    width: 200.0,
+                    lineHeight: 12.0,
+                    percent: 0.35,
+                    barRadius: const Radius.circular(6.0),
+                    backgroundColor: AppColors.lightGrey,
+                    progressColor: AppColors.grey,
+                    padding: EdgeInsets.zero,
+                  ),
+                  const SizedBox(width: 8.0),
+                  const CustomText(text: '35%', fontSize: 14),
+                ],
+              ),
+              const CustomButton(
+                text: 'Start a session',
+                color: AppColors.grey,
+                width: 240,
+                child: Row(
+                  mainAxisSize: MainAxisSize.max,
+                  children: [
+                    Expanded(
+                        child: CustomText(
+                      text: 'Start a Session',
+                      textAlign: TextAlign.center,
+                    )),
+                    CustomButton(
+                      text: 'start session icon',
+                      width: 40,
+                      color: Colors.black,
+                      child: Icon(Icons.play_circle_fill_rounded),
+                    )
+                  ],
+                ),
+              ),
+            ],
+          )
+        ],
+      ),
     );
   }
 

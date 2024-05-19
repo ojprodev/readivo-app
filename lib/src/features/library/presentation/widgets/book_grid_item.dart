@@ -9,13 +9,19 @@ class BookGridItem extends StatelessWidget {
   final double? authorFontSize;
   final double? coverWidth;
   final double? coverHeight;
+  final String? coverUrl;
+  final String? coverPath;
+  final bool showInfo;
 
   const BookGridItem({
     super.key,
     this.titleFontSize = 14,
     this.authorFontSize = 12,
     this.coverWidth = 130.0,
-    this.coverHeight = 170.0,
+    this.coverHeight = 180.0,
+    this.coverUrl,
+    this.coverPath,
+    this.showInfo = true,
   });
 
   @override
@@ -27,18 +33,18 @@ class BookGridItem extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           _buildBookBoxWithRating(),
-          const SizedBox(height: 4.0),
-           Text(
-            'Book Title',
-            maxLines: 2,
-            softWrap: true,
-            overflow: TextOverflow.ellipsis,
-            style: TextStyle(
-              fontWeight: FontWeight.w600,
-              fontSize: titleFontSize,
+          if (showInfo)
+            Text(
+              'Book Title',
+              maxLines: 2,
+              softWrap: true,
+              overflow: TextOverflow.ellipsis,
+              style: TextStyle(
+                fontWeight: FontWeight.w600,
+                fontSize: titleFontSize,
+              ),
             ),
-          ),
-           Text(
+          if (showInfo) Text(
             'Author Name',
             maxLines: 1,
             overflow: TextOverflow.ellipsis,
@@ -61,8 +67,10 @@ class BookGridItem extends StatelessWidget {
           width: coverWidth,
           height: coverHeight,
           background: AppColors.lightGrey,
+          coverUrl: coverUrl,
+          coverPath: coverPath,
         ),
-        Container(
+        if(showInfo) Container(
           margin: const EdgeInsets.only(top: 12.0),
           width: 60,
           height: 24,

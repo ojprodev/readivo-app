@@ -30,6 +30,9 @@ class BookBox extends StatelessWidget {
   /// Change default icon size, default: 40.0
   final double? iconSize;
 
+  // Border Radius, default 8.0
+  final double borderRadius;
+
   /// Constructor for BookBoxCover.
   const BookBox({
     super.key,
@@ -40,17 +43,18 @@ class BookBox extends StatelessWidget {
     this.width = 150.0,
     this.background = Colors.white,
     this.icon,
+    this.borderRadius = 8.0,
     this.iconSize = 40.0
   });
 
   @override
   Widget build(BuildContext context) {
     return Container(
-      decoration: const BoxDecoration(
-        borderRadius: BorderRadius.all(Radius.circular(8.0)),
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.all(Radius.circular(borderRadius)),
       ),
       child: ClipRRect(
-        borderRadius: const BorderRadius.all(Radius.circular(8.0)),
+        borderRadius: BorderRadius.all(Radius.circular(borderRadius)),
         child: _buildImage(),
       ),
     );
