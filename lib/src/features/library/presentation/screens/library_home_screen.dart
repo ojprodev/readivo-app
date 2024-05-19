@@ -56,12 +56,28 @@ class _LibraryHomeScreenState extends State<LibraryHomeScreen> {
           mainAxisSize: MainAxisSize.max,
           children: [
             _buildContinueReadingSection(),
-            const SizedBox(height: 12.0),
-            _buildSuggestionSection(),
-            const SizedBox(height: 12.0),
-            _buildCollectionsSection(),
-            const SizedBox(height: 12.0),
-            _buildBooksAnalytics(),
+            Container(
+              color: AppColors.lightYellow,
+              child: Container(
+                decoration: const BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.only(
+                    topRight: Radius.circular(16.0),
+                    topLeft: Radius.circular(16.0),
+                  ),
+                ),
+                child: Column(
+                  children: [
+                    const SizedBox(height: 12.0),
+                    _buildSuggestionSection(),
+                    const SizedBox(height: 12.0),
+                    _buildCollectionsSection(),
+                    const SizedBox(height: 12.0),
+                    _buildBooksAnalytics(),
+                  ],
+                ),
+              ),
+            )
           ],
         ),
       ),
