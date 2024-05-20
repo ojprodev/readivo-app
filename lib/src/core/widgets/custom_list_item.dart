@@ -58,8 +58,8 @@ class CustomListItem extends StatelessWidget {
           crossAxisAlignment: crossAxisAlignment,
           children: [
             if (icon != null) Container(
-              width: 52,
-              height: 52,
+              width: 30,
+              height: 30,
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(24),
                 color: iconBackground,

@@ -9,6 +9,7 @@ import 'package:readivo_app/src/core/bloc/app_states.dart';
 import 'package:readivo_app/src/core/constants/constants.dart';
 import 'package:readivo_app/src/core/layouts/basic_layout.dart';
 import 'package:readivo_app/src/core/widgets/custom_chip.dart';
+import 'package:readivo_app/src/core/widgets/custom_list_item.dart';
 import 'package:readivo_app/src/core/widgets/custom_text.dart';
 import 'package:readivo_app/src/features/library/presentation/widgets/book_box.dart';
 import 'package:readivo_app/src/core/widgets/bottom_sheet.dart';
@@ -83,6 +84,7 @@ class _LibraryHomeScreenState extends State<LibraryHomeScreen> {
                 child: Column(
                   children: [
                     _buildSuggestionSection(),
+                    _buildReadingStatuesList(),
                   ],
                 ),
               ),
@@ -412,6 +414,71 @@ class _LibraryHomeScreenState extends State<LibraryHomeScreen> {
           titleFontSize: 16,
           authorFontSize: 14,
         ),
+      ),
+    );
+  }
+
+  Widget _buildReadingStatuesList() {
+    List<Map<String, dynamic>> readingStatus = [
+      {
+        'label': 'Want to read',
+        'icon': Icons.bookmark,
+        'count': '51',
+      },
+      {
+        'label': 'Reading',
+        'icon': Icons.local_library,
+        'count': '3',
+      },
+      {
+        'label': 'Paused',
+        'icon': Icons.pause_circle_filled_rounded,
+        'count': '1',
+      },
+      {
+        'label': 'Finished',
+        'icon': Icons.bookmark_added,
+        'count': '21',
+      },
+      {
+        'label': 'Gave Up',
+        'icon': Icons.flag,
+        'count': '2',
+      },
+    ];
+
+    return Container(
+      margin: const EdgeInsets.symmetric(horizontal: 12.0, vertical: 16),
+      decoration: BoxDecoration(
+        color: AppColors.lightGrey.withOpacity(0.4),
+        borderRadius: BorderRadius.circular(8.0),
+      ),
+      child: ListView.separated(
+        shrinkWrap: true,
+        physics: const NeverScrollableScrollPhysics(),
+        itemBuilder: (context, index) {
+          return CustomListItem(
+            label: readingStatus[index]['label'],
+            padding:
+                const EdgeInsets.symmetric(vertical: 8.0, horizontal: 12.0),
+            icon: Icon(
+              readingStatus[index]['icon'],
+              color: AppColors.grey,
+            ),
+            backgroundColor: Colors.transparent,
+            textStyle: const TextStyle(color: Colors.black),
+            borderColor: Colors.transparent,
+            appendIcon: Text(readingStatus[index]['count']),
+          );
+        },
+        separatorBuilder: (context, index) {
+          return index != readingStatus.length -1 ? Container(
+            color: AppColors.lightGrey.withOpacity(0.6),
+            margin: const EdgeInsets.symmetric(horizontal: 24.0),
+            height: 1,
+          ) : const SizedBox();
+        },
+        itemCount: readingStatus.length,
       ),
     );
   }
