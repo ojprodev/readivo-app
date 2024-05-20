@@ -26,6 +26,20 @@ class LibraryHomeScreen extends StatefulWidget {
 
 class _LibraryHomeScreenState extends State<LibraryHomeScreen> {
   late AppCubit appCubit;
+  List<String> bookShelves = [
+    'For You',
+    'Design',
+    'Art',
+    'Philosophy',
+    'Health',
+    ' Programming',
+    'Communication',
+    'Fiction',
+    'Cooking',
+    'Sport',
+    'Science'
+  ];
+  String selectedShelve = 'For You';
 
   @override
   void initState() {
@@ -57,7 +71,7 @@ class _LibraryHomeScreenState extends State<LibraryHomeScreen> {
           children: [
             _buildContinueReadingSection(),
             Container(
-              color: AppColors.lightYellow,
+              color: AppColors.lightGrey.withOpacity(0.4),
               child: Container(
                 decoration: const BoxDecoration(
                   color: Colors.white,
@@ -68,12 +82,7 @@ class _LibraryHomeScreenState extends State<LibraryHomeScreen> {
                 ),
                 child: Column(
                   children: [
-                    const SizedBox(height: 12.0),
                     _buildSuggestionSection(),
-                    const SizedBox(height: 12.0),
-                    _buildCollectionsSection(),
-                    const SizedBox(height: 12.0),
-                    _buildBooksAnalytics(),
                   ],
                 ),
               ),
@@ -135,7 +144,7 @@ class _LibraryHomeScreenState extends State<LibraryHomeScreen> {
 
   Widget _buildContinueReadingSection() {
     return Container(
-      color: AppColors.lightYellow,
+      color: AppColors.lightGrey.withOpacity(0.4),
       height: 300.0,
       child: Column(
         children: [
@@ -147,32 +156,23 @@ class _LibraryHomeScreenState extends State<LibraryHomeScreen> {
   }
 
   Widget _buildContinueReadingHeader() {
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 6.0, horizontal: 16.0),
+    return const Padding(
+      padding: EdgeInsets.symmetric(vertical: 6.0, horizontal: 16.0),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
-          const CustomText(
+          CustomText(
             text: 'Continue Reading',
             fontSize: 20,
-            fontWeight: FontWeight.w300,
+            fontWeight: FontWeight.w400,
           ),
-          _buildViewAllButton(),
+          CustomText(
+            text: 'See all',
+            fontSize: 16,
+            color: AppColors.lightBlue,
+          ),
         ],
-      ),
-    );
-  }
-
-  Widget _buildViewAllButton() {
-    return CustomButton(
-      text: 'see all',
-      onPressed: () {},
-      styleType: ButtonStyleType.ghost,
-      width: 60,
-      child: const CustomText(
-        text: 'See all',
-        color: AppColors.lightBlue,
       ),
     );
   }
@@ -319,6 +319,16 @@ class _LibraryHomeScreenState extends State<LibraryHomeScreen> {
       children: [
         _buildSuggestionsHeader(),
         _buildSuggestionsList(),
+          Padding(
+            padding: const EdgeInsets.only(top: 8.0, bottom: 12.0),
+            child: CustomButton(
+            text: 'Browse More',
+            color: AppColors.lightGrey,
+            textColor: AppColors.grey,
+            borderRadius: 4.0,
+            width: MediaQuery.sizeOf(context).width /2,
+                    ),
+          ),
       ],
     );
   }
@@ -326,201 +336,72 @@ class _LibraryHomeScreenState extends State<LibraryHomeScreen> {
   Widget _buildSuggestionsHeader() {
     return Padding(
       padding: const EdgeInsets.all(12.0),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      child: Column(
         children: [
-          const Text(
-            'Suggestions',
-            style: TextStyle(
-              fontSize: 20,
-              fontWeight: FontWeight.w500,
-            ),
+          const Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              CustomText(
+                text: 'Suggestions',
+                fontSize: 20,
+                fontWeight: FontWeight.w500,
+              ),
+              CustomText(
+                text: 'Browse all',
+                color: AppColors.lightBlue,
+              ),
+            ],
           ),
-          _buildViewAllButton(),
+          const SizedBox(height: 6.0),
+          SingleChildScrollView(
+            scrollDirection: Axis.horizontal,
+            child: Row(
+              children: bookShelves.map((item) {
+                return Container(
+                  margin: const EdgeInsets.only(right: 8.0),
+                  child: GestureDetector(
+                    onTap: () {
+                      setState(() {
+                        selectedShelve = item;
+                      });
+                    },
+                    child: CustomChip(
+                      text: item,
+                      borderRadius: 4.0,
+                      backgroundColor: selectedShelve == item
+                          ? AppColors.lightGrey.withOpacity(0.6)
+                          : Colors.transparent,
+                    ),
+                  ),
+                );
+              }).toList(),
+            ),
+          )
         ],
       ),
     );
   }
 
   Widget _buildSuggestionsList() {
-    return const Padding(
-      padding: EdgeInsets.only(left: 6.0),
-      child: SingleChildScrollView(
-        scrollDirection: Axis.horizontal,
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.start,
-          children: [
-            BookGridItem(),
-            BookGridItem(),
-            BookGridItem(),
-            BookGridItem(),
-            BookGridItem(),
-          ],
+    return GridView.builder(
+      shrinkWrap: true,
+      physics: const NeverScrollableScrollPhysics(),
+      gridDelegate: const SliverGridDelegateWithMaxCrossAxisExtent(
+        maxCrossAxisExtent: 170,
+        mainAxisSpacing: 4.0,
+        crossAxisSpacing: 0.0,
+        mainAxisExtent: 230,
+      ),
+      padding: const EdgeInsets.symmetric(horizontal: 8.0),
+      itemCount: 5,
+      itemBuilder: (gridContext, index) => GestureDetector(
+        onTap: () {},
+        child: const BookGridItem(
+          coverWidth: 140,
+          coverHeight: 170,
+          titleFontSize: 16,
+          authorFontSize: 14,
         ),
-      ),
-    );
-  }
-
-  Widget _buildCollectionsSection() {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        _buildCollectionsHeader(),
-        _buildCollectionsList(),
-      ],
-    );
-  }
-
-  Widget _buildCollectionsHeader() {
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 12.0, vertical: 4.0),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          const Text(
-            'Collections',
-            style: TextStyle(
-              fontSize: 20,
-              fontWeight: FontWeight.w500,
-            ),
-          ),
-          _buildViewAllButton(),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildCollectionsList() {
-    return SingleChildScrollView(
-      scrollDirection: Axis.horizontal,
-      child: Row(
-        children: [
-          _buildCollectionsItem(),
-          _buildCollectionsItem(),
-          _buildCollectionsItem(),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildCollectionsItem() {
-    return Container(
-      width: 180,
-      height: 100,
-      margin: const EdgeInsets.symmetric(horizontal: 6.0),
-      decoration: const BoxDecoration(
-        gradient: LinearGradient(
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-          colors: [Color(0xFFff930f), Color(0xFFfff95b)],
-        ),
-        borderRadius: BorderRadius.all(Radius.circular(8.0)),
-      ),
-      child: Stack(
-        children: [
-          _buildCollectionsText(),
-          _buildCollectionsIcon(),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildCollectionsText() {
-    return const Padding(
-      padding: EdgeInsets.all(8.0),
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-            'Cryptocurrencies',
-            softWrap: true,
-            maxLines: 2,
-            style: TextStyle(
-              overflow: TextOverflow.ellipsis,
-              fontSize: 18.0,
-              fontWeight: FontWeight.w500,
-              color: Colors.white, // Text color
-            ),
-          ),
-          Text(
-            '12 books',
-            style: TextStyle(
-              fontSize: 14.0,
-              color: Colors.white, // Text color
-              fontWeight: FontWeight.w400,
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildCollectionsIcon() {
-    return Positioned(
-      bottom: -10,
-      right: -8,
-      child: Container(
-        padding: const EdgeInsets.all(8.0),
-        decoration: BoxDecoration(
-            color: AppColors.lightGrey.withOpacity(0.2),
-            borderRadius: const BorderRadius.all(Radius.circular(100))),
-        child: const Icon(
-          Icons.currency_bitcoin,
-          color: Colors.white, // Icon color
-          size: 64,
-        ),
-      ),
-    );
-  }
-
-  Widget _buildBooksCountHeader() {
-    return const Padding(
-      padding: EdgeInsets.all(8.0),
-      child: Text(
-        'Books Analytics',
-        textAlign: TextAlign.start,
-        style: TextStyle(
-          fontSize: 20,
-        ),
-      ),
-    );
-  }
-
-  Widget _buildBooksAnalytics() {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        _buildBooksCountHeader(),
-        Container(
-          padding: const EdgeInsets.all(8.0),
-          color: AppColors.lightGrey,
-          child: Column(
-            children: [
-              _bookAnalyticsItem('Paused Books'),
-              _bookAnalyticsItem('Give-Up Books'),
-              _bookAnalyticsItem('Local Books'),
-              _bookAnalyticsItem('Online Books'),
-              _bookAnalyticsItem('Without Collection'),
-            ],
-          ),
-        )
-      ],
-    );
-  }
-
-  Widget _bookAnalyticsItem(String title) {
-    return Padding(
-      padding: const EdgeInsets.all(8.0),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          Text(
-            title,
-            style: const TextStyle(fontWeight: FontWeight.w400, fontSize: 15),
-          ),
-          const Text('12'),
-        ],
       ),
     );
   }
