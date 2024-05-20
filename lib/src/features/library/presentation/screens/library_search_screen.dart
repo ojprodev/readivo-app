@@ -54,8 +54,8 @@ class _LibrarySearchScreenState extends State<LibrarySearchScreen> {
         styleType: ButtonStyleType.ghost,
         child: SvgPicture.asset(AppIcons.chevronLeft),
         onPressed: () {
-          // redirect back to home screen
-          appCubit.changeScreen(screen: const LibraryHomeScreen());
+          // redirect to previous screen
+          Navigator.of(context).pop();
         },
       ),
       showBackButton: false,
@@ -122,8 +122,8 @@ class _LibrarySearchScreenState extends State<LibrarySearchScreen> {
                       physics: const NeverScrollableScrollPhysics(),
                       itemBuilder: (context, index) {
                         return GestureDetector(
-                          onTap: (){
-                            appCubit.changeScreen(screen: const LibraryAddBookScreen());
+                          onTap: () {
+                            appCubit.changeScreen(const LibraryAddBookScreen());
                           },
                           child: BookListItem(key: UniqueKey()),
                         );
@@ -176,7 +176,8 @@ class _LibrarySearchScreenState extends State<LibrarySearchScreen> {
             label: 'Local',
             source: SearchSourceEnums.local,
             append: true,
-            icon: const Icon(Icons.sd_storage_rounded, color: AppColors.goldenYellow),
+            icon: const Icon(Icons.sd_storage_rounded,
+                color: AppColors.goldenYellow),
           ),
         ],
       ),
@@ -235,9 +236,10 @@ class _LibrarySearchScreenState extends State<LibrarySearchScreen> {
           const Text(
             'Found 12 Books',
             style: TextStyle(
-                fontWeight: FontWeight.w500,
-                fontSize: 16,
-                color: AppColors.grey,),
+              fontWeight: FontWeight.w500,
+              fontSize: 16,
+              color: AppColors.grey,
+            ),
           ),
           IconButton(
             onPressed: () {

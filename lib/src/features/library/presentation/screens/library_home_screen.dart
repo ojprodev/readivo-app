@@ -112,7 +112,7 @@ class _LibraryHomeScreenState extends State<LibraryHomeScreen> {
           Navigator.pop(context);
 
           // redirect to the Search Screen
-          appCubit.changeScreen(screen: const LibrarySearchScreen());
+          appCubit.changeScreen(const LibrarySearchScreen());
         },
       ),
       BottomSheetItem(
