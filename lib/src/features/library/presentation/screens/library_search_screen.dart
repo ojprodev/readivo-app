@@ -75,7 +75,6 @@ class _LibrarySearchScreenState extends State<LibrarySearchScreen> {
         ),
       ],
       floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
-      floatingActionButton: _buildSourceSwitchButton(),
       body: RefreshIndicator(
         strokeWidth: 2,
         displacement: 0,
@@ -137,91 +136,6 @@ class _LibrarySearchScreenState extends State<LibrarySearchScreen> {
             ],
           ),
         ),
-      ),
-    );
-  }
-
-  Widget _buildSourceSwitchButton() {
-    return FloatingActionButton.extended(
-      extendedPadding: const EdgeInsets.all(0),
-      backgroundColor: AppColors.white,
-      shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.all(Radius.circular(30)),
-      ),
-      elevation: 2.0,
-      tooltip: "Switch Search Source",
-      onPressed: () {},
-      clipBehavior: Clip.hardEdge,
-      enableFeedback: false,
-      label: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          _switchSourceFab(
-            label: 'Online',
-            source: SearchSourceEnums.online,
-            icon: SvgPicture.asset(
-              AppIcons.globeAlt,
-              colorFilter: const ColorFilter.mode(
-                AppColors.lightBlue,
-                BlendMode.srcIn,
-              ),
-            ),
-          ),
-          Container(
-            height: 55,
-            width: 1,
-            color: AppColors.lightGrey,
-          ),
-          _switchSourceFab(
-            label: 'Local',
-            source: SearchSourceEnums.local,
-            append: true,
-            icon: const Icon(Icons.sd_storage_rounded,
-                color: AppColors.goldenYellow),
-          ),
-        ],
-      ),
-    );
-  }
-
-  CustomButton _switchSourceFab({
-    required String label,
-    required SearchSourceEnums source,
-    required Widget icon,
-    bool? append,
-  }) {
-    return CustomButton(
-      text: label,
-      borderRadius: 0.0,
-      onPressed: () {
-        libraryCubit.changeSearchSource(source);
-      },
-      height: 56,
-      width: 110,
-      color: LibraryStates.searchSource == source ? AppColors.grey : null,
-      styleType: LibraryStates.searchSource == source
-          ? ButtonStyleType.filled
-          : ButtonStyleType.ghost,
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-        children: [
-          ConditionalBuilder(
-              condition: append != true,
-              builder: (context) => icon,
-              fallback: null),
-          Text(
-            label,
-            style: TextStyle(
-              color: LibraryStates.searchSource == source
-                  ? AppColors.white
-                  : Colors.black,
-            ),
-          ),
-          ConditionalBuilder(
-              condition: append == true,
-              builder: (context) => icon,
-              fallback: null),
-        ],
       ),
     );
   }
