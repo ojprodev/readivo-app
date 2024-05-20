@@ -11,7 +11,6 @@ import 'package:readivo_app/src/core/widgets/custom_input_field.dart';
 import 'package:readivo_app/src/features/library/presentation/bloc/library_cubit.dart';
 import 'package:readivo_app/src/features/library/presentation/bloc/library_states.dart';
 import 'package:readivo_app/src/features/library/presentation/screens/library_add_book_screen.dart';
-import 'package:readivo_app/src/features/library/presentation/screens/library_home_screen.dart';
 import 'package:readivo_app/src/features/library/presentation/widgets/book_grid_item.dart';
 import 'package:readivo_app/src/features/library/presentation/widgets/book_list_item.dart';
 
@@ -25,6 +24,7 @@ class LibrarySearchScreen extends StatefulWidget {
 class _LibrarySearchScreenState extends State<LibrarySearchScreen> {
   late AppCubit appCubit;
   late LibraryCubit libraryCubit;
+  TextEditingController searchBooksController = TextEditingController();
 
   @override
   void initState() {
@@ -59,11 +59,26 @@ class _LibrarySearchScreenState extends State<LibrarySearchScreen> {
         },
       ),
       showBackButton: false,
-      titleWidget: const CustomInputField(
+      titleWidget:  CustomInputField(
+        controller: searchBooksController,
         placeholder: "Search for a book",
         textInputAction: TextInputAction.search,
-        fillColor: AppColors.lightGrey,
-        endIcon: Icons.search_outlined,
+        fillColor: AppColors.lightGrey.withOpacity(0.4),
+        endIcon: searchBooksController.text.isNotEmpty ? Icons.clear_rounded :Icons.search_outlined,
+        maxLines: 1,
+        onChanged: (value){
+          setState(() {
+            searchBooksController.text = value;
+          });
+        },
+        onEndIconPress: (){
+          if(searchBooksController.text.isNotEmpty){
+            setState(() {
+              searchBooksController.clear();
+            });
+          }
+        },
+        contentPadding: const EdgeInsets.all( 8.0),
       ),
       actions: [
         CustomButton(
