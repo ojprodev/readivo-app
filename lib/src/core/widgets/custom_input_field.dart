@@ -30,6 +30,7 @@ class CustomInputField extends StatelessWidget {
   final int? minLines;
   final Widget? prefix;
   final Widget? suffix;
+  final TextStyle? labelTextStyle;
 
   const CustomInputField({
     super.key,
@@ -53,6 +54,11 @@ class CustomInputField extends StatelessWidget {
     this.textStyle,
     this.contentPadding =
         const EdgeInsets.symmetric(vertical: 12.0, horizontal: 10.0),
+    this.labelTextStyle =const  TextStyle(
+      color: Colors.black54,
+      fontSize: 16,
+      fontWeight: FontWeight.bold,
+    ),
     this.dismissibleKeyboard = false,
     this.autoFocus = false,
     this.textInputAction,
@@ -76,11 +82,7 @@ class CustomInputField extends StatelessWidget {
               padding: const EdgeInsets.only(bottom: 8.0),
               child: Text(
                 label!,
-                style: TextStyle(
-                  color: Colors.grey[700],
-                  fontSize: 16,
-                  fontWeight: FontWeight.bold,
-                ),
+                style: labelTextStyle,
               ),
             ),
           Container(

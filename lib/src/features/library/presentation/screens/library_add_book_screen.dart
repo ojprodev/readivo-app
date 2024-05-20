@@ -9,6 +9,7 @@ import 'package:readivo_app/src/core/constants/constants.dart';
 import 'package:readivo_app/src/core/layouts/basic_layout.dart';
 import 'package:readivo_app/src/core/utils/utils.dart';
 import 'package:readivo_app/src/core/widgets/bottom_sheet.dart';
+import 'package:readivo_app/src/core/widgets/custom_alert.dart';
 import 'package:readivo_app/src/core/widgets/custom_button.dart';
 import 'package:readivo_app/src/core/widgets/custom_chip.dart';
 import 'package:readivo_app/src/core/widgets/custom_input_field.dart';
@@ -30,13 +31,13 @@ class _LibraryAddBookScreenState extends State<LibraryAddBookScreen> {
   DateTime? finishDate;
   List<String> bookTypes = ['paper book', 'e-book', 'audio book'];
   String selectedBookType = 'paper book';
-  List<Map<String, dynamic>> selectedCollections = [];
+  List<Map<String, dynamic>> selectedBooksShelves = [];
   List<String> selectedTags = [];
   List<String> tempSelectedTags = [];
-  List<Map<String, dynamic>> tempSelectedCollections = [];
-  List<Map<String, dynamic>> collectionsSearchResult = [];
+  List<Map<String, dynamic>> tempSelectedBooksShelves = [];
+  List<Map<String, dynamic>> booksShelvesSearchResult = [];
   List<String> tagsSearchResult = [];
-  final List<Map<String, dynamic>> collectionsList = [
+  final List<Map<String, dynamic>> booksShelves = [
     {'text': 'Chip 1', 'icon': Icons.star, 'color': Colors.blue},
     {'text': 'Short', 'icon': Icons.ac_unit, 'color': Colors.purple},
     {'text': 'Another', 'icon': Icons.favorite, 'color': Colors.red},
@@ -90,7 +91,7 @@ class _LibraryAddBookScreenState extends State<LibraryAddBookScreen> {
   final TextEditingController publishedAtController = TextEditingController();
   final TextEditingController descriptionController = TextEditingController();
   final TextEditingController reviewController = TextEditingController();
-  final TextEditingController searchCollectionsController =
+  final TextEditingController searchBooksShelvesController =
       TextEditingController();
   final TextEditingController searchTagsController = TextEditingController();
 
@@ -183,7 +184,7 @@ class _LibraryAddBookScreenState extends State<LibraryAddBookScreen> {
               const SizedBox(height: 8.0),
               _buildRatingSection(),
               _buildBookTypeTabs(),
-              _buildAddToCollectionSection(),
+              _buildAddToBooksShelvesSection(),
               _buildBookTagsSection(),
               _buildBookInfoFields(),
               const SizedBox(height: 8.0),
@@ -330,24 +331,72 @@ class _LibraryAddBookScreenState extends State<LibraryAddBookScreen> {
     return Column(
       mainAxisSize: MainAxisSize.min,
       children: [
-        _buildSearchField(
-          controller: searchTagsController,
-          placeholder: 'Search for a tags',
-          onChanged: (value) {
-            updateState(() {
-              if (value.isEmpty) {
-                tagsSearchResult = List.from(tagsList);
-              } else {
-                tagsSearchResult = tagsList.where((tag) {
-                  String tagText = tag.toString().toLowerCase();
-                  return tagText.contains(value.toLowerCase());
-                }).toList();
-              }
-            });
-          },
+        Row(
+          children: [
+            Expanded(
+              child: _buildSearchField(
+                controller: searchTagsController,
+                placeholder: 'Search for a tags',
+                onChanged: (value) {
+                  updateState(
+                    () {
+                      if (value.isEmpty) {
+                        tagsSearchResult = List.from(tagsList);
+                      } else {
+                        tagsSearchResult = tagsList.where((tag) {
+                          String tagText = tag.toString().toLowerCase();
+                          return tagText.contains(value.toLowerCase());
+                        }).toList();
+                      }
+                    },
+                  );
+                },
+              ),
+            ),
+            _buildNewTagBottomSheetButton(),
+          ],
         ),
         _buildAddTagsBottomSheetList(updateState),
       ],
+    );
+  }
+  Widget _buildNewTagBottomSheetButton(){
+    return CustomButton(
+      text: 'new tag',
+      width: 48,
+      height: 48,
+      borderRadius: 4,
+      child: const Icon(Icons.add_circle_rounded, size: 32),
+      onPressed: () {
+        showDialog(
+          context: context,
+          builder: (context) => CustomAlertDialog(
+            title: 'Add New Tag',
+            content: const CustomInputField(
+              placeholder: 'Tag name',
+              contentPadding:
+              EdgeInsets.symmetric(horizontal: 6.0, vertical: 14.0),
+            ),
+            actions: [
+              Expanded(
+                child: CustomButton(
+                  styleType: ButtonStyleType.ghost,
+                  text: 'Close',
+                  onPressed: () {
+                    Navigator.of(context).pop();
+                  },
+                ),
+              ),
+              const SizedBox(width: 8.0),
+              const Expanded(
+                child: CustomButton(
+                  text: 'Save',
+                ),
+              ),
+            ],
+          ),
+        );
+      },
     );
   }
 
@@ -486,7 +535,7 @@ class _LibraryAddBookScreenState extends State<LibraryAddBookScreen> {
     );
   }
 
-  void _showAddCollectionsBottomSheet(BuildContext context) {
+  void _showAddBooksShelvesBottomSheet(BuildContext context) {
     CustomBottomSheet.show(
       context: context,
       height: bottomSheetFullHeight,
@@ -498,14 +547,14 @@ class _LibraryAddBookScreenState extends State<LibraryAddBookScreen> {
             children: [
               _buildBottomSheetHeader(
                 context: context,
-                title: 'Add to Collections',
-                tempSelectedList: tempSelectedCollections,
+                title: 'Add to BooksShelves',
+                tempSelectedList: tempSelectedBooksShelves,
                 updateFinalSelectedList: (List<dynamic> updatedList) {
-                  selectedCollections =
+                  selectedBooksShelves =
                       updatedList as List<Map<String, dynamic>>;
                 },
               ),
-              _buildAddCollectionsBottomSheetContent(context, updateState),
+              _buildAddBooksShelvesBottomSheetContent(context, updateState),
             ],
           );
         },
@@ -513,42 +562,41 @@ class _LibraryAddBookScreenState extends State<LibraryAddBookScreen> {
     );
   }
 
-  Widget _buildAddToCollectionSection() {
+  Widget _buildAddToBooksShelvesSection() {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16.0),
       child: Column(
         mainAxisAlignment: MainAxisAlignment.start,
         crossAxisAlignment: CrossAxisAlignment.start,
-        mainAxisSize: MainAxisSize.min,
         children: [
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              _buildInputLabel('Add to a Collections'),
-              _buildAddToCollectionButton(),
+              _buildInputLabel('Add to a Books Shelves'),
+              _buildAddToBookShelfButton(),
             ],
           ),
-          selectedCollections.isNotEmpty
-              ? _buildCollectionsContainer(selectedCollections)
+          selectedBooksShelves.isNotEmpty
+              ? _buildBooksShelvesContainer(selectedBooksShelves)
               : const SizedBox(),
         ],
       ),
     );
   }
 
-  Widget _buildAddToCollectionButton() {
+  Widget _buildAddToBookShelfButton() {
     return CustomButton(
-      text: 'Add to a Collection',
+      text: 'Add to a bookshelf',
       width: 30,
       height: 30,
       styleType: ButtonStyleType.ghost,
       borderRadius: 15,
       onPressed: () {
-        // fill the temp list with the already selected collections
-        tempSelectedCollections = selectedCollections;
+        // fill the temp list with the already selected bookshelf
+        tempSelectedBooksShelves = selectedBooksShelves;
 
         // show the bottom sheet
-        _showAddCollectionsBottomSheet(context);
+        _showAddBooksShelvesBottomSheet(context);
       },
       child: const Icon(
         Icons.create_new_folder,
@@ -557,35 +605,48 @@ class _LibraryAddBookScreenState extends State<LibraryAddBookScreen> {
     );
   }
 
-  Widget _buildAddCollectionsBottomSheetContent(
+  Widget _buildAddBooksShelvesBottomSheetContent(
       BuildContext context, StateSetter updateState) {
-    final List<Map<String, dynamic>> collections =
-        searchCollectionsController.text != ''
-            ? collectionsSearchResult
-            : collectionsList;
+    final List<Map<String, dynamic>> bookshelves =
+        searchBooksShelvesController.text != ''
+            ? booksShelvesSearchResult
+            : booksShelves;
 
     return Expanded(
       child: Column(
-        mainAxisSize: MainAxisSize.min,
+        mainAxisSize: MainAxisSize.max,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        mainAxisAlignment: MainAxisAlignment.spaceAround,
         children: [
-          _buildSearchField(
-            controller: searchCollectionsController,
-            placeholder: 'Search for tags',
-            onChanged: (value) {
-              updateState(() {
-                if (value.isEmpty) {
-                  collectionsSearchResult = List.from(collectionsList);
-                } else {
-                  collectionsSearchResult = collectionsList.where((collection) {
-                    String collectionText =
-                        collection['text'].toString().toLowerCase();
-                    return collectionText.contains(value.toLowerCase());
-                  }).toList();
-                }
-              });
-            },
+          Padding(
+            padding: const EdgeInsets.only(left: 4.0, right: 12.0),
+            child: Row(
+              children: [
+                Expanded(
+                  child: _buildSearchField(
+                    controller: searchBooksShelvesController,
+                    placeholder: 'Search for tags',
+                    onChanged: (value) {
+                      updateState(() {
+                        if (value.isEmpty) {
+                          booksShelvesSearchResult = List.from(booksShelves);
+                        } else {
+                          booksShelvesSearchResult =
+                              booksShelves.where((bookShelf) {
+                            String bookShelfText =
+                                bookShelf['text'].toString().toLowerCase();
+                            return bookShelfText.contains(value.toLowerCase());
+                          }).toList();
+                        }
+                      });
+                    },
+                  ),
+                ),
+                _buildNewBookShelfBottomSheetButton(),
+              ],
+            ),
           ),
-          _buildCollectionsList(context, updateState, collections),
+          _buildBooksShelvesList(context, updateState, bookshelves),
         ],
       ),
     );
@@ -598,13 +659,14 @@ class _LibraryAddBookScreenState extends State<LibraryAddBookScreen> {
   }) {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 8.0),
-      color: AppColors.lightGrey.withOpacity(0.2),
       child: CustomInputField(
         controller: controller,
         placeholder: placeholder,
-        borderRadius: 16,
+        borderRadius: 8,
+        contentPadding:
+            const EdgeInsets.symmetric(horizontal: 8.0, vertical: 14.0),
         suffix: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 8.0),
+          padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 6.0),
           child: CustomButton(
             text: 'clear search',
             color: AppColors.grey.withOpacity(0.6),
@@ -626,24 +688,23 @@ class _LibraryAddBookScreenState extends State<LibraryAddBookScreen> {
     );
   }
 
-  Widget _buildCollectionsList(BuildContext context, StateSetter updateState,
-      List<Map<String, dynamic>> collections) {
+  Widget _buildBooksShelvesList(BuildContext context, StateSetter updateState,
+      List<Map<String, dynamic>> booksShelves) {
     return Expanded(
       child: Container(
-        color: AppColors.lightGrey.withOpacity(0.2),
         padding: const EdgeInsets.symmetric(vertical: 8.0),
         child: ListView.builder(
           shrinkWrap: true,
-          itemCount: collections.length,
+          itemCount: booksShelves.length,
           itemBuilder: (context, index) {
             bool isSelected =
-                tempSelectedCollections.contains(collections[index]);
+                tempSelectedBooksShelves.contains(booksShelves[index]);
             return Container(
               margin: const EdgeInsets.symmetric(horizontal: 8.0),
               child: CustomListItem(
                 padding: const EdgeInsets.symmetric(
-                    vertical: 10.0, horizontal: 16.0),
-                label: collections[index]['text'].toString(),
+                    horizontal: 12.0, vertical: 18.0),
+                label: booksShelves[index]['text'].toString(),
                 iconBackground: isSelected
                     ? AppColors.lighterGreen
                     : AppColors.lightGrey.withOpacity(0.4),
@@ -654,11 +715,6 @@ class _LibraryAddBookScreenState extends State<LibraryAddBookScreen> {
                 borderRadius: 12.0,
                 backgroundColor:
                     isSelected ? AppColors.extraLightGreen : Colors.white,
-                icon: Icon(
-                  collections[index]['icon'],
-                  size: 24,
-                  color: collections[index]['color'],
-                ),
                 textStyle: const TextStyle(
                   fontSize: 18,
                   fontWeight: FontWeight.w400,
@@ -669,16 +725,17 @@ class _LibraryAddBookScreenState extends State<LibraryAddBookScreen> {
                     color: isSelected
                         ? AppColors.extraLightGreen.withOpacity(0.2)
                         : AppColors.lightGrey.withOpacity(0.2),
-                    blurRadius: 4,
+                    blurRadius: 8,
                     spreadRadius: 4,
                   )
                 ],
                 onTap: () {
                   updateState(() {
-                    if (!tempSelectedCollections.contains(collections[index])) {
-                      tempSelectedCollections.add(collections[index]);
+                    if (!tempSelectedBooksShelves
+                        .contains(booksShelves[index])) {
+                      tempSelectedBooksShelves.add(booksShelves[index]);
                     } else {
-                      tempSelectedCollections.remove(collections[index]);
+                      tempSelectedBooksShelves.remove(booksShelves[index]);
                     }
                   });
                 },
@@ -690,7 +747,7 @@ class _LibraryAddBookScreenState extends State<LibraryAddBookScreen> {
     );
   }
 
-  Widget _buildCollectionsContainer(List<Map<String, dynamic>> collections) {
+  Widget _buildBooksShelvesContainer(List<Map<String, dynamic>> booksShelves) {
     return Container(
       width: double.infinity,
       padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 2.0),
@@ -698,20 +755,19 @@ class _LibraryAddBookScreenState extends State<LibraryAddBookScreen> {
         color: Colors.grey[50],
         borderRadius: BorderRadius.circular(4.0),
         border: Border.all(
-          color: AppColors.lightGrey,
+          color: AppColors.lightGrey.withOpacity(0.4),
           width: 2,
         ),
       ),
       child: Wrap(
         spacing: 8.0,
         runSpacing: 4.0,
-        children: collections.map((chip) {
+        children: booksShelves.map((chip) {
           return CustomChip(
             text: chip['text'],
-            icon: chip['icon'],
             iconColor: chip['color'],
             backgroundColor: AppColors.lightGrey.withOpacity(0.6),
-            borderRadius: 8.0,
+            borderRadius: 4.0,
           );
         }).toList(),
       ),
@@ -772,6 +828,46 @@ class _LibraryAddBookScreenState extends State<LibraryAddBookScreen> {
         ),
       ),
       fallback: null,
+    );
+  }
+
+  Widget _buildNewBookShelfBottomSheetButton() {
+    return CustomButton(
+      text: 'new bookshelf',
+      width: 48,
+      height: 48,
+      borderRadius: 4,
+      child: const Icon(Icons.add_circle_rounded, size: 32),
+      onPressed: () {
+        showDialog(
+          context: context,
+          builder: (context) => CustomAlertDialog(
+            title: 'New Books Shelf',
+            content: const CustomInputField(
+              placeholder: 'BookShelf name',
+              contentPadding:
+                  EdgeInsets.symmetric(horizontal: 6.0, vertical: 14.0),
+            ),
+            actions: [
+              Expanded(
+                child: CustomButton(
+                  styleType: ButtonStyleType.ghost,
+                  text: 'Close',
+                  onPressed: () {
+                    Navigator.of(context).pop();
+                  },
+                ),
+              ),
+              const SizedBox(width: 8.0),
+              const Expanded(
+                child: CustomButton(
+                  text: 'Save',
+                ),
+              ),
+            ],
+          ),
+        );
+      },
     );
   }
 
