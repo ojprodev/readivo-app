@@ -12,7 +12,7 @@ class CustomListItem extends StatelessWidget {
   final String label;
   final Widget? appendIcon;
   final TextStyle? textStyle;
-  final EdgeInsetsGeometry padding;
+  final EdgeInsetsGeometry? padding;
   final EdgeInsetsGeometry margin;
   final MainAxisAlignment mainAxisAlignment;
   final CrossAxisAlignment crossAxisAlignment;

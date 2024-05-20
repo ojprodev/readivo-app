@@ -16,6 +16,7 @@ class BottomSheetItem {
   final Color? textColor;
   final double textSize;
   final Widget? appendIcon;
+  final EdgeInsetsGeometry? padding;
 
   const BottomSheetItem({
     this.icon,
@@ -27,6 +28,7 @@ class BottomSheetItem {
     this.textColor = Colors.black,
     this.textSize = 16.0,
     this.appendIcon,
+    this.padding,
   });
 }
 
@@ -49,6 +51,7 @@ class BottomSheetItemWidget extends StatelessWidget {
       icon: item.icon,
       label: item.label,
       appendIcon: item.appendIcon,
+      padding: item.padding,
       textStyle: TextStyle(color: item.textColor, fontSize: item.textSize),
     );
   }

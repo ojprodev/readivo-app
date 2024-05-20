@@ -118,6 +118,8 @@ class _LibraryHomeScreenState extends State<LibraryHomeScreen> {
       BottomSheetItem(
         icon: const Icon(Icons.search),
         label: 'Search',
+        borderColor: AppColors.lightGrey.withOpacity(0.5),
+        padding: const EdgeInsets.symmetric(vertical: 10.0, horizontal: 12.0),
         onTap: () {
           // close the bottom sheet
           Navigator.pop(context);
@@ -129,6 +131,8 @@ class _LibraryHomeScreenState extends State<LibraryHomeScreen> {
       BottomSheetItem(
         icon: const Icon(Icons.qr_code_scanner_outlined),
         label: 'Scan ISBN',
+        borderColor: AppColors.lightGrey.withOpacity(0.5),
+        padding: const EdgeInsets.symmetric(vertical: 10.0, horizontal: 12.0),
         onTap: () {
           // close the bottom sheet
           Navigator.pop(context);
@@ -137,6 +141,8 @@ class _LibraryHomeScreenState extends State<LibraryHomeScreen> {
       BottomSheetItem(
         icon: const Icon(Icons.edit_note_outlined),
         label: 'Add manually',
+        borderColor: AppColors.lightGrey.withOpacity(0.5),
+        padding: const EdgeInsets.symmetric(vertical: 10.0, horizontal: 12.0),
         onTap: () {
           // Handle add manually
         },
