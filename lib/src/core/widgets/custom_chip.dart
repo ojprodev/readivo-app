@@ -13,6 +13,7 @@ class CustomChip extends StatelessWidget {
   final double borderWidth;
   final Function()? onDeleted;
   final EdgeInsetsGeometry padding;
+  final TextStyle? textStyle;
 
   const CustomChip({
     super.key,
@@ -27,11 +28,13 @@ class CustomChip extends StatelessWidget {
     this.borderWidth = 1,
     this.padding = const EdgeInsets.symmetric(vertical: 4.0, horizontal: 6.0),
     this.onDeleted,
+    this.textStyle,
   });
 
   @override
   Widget build(BuildContext context) {
     return Chip(
+      labelStyle: textStyle,
       padding: padding,
       label: Text(
         text,

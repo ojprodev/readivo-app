@@ -25,6 +25,8 @@ class LibrarySearchScreen extends StatefulWidget {
 class _LibrarySearchScreenState extends State<LibrarySearchScreen> {
   late AppCubit appCubit;
   late LibraryCubit libraryCubit;
+  bool showFilters = false;
+  String searchSource = 'Online';
   TextEditingController searchBooksController = TextEditingController();
 
   @override
@@ -59,26 +61,28 @@ class _LibrarySearchScreenState extends State<LibrarySearchScreen> {
         },
       ),
       showBackButton: false,
-      titleWidget:  CustomInputField(
+      titleWidget: CustomInputField(
         controller: searchBooksController,
         placeholder: "Search for a book",
         textInputAction: TextInputAction.search,
         fillColor: AppColors.lightGrey.withOpacity(0.4),
-        endIcon: searchBooksController.text.isNotEmpty ? Icons.clear_rounded :Icons.search_outlined,
+        endIcon: searchBooksController.text.isNotEmpty
+            ? Icons.clear_rounded
+            : Icons.search_outlined,
         maxLines: 1,
-        onChanged: (value){
+        onChanged: (value) {
           setState(() {
             searchBooksController.text = value;
           });
         },
-        onEndIconPress: (){
-          if(searchBooksController.text.isNotEmpty){
+        onEndIconPress: () {
+          if (searchBooksController.text.isNotEmpty) {
             setState(() {
               searchBooksController.clear();
             });
           }
         },
-        contentPadding: const EdgeInsets.all( 8.0),
+        contentPadding: const EdgeInsets.all(8.0),
       ),
       actions: [
         CustomButton(
@@ -87,6 +91,9 @@ class _LibrarySearchScreenState extends State<LibrarySearchScreen> {
           width: 40,
           child: SvgPicture.asset(AppIcons.adjustments),
           onPressed: () {
+            setState(() {
+              showFilters = !showFilters;
+            });
           },
         ),
       ],
@@ -103,58 +110,69 @@ class _LibrarySearchScreenState extends State<LibrarySearchScreen> {
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
+                if (showFilters) _buildFiltersSection(),
                 _buildHeadSection(),
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 6.0,vertical: 4.0),
-                  child: ConditionalBuilder(
-                    condition: LibraryStates.searchDisplayOption ==
-                        SearchDisplayOption.grid,
-                    builder: (context) {
-                      return GridView.builder(
-                        shrinkWrap: true,
-                        physics: const NeverScrollableScrollPhysics(),
-                        gridDelegate:
-                            const SliverGridDelegateWithMaxCrossAxisExtent(
-                          maxCrossAxisExtent: 240,
-                          mainAxisSpacing: 8.0,
-                          crossAxisSpacing: 8.0,
-                          mainAxisExtent: 300,
-                        ),
-                        padding: const EdgeInsets.all(8.0),
-                        itemCount: 24,
-                        itemBuilder: (gridContext, index) => GestureDetector(
-                          onTap: () {},
-                          child: const BookGridItem(
-                            coverWidth: 180,
-                            coverHeight: 240,
-                            titleFontSize: 16,
-                            authorFontSize: 14,
-                          ),
-                        ),
-                      );
-                    },
-                    fallback: (context) {
-                      return ListView.builder(
-                        shrinkWrap: true,
-                        physics: const NeverScrollableScrollPhysics(),
-                        itemBuilder: (context, index) {
-                          return GestureDetector(
-                            onTap: () {
-                              appCubit.changeScreen(const LibraryAddBookScreen());
-                            },
-                            child: BookListItem(key: UniqueKey()),
-                          );
-                        },
-                        // Provide unique keys
-                        itemCount: 12,
-                      );
-                    },
-                  ),
-                ),
+                _buildSearchList(),
               ],
             ),
           ),
         ),
+      ),
+    );
+  }
+
+  Widget _buildFiltersSection() {
+    return Container(
+      color: AppColors.lightGrey.withOpacity(0.2),
+      padding: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 14.0),
+      child: Column(
+        children: [
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              const Text('Source'),
+              const SizedBox(height: 4.0),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Expanded(
+                    child: CustomButton(
+                      styleType: searchSource == 'Online'
+                          ? ButtonStyleType.filled
+                          : ButtonStyleType.outline,
+                      color: AppColors.grey,
+                      text: 'Online',
+                      onPressed: () {
+                        if (searchSource != 'Online') {
+                          setState(() {
+                            searchSource = 'Online';
+                          });
+                        }
+                      },
+                    ),
+                  ),
+                  const SizedBox(width: 8.0),
+                  Expanded(
+                    child: CustomButton(
+                      styleType: searchSource == 'Local'
+                          ? ButtonStyleType.filled
+                          : ButtonStyleType.outline,
+                      color: AppColors.grey,
+                      text: 'Local',
+                      onPressed: () {
+                        if (searchSource != 'Local') {
+                          setState(() {
+                            searchSource = 'Local';
+                          });
+                        }
+                      },
+                    ),
+                  ),
+                ],
+              )
+            ],
+          ),
+        ],
       ),
     );
   }
@@ -186,6 +204,55 @@ class _LibrarySearchScreenState extends State<LibrarySearchScreen> {
             ),
           )
         ],
+      ),
+    );
+  }
+
+  Widget _buildSearchList() {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 6.0, vertical: 4.0),
+      child: ConditionalBuilder(
+        condition:
+            LibraryStates.searchDisplayOption == SearchDisplayOption.grid,
+        builder: (context) {
+          return GridView.builder(
+            shrinkWrap: true,
+            physics: const NeverScrollableScrollPhysics(),
+            gridDelegate: const SliverGridDelegateWithMaxCrossAxisExtent(
+              maxCrossAxisExtent: 240,
+              mainAxisSpacing: 8.0,
+              crossAxisSpacing: 8.0,
+              mainAxisExtent: 300,
+            ),
+            padding: const EdgeInsets.all(8.0),
+            itemCount: 24,
+            itemBuilder: (gridContext, index) => GestureDetector(
+              onTap: () {},
+              child: const BookGridItem(
+                coverWidth: 180,
+                coverHeight: 240,
+                titleFontSize: 16,
+                authorFontSize: 14,
+              ),
+            ),
+          );
+        },
+        fallback: (context) {
+          return ListView.builder(
+            shrinkWrap: true,
+            physics: const NeverScrollableScrollPhysics(),
+            itemBuilder: (context, index) {
+              return GestureDetector(
+                onTap: () {
+                  appCubit.changeScreen(const LibraryAddBookScreen());
+                },
+                child: BookListItem(key: UniqueKey()),
+              );
+            },
+            // Provide unique keys
+            itemCount: 12,
+          );
+        },
       ),
     );
   }
