@@ -2,6 +2,7 @@ import 'package:conditional_builder_null_safety/conditional_builder_null_safety.
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+
 import 'package:readivo_app/src/core/bloc/app_cubit.dart';
 import 'package:readivo_app/src/core/constants/constants.dart';
 import 'package:readivo_app/src/core/enums/enums.dart';
@@ -47,7 +48,6 @@ class _LibrarySearchScreenState extends State<LibrarySearchScreen> {
   Widget _buildLibrarySearchLayout(BuildContext context, state) {
     return BasicLayout(
       title: 'Search Screen',
-      appBarBackground: Colors.white,
       isPinned: false,
       leading: CustomButton(
         text: 'back home',
@@ -86,69 +86,73 @@ class _LibrarySearchScreenState extends State<LibrarySearchScreen> {
           styleType: ButtonStyleType.ghost,
           width: 40,
           child: SvgPicture.asset(AppIcons.adjustments),
-          onPressed: () {},
+          onPressed: () {
+          },
         ),
       ],
-      floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
       body: RefreshIndicator(
-        strokeWidth: 2,
+        strokeWidth: 3,
         displacement: 0,
+        color: AppColors.grey,
         onRefresh: () async {
           await Future.delayed(const Duration(seconds: 2));
         },
-        child: SingleChildScrollView(
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              _buildHeadSection(),
-              Flexible(
-                fit: FlexFit.loose,
-                child: ConditionalBuilder(
-                  condition: LibraryStates.searchDisplayOption ==
-                      SearchDisplayOption.grid,
-                  builder: (context) {
-                    return GridView.builder(
-                      shrinkWrap: true,
-                      physics: const NeverScrollableScrollPhysics(),
-                      gridDelegate:
-                          const SliverGridDelegateWithMaxCrossAxisExtent(
-                        maxCrossAxisExtent: 240,
-                        mainAxisSpacing: 8.0,
-                        crossAxisSpacing: 8.0,
-                        mainAxisExtent: 300,
-                      ),
-                      padding: const EdgeInsets.all(8.0),
-                      itemCount: 24,
-                      itemBuilder: (gridContext, index) => GestureDetector(
-                        onTap: () {},
-                        child: const BookGridItem(
-                          coverWidth: 180,
-                          coverHeight: 240,
-                          titleFontSize: 16,
-                          authorFontSize: 14,
+        child: Container(
+          color: Colors.white,
+          child: SingleChildScrollView(
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                _buildHeadSection(),
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 6.0,vertical: 4.0),
+                  child: ConditionalBuilder(
+                    condition: LibraryStates.searchDisplayOption ==
+                        SearchDisplayOption.grid,
+                    builder: (context) {
+                      return GridView.builder(
+                        shrinkWrap: true,
+                        physics: const NeverScrollableScrollPhysics(),
+                        gridDelegate:
+                            const SliverGridDelegateWithMaxCrossAxisExtent(
+                          maxCrossAxisExtent: 240,
+                          mainAxisSpacing: 8.0,
+                          crossAxisSpacing: 8.0,
+                          mainAxisExtent: 300,
                         ),
-                      ),
-                    );
-                  },
-                  fallback: (context) {
-                    return ListView.builder(
-                      shrinkWrap: true,
-                      physics: const NeverScrollableScrollPhysics(),
-                      itemBuilder: (context, index) {
-                        return GestureDetector(
-                          onTap: () {
-                            appCubit.changeScreen(const LibraryAddBookScreen());
-                          },
-                          child: BookListItem(key: UniqueKey()),
-                        );
-                      },
-                      // Provide unique keys
-                      itemCount: 12,
-                    );
-                  },
+                        padding: const EdgeInsets.all(8.0),
+                        itemCount: 24,
+                        itemBuilder: (gridContext, index) => GestureDetector(
+                          onTap: () {},
+                          child: const BookGridItem(
+                            coverWidth: 180,
+                            coverHeight: 240,
+                            titleFontSize: 16,
+                            authorFontSize: 14,
+                          ),
+                        ),
+                      );
+                    },
+                    fallback: (context) {
+                      return ListView.builder(
+                        shrinkWrap: true,
+                        physics: const NeverScrollableScrollPhysics(),
+                        itemBuilder: (context, index) {
+                          return GestureDetector(
+                            onTap: () {
+                              appCubit.changeScreen(const LibraryAddBookScreen());
+                            },
+                            child: BookListItem(key: UniqueKey()),
+                          );
+                        },
+                        // Provide unique keys
+                        itemCount: 12,
+                      );
+                    },
+                  ),
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
         ),
       ),
@@ -157,7 +161,7 @@ class _LibrarySearchScreenState extends State<LibrarySearchScreen> {
 
   Widget _buildHeadSection() {
     return Padding(
-      padding: const EdgeInsets.only(left: 10.0),
+      padding: const EdgeInsets.only(left: 14.0),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         crossAxisAlignment: CrossAxisAlignment.center,

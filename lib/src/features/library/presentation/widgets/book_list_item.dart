@@ -13,19 +13,21 @@ class BookListItem extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.all(8.0),
       margin: const EdgeInsets.symmetric(vertical: 6.0, horizontal: 8.0),
+      height: 130,
       decoration: BoxDecoration(
         color: AppColors.white,
         borderRadius: BorderRadius.circular(8.0),
         boxShadow: [
           BoxShadow(
             color: AppColors.lightGrey.withOpacity(0.6),
-            spreadRadius: 2,
-            blurRadius: 6,
+            spreadRadius: 1,
+            blurRadius: 4,
           ),
         ],
       ),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
+        mainAxisSize: MainAxisSize.max,
         children: [
           Container(
             height: 120,
@@ -37,71 +39,62 @@ class BookListItem extends StatelessWidget {
             child: const BookBox(),
           ),
           const SizedBox(width: 16.0),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                const Text(
-                  'Book Title',
-                  style: TextStyle(
-                    fontWeight: FontWeight.bold,
-                    fontSize: 18.0,
-                  ),
-                  maxLines: 2,
-                  overflow: TextOverflow.ellipsis,
-                ),
-                const SizedBox(height: 4.0),
-                const Text(
-                  'Author name',
-                  style: TextStyle(
-                    fontSize: 16.0,
-                    color: AppColors.grey,
-                  ),
-                ),
-                const SizedBox(height: 4.0),
-                const Row(
-                  children: [
-                    Expanded(
-                        child: Row(
-                      children: [
-                        Icon(
-                          // TODO: either use MU icons or Heroicons
-                          Icons.star,
-                          color: AppColors.goldenYellow,
-                          size: 20.0,
-                        ),
-                        SizedBox(width: 4.0),
-                        Text(
-                          '4.5',
-                          style: TextStyle(fontSize: 16.0),
-                        ),
-                      ],
-                    )),
-                    Text(
-                      '1997',
-                      style: TextStyle(
-                        fontSize: 14.0,
-                        color: AppColors.grey,
-                      ),
-                    )
-                  ],
-                ),
-                const SizedBox(height: 4.0),
-                SingleChildScrollView(
-                  scrollDirection: Axis.horizontal,
-                  child: Row(
-                    children: [
-                      _buildCategoryBadge('Finance'),
-                      _buildCategoryBadge('Communication'),
-                      _buildCategoryBadge('Self Development'),
-                      _buildCategoryBadge('Marketing'),
-                      _buildCategoryBadge('Sci-Fiction'),
-                    ],
-                  ),
-                ),
-              ],
-            ),
-          ),
+           const Expanded(
+             child: Column(
+               crossAxisAlignment: CrossAxisAlignment.stretch,
+               mainAxisAlignment: MainAxisAlignment.spaceAround,
+               mainAxisSize: MainAxisSize.max,
+               children: [
+                 Column(
+                   crossAxisAlignment: CrossAxisAlignment.start,
+                   children: [
+                     Text(
+                       'Book Title',
+                       style: TextStyle(
+                         fontWeight: FontWeight.bold,
+                         fontSize: 18.0,
+                       ),
+                       maxLines: 2,
+                       overflow: TextOverflow.ellipsis,
+                     ),
+                     Text(
+                       'Author name',
+                       style: TextStyle(
+                         fontSize: 16.0,
+                         color: AppColors.grey,
+                       ),
+                     ),
+                   ],
+                 ),
+                 Row(
+                   mainAxisSize: MainAxisSize.max,
+                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                   children: [
+                     Row(
+                       children: [
+                         Icon(
+                           Icons.star,
+                           color: AppColors.goldenYellow,
+                           size: 20.0,
+                         ),
+                         Text(
+                           '4.5',
+                           style: TextStyle(fontSize: 16.0),
+                         ),
+                       ],
+                     ),
+                     Text(
+                       '1997',
+                       style: TextStyle(
+                         fontSize: 14.0,
+                         color: AppColors.grey,
+                       ),
+                     ),
+                   ],
+                 ),
+               ],
+             ),
+           ),
         ],
       ),
     );
