@@ -193,10 +193,6 @@ class _LibraryHomeScreenState extends State<LibraryHomeScreen> {
   }
 
   Widget _buildReadingBookCard() {
-    List<Map<String, dynamic>> chips = [
-      {'icon': Icons.format_quote, 'label': '300 Quotes'},
-      {'icon': Icons.edit_note, 'label': '100 Note'}
-    ];
     return Container(
       width: 300,
       height: 200,
@@ -216,7 +212,6 @@ class _LibraryHomeScreenState extends State<LibraryHomeScreen> {
       ),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
-        mainAxisSize: MainAxisSize.min,
         children: [
           SizedBox(
             width: 130,
@@ -235,79 +230,94 @@ class _LibraryHomeScreenState extends State<LibraryHomeScreen> {
               ),
             ),
           ),
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-            children: [
-              const Column(
+          Expanded(
+            child: Padding(
+              padding: const EdgeInsets.only(right: 4.0),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisAlignment: MainAxisAlignment.spaceAround,
                 children: [
-                  CustomText(
-                    text: 'The Alchemist',
-                    fontWeight: FontWeight.w500,
-                    fontSize: 20,
+                  const Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      CustomText(
+                        text: 'The Alchemist',
+                        fontWeight: FontWeight.w500,
+                        fontSize: 20,
+                      ),
+                      CustomText(
+                        text: 'By Paulo Coelho',
+                        color: AppColors.grey,
+                      ),
+                    ],
                   ),
-                  CustomText(
-                    text: 'By Paulo Coelho',
+                  const Row(
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    children: [
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.start,
+                        children: [
+                          Icon(
+                            Icons.access_time_filled_rounded,
+                            size: 16,
+                          ),
+                          SizedBox(width: 4.0),
+                          CustomText(text: '2 weeks'),
+                        ],
+                      ),
+                      Expanded(
+                        child: Row(
+                          mainAxisSize: MainAxisSize.max,
+                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                          children: [
+                            CustomText(text: '5 Quotes', color: AppColors.grey),
+                            CustomText(text: '3 Notes', color: AppColors.grey),
+                          ],
+                        ),
+                      )
+                    ],
+                  ),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    mainAxisSize: MainAxisSize.max,
+                    children: [
+                      LinearPercentIndicator(
+                        width: 200.0,
+                        lineHeight: 12.0,
+                        percent: 0.35,
+                        barRadius: const Radius.circular(6.0),
+                        backgroundColor: AppColors.lightGrey,
+                        progressColor: AppColors.grey,
+                        padding: EdgeInsets.zero,
+                      ),
+                      const SizedBox(width: 8.0),
+                      const CustomText(text: '35%', fontSize: 14),
+                    ],
+                  ),
+                  const CustomButton(
+                    text: 'Start a session',
                     color: AppColors.grey,
-                  ),
-                ],
-              ),
-              Row(
-                mainAxisSize: MainAxisSize.max,
-                children: chips.map((chip) {
-                  return Padding(
-                    padding: const EdgeInsets.only(right: 4.0),
-                    child: CustomChip(
-                      text: chip['label'],
-                      icon: chip['icon'],
-                      iconColor: AppColors.grey.withOpacity(0.4),
-                      backgroundColor: AppColors.lightGrey,
-                      textColor: AppColors.grey,
-                      padding: const EdgeInsets.all(2.0),
-                      borderRadius: 4.0,
+                    width: 240,
+                    child: Row(
+                      mainAxisSize: MainAxisSize.max,
+                      children: [
+                        Expanded(
+                            child: CustomText(
+                          text: 'Start a Session',
+                          textAlign: TextAlign.center,
+                        )),
+                        CustomButton(
+                          text: 'start session icon',
+                          width: 40,
+                          color: Colors.black,
+                          child: Icon(Icons.play_circle_fill_rounded),
+                        )
+                      ],
                     ),
-                  );
-                }).toList(),
-              ),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                mainAxisSize: MainAxisSize.max,
-                children: [
-                  LinearPercentIndicator(
-                    width: 200.0,
-                    lineHeight: 12.0,
-                    percent: 0.35,
-                    barRadius: const Radius.circular(6.0),
-                    backgroundColor: AppColors.lightGrey,
-                    progressColor: AppColors.grey,
-                    padding: EdgeInsets.zero,
                   ),
-                  const SizedBox(width: 8.0),
-                  const CustomText(text: '35%', fontSize: 14),
                 ],
               ),
-              const CustomButton(
-                text: 'Start a session',
-                color: AppColors.grey,
-                width: 240,
-                child: Row(
-                  mainAxisSize: MainAxisSize.max,
-                  children: [
-                    Expanded(
-                        child: CustomText(
-                      text: 'Start a Session',
-                      textAlign: TextAlign.center,
-                    )),
-                    CustomButton(
-                      text: 'start session icon',
-                      width: 40,
-                      color: Colors.black,
-                      child: Icon(Icons.play_circle_fill_rounded),
-                    )
-                  ],
-                ),
-              ),
-            ],
+            ),
           )
         ],
       ),
@@ -319,16 +329,16 @@ class _LibraryHomeScreenState extends State<LibraryHomeScreen> {
       children: [
         _buildSuggestionsHeader(),
         _buildSuggestionsList(),
-          Padding(
-            padding: const EdgeInsets.only(top: 8.0, bottom: 12.0),
-            child: CustomButton(
+        Padding(
+          padding: const EdgeInsets.only(top: 8.0, bottom: 12.0),
+          child: CustomButton(
             text: 'Browse More',
             color: AppColors.lightGrey,
             textColor: AppColors.grey,
             borderRadius: 4.0,
-            width: MediaQuery.sizeOf(context).width /2,
-                    ),
+            width: MediaQuery.sizeOf(context).width / 2,
           ),
+        ),
       ],
     );
   }
