@@ -17,6 +17,7 @@ class BottomSheetItem {
   final double textSize;
   final Widget? appendIcon;
   final EdgeInsetsGeometry? padding;
+  final EdgeInsetsGeometry? margin;
 
   const BottomSheetItem({
     this.icon,
@@ -28,7 +29,8 @@ class BottomSheetItem {
     this.textColor = Colors.black,
     this.textSize = 16.0,
     this.appendIcon,
-    this.padding,
+    this.padding = const EdgeInsets.symmetric(vertical: 10.0, horizontal: 12.0),
+    this.margin = const EdgeInsets.symmetric(vertical: 2.0),
   });
 }
 
@@ -52,6 +54,7 @@ class BottomSheetItemWidget extends StatelessWidget {
       label: item.label,
       appendIcon: item.appendIcon,
       padding: item.padding,
+      margin: item.margin,
       textStyle: TextStyle(color: item.textColor, fontSize: item.textSize),
     );
   }

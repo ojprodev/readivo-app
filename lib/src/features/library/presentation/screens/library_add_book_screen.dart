@@ -221,6 +221,108 @@ class _LibraryAddBookScreenState extends State<LibraryAddBookScreen> {
     );
   }
 
+  Widget _buildReadingStatusButton() {
+    return Center(
+      child: CustomButton(
+        borderColor: AppColors.grey,
+        textColor: AppColors.grey,
+        text: 'Reading Status',
+        color: Colors.white,
+        height: 42,
+        width: 200,
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+          children: [
+            Expanded(
+              child: Text(
+                selectedStatus,
+                textAlign: TextAlign.center,
+              ),
+            ),
+            Container(
+              padding: const EdgeInsets.all(8.0),
+              decoration: const BoxDecoration(
+                color: AppColors.grey,
+                borderRadius: BorderRadius.only(
+                  topRight: Radius.circular(4.0),
+                  bottomRight: Radius.circular(4.0),
+                ),
+              ),
+              child: SvgPicture.asset(
+                AppIcons.chevronUpDown,
+                colorFilter:
+                const ColorFilter.mode(Colors.white, BlendMode.srcIn),
+              ),
+            )
+          ],
+        ),
+        onPressed: () {
+          CustomBottomSheet.show(
+            context: context,
+            bottomSheetItems: _buildReadingStatusBottomSheet(),
+          );
+        },
+      ),
+    );
+  }
+
+  List<BottomSheetItem> _buildReadingStatusBottomSheet() {
+    return _buildBottomSheetItems([
+      'Want to read',
+      'Reading',
+      'Finished',
+      'Gave up',
+    ]);
+  }
+
+  List<BottomSheetItem> _buildBottomSheetItems(List<String> statuses) {
+    return statuses.map((status) {
+      return BottomSheetItem(
+        borderColor:
+        status == selectedStatus ? AppColors.grey : AppColors.lightGrey.withOpacity(0.4),
+        icon: _getStatusIcon(status),
+        label: status,
+        appendIcon: _getAppendIcon(status),
+        onTap: () {
+          setState(() {
+            selectedStatus = status;
+          });
+          Navigator.of(context).pop();
+        },
+      );
+    }).toList();
+  }
+
+  Widget _getStatusIcon(String status) {
+    switch (status) {
+      case 'Want to read':
+        return const Icon(
+          Icons.library_add_outlined,
+          color: AppColors.grey,
+        );
+      case 'Reading':
+        return const Icon(
+          Icons.local_library_outlined,
+          color: AppColors.grey,
+        );
+      case 'Finished':
+        return const Icon(
+          Icons.library_add_check_outlined,
+          color: AppColors.grey,
+        );
+      case 'Gave up':
+        return const Icon(
+          Icons.flag_outlined,
+          color: AppColors.grey,
+        );
+      default:
+        return const Icon(
+          Icons.circle_outlined,
+          color: AppColors.grey,
+        );
+    }
+  }
+
   Widget _buildBookTypeTabs() {
     return Container(
       margin: const EdgeInsets.all(16.0),
@@ -975,112 +1077,10 @@ class _LibraryAddBookScreenState extends State<LibraryAddBookScreen> {
     );
   }
 
-  Widget _buildReadingStatusButton() {
-    return Center(
-      child: CustomButton(
-        borderColor: AppColors.grey,
-        textColor: AppColors.grey,
-        text: 'Reading Status',
-        color: Colors.white,
-        height: 42,
-        width: 200,
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-          children: [
-            Expanded(
-              child: Text(
-                selectedStatus,
-                textAlign: TextAlign.center,
-              ),
-            ),
-            Container(
-              padding: const EdgeInsets.all(8.0),
-              decoration: const BoxDecoration(
-                color: AppColors.grey,
-                borderRadius: BorderRadius.only(
-                  topRight: Radius.circular(4.0),
-                  bottomRight: Radius.circular(4.0),
-                ),
-              ),
-              child: SvgPicture.asset(
-                AppIcons.chevronUpDown,
-                colorFilter:
-                    const ColorFilter.mode(Colors.white, BlendMode.srcIn),
-              ),
-            )
-          ],
-        ),
-        onPressed: () {
-          CustomBottomSheet.show(
-            context: context,
-            bottomSheetItems: _buildReadingStatusBottomSheet(),
-          );
-        },
-      ),
-    );
-  }
-
-  List<BottomSheetItem> _buildReadingStatusBottomSheet() {
-    return _buildBottomSheetItems([
-      'Want to read',
-      'Reading',
-      'Finished',
-      'Gave up',
-    ]);
-  }
-
-  List<BottomSheetItem> _buildBottomSheetItems(List<String> statuses) {
-    return statuses.map((status) {
-      return BottomSheetItem(
-        borderColor:
-            status == selectedStatus ? AppColors.grey : AppColors.lightGrey,
-        icon: _getStatusIcon(status),
-        label: status,
-        appendIcon: _getAppendIcon(status),
-        onTap: () {
-          setState(() {
-            selectedStatus = status;
-          });
-          Navigator.of(context).pop();
-        },
-      );
-    }).toList();
-  }
-
-  Widget _getStatusIcon(String status) {
-    switch (status) {
-      case 'Want to read':
-        return const Icon(
-          Icons.library_add_outlined,
-          color: AppColors.grey,
-        );
-      case 'Reading':
-        return const Icon(
-          Icons.local_library_outlined,
-          color: AppColors.grey,
-        );
-      case 'Finished':
-        return const Icon(
-          Icons.library_add_check_outlined,
-          color: AppColors.grey,
-        );
-      case 'Gave up':
-        return const Icon(
-          Icons.flag_outlined,
-          color: AppColors.grey,
-        );
-      default:
-        return const Icon(
-          Icons.circle_outlined,
-          color: AppColors.grey,
-        );
-    }
-  }
-
   Widget _getAppendIcon(String status) {
     return Icon(
       selectedStatus == status ? Icons.check_circle : Icons.circle_outlined,
-      color: selectedStatus == status ? AppColors.grey : AppColors.lightGrey,
+      color: selectedStatus == status ? AppColors.grey : AppColors.lightGrey.withOpacity(0.4),
     );
   }
 

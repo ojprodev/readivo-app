@@ -118,8 +118,7 @@ class _LibraryHomeScreenState extends State<LibraryHomeScreen> {
       BottomSheetItem(
         icon: const Icon(Icons.search),
         label: 'Search',
-        borderColor: AppColors.lightGrey.withOpacity(0.5),
-        padding: const EdgeInsets.symmetric(vertical: 10.0, horizontal: 12.0),
+        borderColor: AppColors.lightGrey.withOpacity(0.4),
         onTap: () {
           // close the bottom sheet
           Navigator.pop(context);
@@ -131,8 +130,7 @@ class _LibraryHomeScreenState extends State<LibraryHomeScreen> {
       BottomSheetItem(
         icon: const Icon(Icons.qr_code_scanner_outlined),
         label: 'Scan ISBN',
-        borderColor: AppColors.lightGrey.withOpacity(0.5),
-        padding: const EdgeInsets.symmetric(vertical: 10.0, horizontal: 12.0),
+        borderColor: AppColors.lightGrey.withOpacity(0.3),
         onTap: () {
           // close the bottom sheet
           Navigator.pop(context);
@@ -141,8 +139,7 @@ class _LibraryHomeScreenState extends State<LibraryHomeScreen> {
       BottomSheetItem(
         icon: const Icon(Icons.edit_note_outlined),
         label: 'Add manually',
-        borderColor: AppColors.lightGrey.withOpacity(0.5),
-        padding: const EdgeInsets.symmetric(vertical: 10.0, horizontal: 12.0),
+        borderColor: AppColors.lightGrey.withOpacity(0.4),
         onTap: () {
           // Handle add manually
         },
@@ -284,17 +281,17 @@ class _LibraryHomeScreenState extends State<LibraryHomeScreen> {
                     ],
                   ),
                   Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    mainAxisSize: MainAxisSize.max,
                     children: [
-                      LinearPercentIndicator(
-                        width: 200.0,
-                        lineHeight: 12.0,
-                        percent: 0.35,
-                        barRadius: const Radius.circular(6.0),
-                        backgroundColor: AppColors.lightGrey,
-                        progressColor: AppColors.grey,
-                        padding: EdgeInsets.zero,
+                      Expanded(
+                        child: LinearPercentIndicator(
+                          // width: 140.0,
+                          lineHeight: 12.0,
+                          percent: 0.35,
+                          barRadius: const Radius.circular(6.0),
+                          backgroundColor: AppColors.lightGrey,
+                          progressColor: AppColors.grey,
+                          padding: EdgeInsets.zero,
+                        ),
                       ),
                       const SizedBox(width: 8.0),
                       const CustomText(text: '35%', fontSize: 14),
@@ -374,7 +371,7 @@ class _LibraryHomeScreenState extends State<LibraryHomeScreen> {
             child: Row(
               children: bookShelves.map((item) {
                 return Container(
-                  margin: const EdgeInsets.only(right: 8.0),
+                  margin: const EdgeInsets.only(right: 4.0),
                   child: GestureDetector(
                     onTap: () {
                       setState(() {
@@ -384,9 +381,10 @@ class _LibraryHomeScreenState extends State<LibraryHomeScreen> {
                     child: CustomChip(
                       text: item,
                       borderRadius: 4.0,
+                      padding: const EdgeInsets.symmetric(horizontal: 8.0),
                       backgroundColor: selectedShelve == item
-                          ? AppColors.lightGrey.withOpacity(0.6)
-                          : Colors.transparent,
+                          ? AppColors.lightGrey.withOpacity(0.4)
+                          : Colors.white,
                     ),
                   ),
                 );

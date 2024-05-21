@@ -13,7 +13,7 @@ class CustomListItem extends StatelessWidget {
   final Widget? appendIcon;
   final TextStyle? textStyle;
   final EdgeInsetsGeometry? padding;
-  final EdgeInsetsGeometry margin;
+  final EdgeInsetsGeometry? margin;
   final MainAxisAlignment mainAxisAlignment;
   final CrossAxisAlignment crossAxisAlignment;
   final List<BoxShadow>? shadow;
