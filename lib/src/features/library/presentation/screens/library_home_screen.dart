@@ -16,7 +16,6 @@ import 'package:readivo_app/src/core/widgets/bottom_sheet.dart';
 import 'package:readivo_app/src/core/widgets/custom_button.dart';
 import 'package:readivo_app/src/core/widgets/partials/bottom_sheet_item.dart';
 import 'package:readivo_app/src/features/library/presentation/screens/library_search_screen.dart';
-import 'package:readivo_app/src/features/library/presentation/widgets/book_grid_item.dart';
 
 class LibraryHomeScreen extends StatefulWidget {
   const LibraryHomeScreen({super.key});
@@ -410,12 +409,13 @@ class _LibraryHomeScreenState extends State<LibraryHomeScreen> {
       itemCount: 5,
       itemBuilder: (gridContext, index) => GestureDetector(
         onTap: () {},
-        child: const BookGridItem(
-          coverWidth: 140,
-          coverHeight: 170,
-          titleFontSize: 16,
-          authorFontSize: 14,
-        ),
+        child: const SizedBox(),
+        // const BookGridItem(
+        //   coverWidth: 140,
+        //   coverHeight: 170,
+        //   titleFontSize: 16,
+        //   authorFontSize: 14,
+        // ),
       ),
     );
   }

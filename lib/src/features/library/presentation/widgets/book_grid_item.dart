@@ -2,26 +2,25 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:readivo_app/src/core/constants/constants.dart';
 import 'package:readivo_app/src/core/widgets/custom_text.dart';
+import 'package:readivo_app/src/features/library/domain/entities/book_entity.dart';
 
 import 'book_box.dart';
 
 class BookGridItem extends StatelessWidget {
+  final BookEntity book;
   final double? titleFontSize;
   final double? authorFontSize;
   final double? coverWidth;
   final double? coverHeight;
-  final String? coverUrl;
-  final String? coverPath;
   final bool showInfo;
 
   const BookGridItem({
     super.key,
+    required this.book,
     this.titleFontSize = 14,
     this.authorFontSize = 12,
     this.coverWidth = 130.0,
     this.coverHeight = 180.0,
-    this.coverUrl,
-    this.coverPath,
     this.showInfo = true,
   });
 
@@ -36,7 +35,7 @@ class BookGridItem extends StatelessWidget {
           _buildBookBoxWithRating(),
           if (showInfo)
             CustomText(
-              text: 'Book Title',
+              text: book.title,
               maxLines: 2,
               softWrap: true,
               overflow: TextOverflow.ellipsis,
@@ -45,7 +44,7 @@ class BookGridItem extends StatelessWidget {
             ),
           if (showInfo)
             CustomText(
-              text: 'Author Name',
+              text: '${book.author}',
               maxLines: 1,
               overflow: TextOverflow.ellipsis,
               color: AppColors.grey,
@@ -64,8 +63,7 @@ class BookGridItem extends StatelessWidget {
           width: coverWidth,
           height: coverHeight,
           background: AppColors.lightGrey,
-          coverUrl: coverUrl,
-          coverPath: coverPath,
+          coverUrl: book.coverURI,
         ),
         if (showInfo)
           Container(
@@ -89,7 +87,7 @@ class BookGridItem extends StatelessWidget {
                     BlendMode.srcIn,
                   ),
                 ),
-                const Text('4.3/5'),
+                Text('${book.globalRating}'),
               ],
             ),
           )

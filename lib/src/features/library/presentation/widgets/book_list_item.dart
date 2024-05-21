@@ -1,11 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:readivo_app/src/core/constants/colors.dart';
 import 'package:readivo_app/src/core/constants/constants.dart';
+import 'package:readivo_app/src/core/widgets/custom_text.dart';
+import 'package:readivo_app/src/features/library/domain/entities/book_entity.dart';
 import 'package:readivo_app/src/features/library/presentation/widgets/book_box.dart';
 
 class BookListItem extends StatelessWidget {
+  final BookEntity book;
+
   const BookListItem({
     super.key,
+    required this.book,
   });
 
   @override
@@ -36,84 +41,65 @@ class BookListItem extends StatelessWidget {
               border: Border.all(color: AppColors.lightGrey),
               borderRadius: const BorderRadius.all(Radius.circular(4.0)),
             ),
-            child: const BookBox(),
+            child: BookBox(
+              coverUrl: book.coverURI,
+            ),
           ),
           const SizedBox(width: 16.0),
-           const Expanded(
-             child: Column(
-               crossAxisAlignment: CrossAxisAlignment.stretch,
-               mainAxisAlignment: MainAxisAlignment.spaceAround,
-               mainAxisSize: MainAxisSize.max,
-               children: [
-                 Column(
-                   crossAxisAlignment: CrossAxisAlignment.start,
-                   children: [
-                     Text(
-                       'Book Title',
-                       style: TextStyle(
-                         fontWeight: FontWeight.bold,
-                         fontSize: 18.0,
-                       ),
-                       maxLines: 2,
-                       overflow: TextOverflow.ellipsis,
-                     ),
-                     Text(
-                       'Author name',
-                       style: TextStyle(
-                         fontSize: 16.0,
-                         color: AppColors.grey,
-                       ),
-                     ),
-                   ],
-                 ),
-                 Row(
-                   mainAxisSize: MainAxisSize.max,
-                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                   children: [
-                     Row(
-                       children: [
-                         Icon(
-                           Icons.star,
-                           color: AppColors.goldenYellow,
-                           size: 20.0,
-                         ),
-                         Text(
-                           '4.5',
-                           style: TextStyle(fontSize: 16.0),
-                         ),
-                       ],
-                     ),
-                     Text(
-                       '1997',
-                       style: TextStyle(
-                         fontSize: 14.0,
-                         color: AppColors.grey,
-                       ),
-                     ),
-                   ],
-                 ),
-               ],
-             ),
-           ),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              mainAxisAlignment: MainAxisAlignment.spaceAround,
+              mainAxisSize: MainAxisSize.max,
+              children: [
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    CustomText(
+                      text: book.title,
+                      fontWeight: FontWeight.bold,
+                      fontSize: 18.0,
+                      maxLines: 2,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                    CustomText(
+                      text: '${book.author}',
+                      fontSize: 16.0,
+                      color: AppColors.grey,
+                      maxLines: 1,
+                    ),
+                  ],
+                ),
+                Row(
+                  mainAxisSize: MainAxisSize.max,
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Row(
+                      children: [
+                        const Icon(
+                          Icons.star,
+                          color: AppColors.goldenYellow,
+                          size: 20.0,
+                        ),
+                        Text(
+                          '${book.globalRating}',
+                          style: const TextStyle(fontSize: 16.0),
+                        ),
+                      ],
+                    ),
+                    Text(
+                      '${book.publishDate}',
+                      style: const TextStyle(
+                        fontSize: 14.0,
+                        color: AppColors.grey,
+                      ),
+                    ),
+                  ],
+                ),
+              ],
+            ),
+          ),
         ],
-      ),
-    );
-  }
-
-  Widget _buildCategoryBadge(String category) {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 4.0),
-      margin: const EdgeInsets.symmetric(horizontal: 4.0),
-      decoration: BoxDecoration(
-        color: AppColors.lightGrey, // Use grey color for badges
-        borderRadius: BorderRadius.circular(16.0),
-      ),
-      child: Text(
-        category,
-        style: const TextStyle(
-          color: AppColors.grey,
-          fontSize: 12.0,
-        ),
       ),
     );
   }

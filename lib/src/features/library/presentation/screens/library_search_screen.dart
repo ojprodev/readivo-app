@@ -9,8 +9,9 @@ import 'package:readivo_app/src/core/enums/enums.dart';
 import 'package:readivo_app/src/core/layouts/basic_layout.dart';
 import 'package:readivo_app/src/core/widgets/custom_button.dart';
 import 'package:readivo_app/src/core/widgets/custom_input_field.dart';
+import 'package:readivo_app/src/core/widgets/custom_text.dart';
+import 'package:readivo_app/src/features/library/domain/entities/book_entity.dart';
 import 'package:readivo_app/src/features/library/presentation/bloc/library_cubit.dart';
-import 'package:readivo_app/src/features/library/presentation/bloc/library_states.dart';
 import 'package:readivo_app/src/features/library/presentation/screens/library_add_book_screen.dart';
 import 'package:readivo_app/src/features/library/presentation/widgets/book_grid_item.dart';
 import 'package:readivo_app/src/features/library/presentation/widgets/book_list_item.dart';
@@ -39,15 +40,6 @@ class _LibrarySearchScreenState extends State<LibrarySearchScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return BlocConsumer<LibraryCubit, LibraryStates>(
-      listener: _buildChangeListener,
-      builder: _buildLibrarySearchLayout,
-    );
-  }
-
-  void _buildChangeListener(BuildContext context, state) {}
-
-  Widget _buildLibrarySearchLayout(BuildContext context, state) {
     return BasicLayout(
       title: 'Search Screen',
       isPinned: false,
@@ -75,6 +67,9 @@ class _LibrarySearchScreenState extends State<LibrarySearchScreen> {
             searchBooksController.text = value;
           });
         },
+        onSubmit: (query) {
+          libraryCubit.search(query);
+        },
         onEndIconPress: () {
           if (searchBooksController.text.isNotEmpty) {
             setState(() {
@@ -90,35 +85,48 @@ class _LibrarySearchScreenState extends State<LibrarySearchScreen> {
           styleType: ButtonStyleType.ghost,
           width: 40,
           child: SvgPicture.asset(AppIcons.adjustments),
-          onPressed: () {
-            setState(() {
-              showFilters = !showFilters;
-            });
-          },
+          onPressed: () {},
         ),
       ],
-      body: RefreshIndicator(
-        strokeWidth: 3,
-        displacement: 0,
-        color: AppColors.grey,
-        onRefresh: () async {
-          await Future.delayed(const Duration(seconds: 2));
-        },
-        child: Container(
-          color: Colors.white,
-          child: SingleChildScrollView(
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                if (showFilters) _buildFiltersSection(),
-                _buildHeadSection(),
-                _buildSearchList(),
-              ],
+      body: BlocConsumer<LibraryCubit, LibraryStates>(
+        listener: _buildChangeListener,
+        builder: _buildLibrarySearchContainer,
+      ),
+    );
+  }
+
+  void _buildChangeListener(BuildContext context, state) {}
+
+  Widget _buildLibrarySearchContainer(BuildContext context, state) {
+    if (state is LibrarySearchLoadedState) {
+      return ConditionalBuilder(
+        condition: state.books.isNotEmpty,
+        builder: (context) => RefreshIndicator(
+          strokeWidth: 3,
+          displacement: 0,
+          color: AppColors.grey,
+          onRefresh: () async {
+            await Future.delayed(const Duration(seconds: 2));
+          },
+          child: Container(
+            color: Colors.white,
+            child: SingleChildScrollView(
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  // if (showFilters) _buildFiltersSection(),
+                  _buildHeadSection(booksCount: state.books.length),
+                  _buildSearchList(books: state.books),
+                ],
+              ),
             ),
           ),
         ),
-      ),
-    );
+        fallback: (context) => const Text('First visit'),
+      );
+    } else {
+      return const Text('hola');
+    }
   }
 
   Widget _buildFiltersSection() {
@@ -142,13 +150,7 @@ class _LibrarySearchScreenState extends State<LibrarySearchScreen> {
                           : ButtonStyleType.outline,
                       color: AppColors.grey,
                       text: 'Online',
-                      onPressed: () {
-                        if (searchSource != 'Online') {
-                          setState(() {
-                            searchSource = 'Online';
-                          });
-                        }
-                      },
+                      onPressed: () {},
                     ),
                   ),
                   const SizedBox(width: 8.0),
@@ -159,13 +161,7 @@ class _LibrarySearchScreenState extends State<LibrarySearchScreen> {
                           : ButtonStyleType.outline,
                       color: AppColors.grey,
                       text: 'Local',
-                      onPressed: () {
-                        if (searchSource != 'Local') {
-                          setState(() {
-                            searchSource = 'Local';
-                          });
-                        }
-                      },
+                      onPressed: () { },
                     ),
                   ),
                 ],
@@ -177,25 +173,21 @@ class _LibrarySearchScreenState extends State<LibrarySearchScreen> {
     );
   }
 
-  Widget _buildHeadSection() {
+  Widget _buildHeadSection({required int booksCount}) {
     return Padding(
       padding: const EdgeInsets.only(left: 14.0),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
-          const Text(
-            'Found 12 Books',
-            style: TextStyle(
-              fontWeight: FontWeight.w500,
-              fontSize: 16,
-              color: AppColors.grey,
-            ),
+          CustomText(
+            text: 'Found $booksCount Books',
+            fontWeight: FontWeight.w500,
+            fontSize: 16,
+            color: AppColors.grey,
           ),
           IconButton(
-            onPressed: () {
-              libraryCubit.toggleSearchDisplayOption();
-            },
+            onPressed: () {},
             icon: Icon(
               LibraryStates.searchDisplayOption == SearchDisplayOption.list
                   ? Icons.grid_view_rounded
@@ -208,7 +200,7 @@ class _LibrarySearchScreenState extends State<LibrarySearchScreen> {
     );
   }
 
-  Widget _buildSearchList() {
+  Widget _buildSearchList({required List<BookEntity> books}) {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 6.0, vertical: 4.0),
       child: ConditionalBuilder(
@@ -222,13 +214,16 @@ class _LibrarySearchScreenState extends State<LibrarySearchScreen> {
               maxCrossAxisExtent: 240,
               mainAxisSpacing: 8.0,
               crossAxisSpacing: 8.0,
-              mainAxisExtent: 300,
+              mainAxisExtent: 310,
             ),
             padding: const EdgeInsets.all(8.0),
-            itemCount: 24,
+            itemCount: books.length,
             itemBuilder: (gridContext, index) => GestureDetector(
-              onTap: () {},
-              child: const BookGridItem(
+              onTap: () {
+                appCubit.changeScreen(LibraryAddBookScreen(book: books[index],));
+              },
+              child: BookGridItem(
+                book: books[index],
                 coverWidth: 180,
                 coverHeight: 240,
                 titleFontSize: 16,
@@ -240,17 +235,19 @@ class _LibrarySearchScreenState extends State<LibrarySearchScreen> {
         fallback: (context) {
           return ListView.builder(
             shrinkWrap: true,
+            itemCount: books.length,
             physics: const NeverScrollableScrollPhysics(),
             itemBuilder: (context, index) {
               return GestureDetector(
                 onTap: () {
-                  appCubit.changeScreen(const LibraryAddBookScreen());
+                  appCubit.changeScreen(LibraryAddBookScreen(book: books[index],));
                 },
-                child: BookListItem(key: UniqueKey()),
+                child: BookListItem(
+                  key: UniqueKey(),
+                  book: books[index],
+                ),
               );
             },
-            // Provide unique keys
-            itemCount: 12,
           );
         },
       ),

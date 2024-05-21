@@ -15,11 +15,13 @@ import 'package:readivo_app/src/core/widgets/custom_chip.dart';
 import 'package:readivo_app/src/core/widgets/custom_input_field.dart';
 import 'package:readivo_app/src/core/widgets/custom_list_item.dart';
 import 'package:readivo_app/src/core/widgets/partials/bottom_sheet_item.dart';
+import 'package:readivo_app/src/features/library/domain/entities/book_entity.dart';
 import 'package:readivo_app/src/features/library/presentation/widgets/book_box.dart';
 import 'package:readivo_app/src/features/library/presentation/widgets/book_cover.dart';
 
 class LibraryAddBookScreen extends StatefulWidget {
-  const LibraryAddBookScreen({super.key});
+  final BookEntity? book;
+  const LibraryAddBookScreen({super.key, this.book});
 
   @override
   State<LibraryAddBookScreen> createState() => _LibraryAddBookScreenState();
@@ -80,8 +82,9 @@ class _LibraryAddBookScreenState extends State<LibraryAddBookScreen> {
     'Religion',
     'Spirituality',
   ];
-
   double bottomSheetFullHeight = 0.0;
+
+
 
   // controllers
   final TextEditingController titleController = TextEditingController();
@@ -211,10 +214,11 @@ class _LibraryAddBookScreenState extends State<LibraryAddBookScreen> {
           ],
         ),
       ),
-      child: const BookCover(
+      child: BookCover(
         width: 180,
         height: 260,
         child: BookBox(
+          coverUrl: widget.book?.coverURI,
           iconSize: 64,
         ),
       ),
@@ -1088,22 +1092,22 @@ class _LibraryAddBookScreenState extends State<LibraryAddBookScreen> {
     final bookFields = [
       {
         "label": "Title",
-        "value": 'The Alchemist',
+        "value": widget.book?.title,
         "controller": titleController,
-        "defaultValue": 'The Alchemist',
+        "defaultValue": widget.book?.title,
       },
       {
         "label": "Author",
-        "value": 'Paulo Coelho',
+        "value": widget.book?.author,
         "controller": authorController,
-        "defaultValue": 'Paulo Coelho',
+        "defaultValue": widget.book?.author,
       },
       {
         "label": "Total Pages",
-        "value": '196',
+        "value": widget.book?.totalPages,
         "type": 'number',
         "controller": totalPagesController,
-        "defaultValue": '196',
+        "defaultValue": widget.book?.totalPages,
       },
       {
         "label": "ISBN",
@@ -1114,10 +1118,10 @@ class _LibraryAddBookScreenState extends State<LibraryAddBookScreen> {
       },
       {
         "label": "Publish date",
-        "value": '1996',
+        "value": widget.book?.publishDate,
         "type": 'date',
         "controller": publishedAtController,
-        "defaultValue": '1996',
+        "defaultValue": widget.book?.publishDate,
       },
       {
         "label": "Description",

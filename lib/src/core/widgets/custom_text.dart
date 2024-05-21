@@ -36,7 +36,7 @@ class CustomText extends StatelessWidget {
     this.textDirection,
     this.locale,
     this.softWrap,
-    this.overflow,
+    this.overflow = TextOverflow.ellipsis,
     this.maxLines,
   });
 
