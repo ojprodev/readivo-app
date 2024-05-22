@@ -23,7 +23,7 @@ class RemoteBook extends BookEntity {
       globalRating: parseRatingsAverage(json['ratings_average'].toString()),
       publishDate: json['first_publish_year'].toString(),
       coverURI: "https://covers.openlibrary.org/b/id/${json['cover_i']}-M.jpg",
-      totalPages: json['number_of_pages_median'] ?? '0',
+      totalPages: parseTotalPages(json['number_of_pages_median']),
       createdAt: DateTime.now(),
     );
   }
