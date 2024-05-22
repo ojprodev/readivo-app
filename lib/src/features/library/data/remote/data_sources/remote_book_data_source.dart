@@ -13,7 +13,7 @@ class RemoteBookDataSourceImpl implements RemoteBookDataSource {
   @override
   Future<List<RemoteBook>> searchBooks(String query) async {
     // send request
-    final response = await dio.get('https://openlibrary.org/search.json', queryParameters: {'q': query, 'limit': 25, 'sort': 'rating'});
+    final response = await dio.get('https://openlibrary.org/search.json', queryParameters: {'q': query, 'limit': 25});
     // check response
     if(response.statusCode == 200){
       // extract targeted data

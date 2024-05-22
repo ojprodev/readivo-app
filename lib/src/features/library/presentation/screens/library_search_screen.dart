@@ -26,14 +26,16 @@ class LibrarySearchScreen extends StatefulWidget {
 class _LibrarySearchScreenState extends State<LibrarySearchScreen> {
   late AppCubit appCubit;
   late LibraryCubit libraryCubit;
+  SearchDisplayOption searchDisplayOption = SearchDisplayOption.list;
   bool showFilters = false;
-  String searchSource = 'Online';
+  SearchSourceEnums searchSource = SearchSourceEnums.online;
+
+  // controllers
   TextEditingController searchBooksController = TextEditingController();
 
   @override
   void initState() {
     super.initState();
-
     appCubit = AppCubit.get(context);
     libraryCubit = LibraryCubit.get(context);
   }
@@ -85,12 +87,34 @@ class _LibrarySearchScreenState extends State<LibrarySearchScreen> {
           styleType: ButtonStyleType.ghost,
           width: 40,
           child: SvgPicture.asset(AppIcons.adjustments),
-          onPressed: () {},
+          onPressed: () {
+            setState(() {
+              showFilters = !showFilters;
+            });
+          },
         ),
       ],
-      body: BlocConsumer<LibraryCubit, LibraryStates>(
-        listener: _buildChangeListener,
-        builder: _buildLibrarySearchContainer,
+      body: Container(
+        color: Colors.white,
+        child: RefreshIndicator(
+          strokeWidth: 3,
+          displacement: 0,
+          color: AppColors.grey,
+          onRefresh: () async {
+            await Future.delayed(const Duration(seconds: 2));
+          },
+          child: SingleChildScrollView(
+            child: Column(
+              children: [
+                if (showFilters) _buildFiltersSection(),
+                BlocConsumer<LibraryCubit, LibraryStates>(
+                  listener: _buildChangeListener,
+                  builder: _buildLibrarySearchContainer,
+                ),
+              ],
+            ),
+          ),
+        ),
       ),
     );
   }
@@ -98,34 +122,19 @@ class _LibrarySearchScreenState extends State<LibrarySearchScreen> {
   void _buildChangeListener(BuildContext context, state) {}
 
   Widget _buildLibrarySearchContainer(BuildContext context, state) {
+    if (state is LibrarySearchLoadingState) {
+      return const Text('handle loading screen state');
+    }
     if (state is LibrarySearchLoadedState) {
-      return ConditionalBuilder(
-        condition: state.books.isNotEmpty,
-        builder: (context) => RefreshIndicator(
-          strokeWidth: 3,
-          displacement: 0,
-          color: AppColors.grey,
-          onRefresh: () async {
-            await Future.delayed(const Duration(seconds: 2));
-          },
-          child: Container(
-            color: Colors.white,
-            child: SingleChildScrollView(
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  // if (showFilters) _buildFiltersSection(),
-                  _buildHeadSection(booksCount: state.books.length),
-                  _buildSearchList(books: state.books),
-                ],
-              ),
-            ),
-          ),
-        ),
-        fallback: (context) => const Text('First visit'),
+      return Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          _buildHeadSection(booksCount: state.books.length),
+          _buildSearchList(books: state.books),
+        ],
       );
     } else {
-      return const Text('hola');
+      return const Text('handle empty screen before search');
     }
   }
 
@@ -145,23 +154,31 @@ class _LibrarySearchScreenState extends State<LibrarySearchScreen> {
                 children: [
                   Expanded(
                     child: CustomButton(
-                      styleType: searchSource == 'Online'
+                      styleType: searchSource == SearchSourceEnums.online
                           ? ButtonStyleType.filled
                           : ButtonStyleType.outline,
                       color: AppColors.grey,
                       text: 'Online',
-                      onPressed: () {},
+                      onPressed: () {
+                        setState(() {
+                          searchSource = SearchSourceEnums.online;
+                        });
+                      },
                     ),
                   ),
                   const SizedBox(width: 8.0),
                   Expanded(
                     child: CustomButton(
-                      styleType: searchSource == 'Local'
+                      styleType: searchSource == SearchSourceEnums.local
                           ? ButtonStyleType.filled
                           : ButtonStyleType.outline,
                       color: AppColors.grey,
                       text: 'Local',
-                      onPressed: () { },
+                      onPressed: () {
+                        setState(() {
+                          searchSource = SearchSourceEnums.local;
+                        });
+                      },
                     ),
                   ),
                 ],
@@ -187,9 +204,17 @@ class _LibrarySearchScreenState extends State<LibrarySearchScreen> {
             color: AppColors.grey,
           ),
           IconButton(
-            onPressed: () {},
+            onPressed: () {
+              setState(() {
+                if (searchDisplayOption == SearchDisplayOption.list) {
+                  searchDisplayOption = SearchDisplayOption.grid;
+                } else {
+                  searchDisplayOption = SearchDisplayOption.list;
+                }
+              });
+            },
             icon: Icon(
-              LibraryStates.searchDisplayOption == SearchDisplayOption.list
+              searchDisplayOption == SearchDisplayOption.list
                   ? Icons.grid_view_rounded
                   : Icons.format_list_bulleted_sharp,
               size: 20,
@@ -204,8 +229,7 @@ class _LibrarySearchScreenState extends State<LibrarySearchScreen> {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 6.0, vertical: 4.0),
       child: ConditionalBuilder(
-        condition:
-            LibraryStates.searchDisplayOption == SearchDisplayOption.grid,
+        condition: searchDisplayOption == SearchDisplayOption.grid,
         builder: (context) {
           return GridView.builder(
             shrinkWrap: true,
@@ -220,7 +244,9 @@ class _LibrarySearchScreenState extends State<LibrarySearchScreen> {
             itemCount: books.length,
             itemBuilder: (gridContext, index) => GestureDetector(
               onTap: () {
-                appCubit.changeScreen(LibraryAddBookScreen(book: books[index],));
+                appCubit.changeScreen(LibraryAddBookScreen(
+                  book: books[index],
+                ));
               },
               child: BookGridItem(
                 book: books[index],
@@ -240,7 +266,9 @@ class _LibrarySearchScreenState extends State<LibrarySearchScreen> {
             itemBuilder: (context, index) {
               return GestureDetector(
                 onTap: () {
-                  appCubit.changeScreen(LibraryAddBookScreen(book: books[index],));
+                  appCubit.changeScreen(LibraryAddBookScreen(
+                    book: books[index],
+                  ));
                 },
                 child: BookListItem(
                   key: UniqueKey(),
