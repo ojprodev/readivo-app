@@ -19,8 +19,12 @@ class SearchBooksUseCase {
   Future<LocalBook?> scanBook(FileSystemEntity file) async {
     return await localBookRepository.scanBook(file);
   }
-  
-  Future<void> addBook(Book book) async{
+
+  Future<void> addBook(Book book) async {
     return await localBookRepository.addBook(book);
+  }
+
+  Future<List<Book>?> getBooks({bool localOnly = false}) async {
+    return await localBookRepository.getAllBooks(localOnly: localOnly);
   }
 }

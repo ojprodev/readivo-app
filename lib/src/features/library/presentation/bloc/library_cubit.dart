@@ -102,4 +102,20 @@ class LibraryCubit extends Cubit<LibraryStates> {
     // finish scanning
     emit(LibrarySearchLoadedState(localBooks));
   }
+
+  Future<void> getLocalBooks() async {
+    // emit scan loading
+    emit(LibrarySearchLoadingState());
+
+    // search in the database
+    searchBooksUseCase
+        .getBooks(localOnly: true)
+        .whenComplete(() => null)
+        .then((books) {
+      if (books != null && books.isNotEmpty) {
+       // fill the local books
+        localBooks = books;
+      }
+    }).then((_)=> emit(LibrarySearchLoadedState(localBooks)));
+  }
 }

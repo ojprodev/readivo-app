@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:isar/isar.dart';
+import 'package:readivo_app/src/core/enums/enums.dart';
 import 'package:readivo_app/src/core/services/file_system_service.dart';
 import 'package:readivo_app/src/features/library/data/local/models/local_book.dart';
 import 'package:readivo_app/src/features/library/domain/entities/book.dart';
@@ -37,8 +38,12 @@ class LocalBookRepositoryImpl extends LocalBookRepository {
   }
 
   @override
-  Future<List<Book>> getAllBooks() async {
-    return await isar.books.where().findAll();
+  Future<List<Book>> getAllBooks({bool localOnly = false}) async {
+    if(localOnly){
+      return await isar.books.filter().sourceEqualTo(BookSourceEnums.local).findAll();
+    }else{
+      return await isar.books.where().findAll();
+    }
   }
 
   @override

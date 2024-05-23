@@ -14,5 +14,5 @@ abstract class LocalBookRepository {
 
   Future<void> deleteBook(int id);
 
-  Future<List<Book>> getAllBooks();
+  Future<List<Book>> getAllBooks({bool localOnly = false});
 }

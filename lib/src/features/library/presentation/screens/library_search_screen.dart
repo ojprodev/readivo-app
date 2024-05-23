@@ -144,14 +144,20 @@ class _LibrarySearchScreenState extends State<LibrarySearchScreen> {
     }
 
     if (state is LibraryBookSourceChangeState) {
+      setState(() {
+        showFilters = false;
+      });
+
       if (libraryCubit.bookSource == BookSourceEnums.online) {
         books = libraryCubit.remoteBooks;
       } else {
         books = libraryCubit.localBooks;
         // first time loaded
         if (initialLoad) {
+          // fetch local books from the database
+          libraryCubit.getLocalBooks();
 
-          // perform scanning
+          // check permission
           libraryCubit.handleStoragePermission(action: PermissionAction.check);
 
           // prevent reputation
