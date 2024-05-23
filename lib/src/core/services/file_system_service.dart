@@ -143,8 +143,9 @@ class FileSystemService {
         removeDashes: true,
       );
       FileStat fileStat = file.statSync();
+      String thumbnailName = predictedName.replaceAll(' ', '-');
       String fileName =
-          '${FileSystemService.localThumbnailsDirectory}$predictedName.png';
+          '${FileSystemService.localThumbnailsDirectory}$thumbnailName.png';
 
       // generate a thumbnail and save it locally
       String thumbnailPath = await saveFileLocallyAsByte(

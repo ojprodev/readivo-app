@@ -41,6 +41,7 @@ class _LibrarySearchScreenState extends State<LibrarySearchScreen> {
     super.initState();
     appCubit = AppCubit.get(context);
     libraryCubit = LibraryCubit.get(context);
+    initialLoad = true;
   }
 
   @override

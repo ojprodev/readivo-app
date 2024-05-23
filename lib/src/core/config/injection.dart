@@ -49,7 +49,6 @@ class DependencyInjection {
     getIt.registerLazySingleton<RemoteBookRepository>(
         () => RemoteBookRepositoryImpl(remoteBookDataSource: getIt()));
 
-    // Repositories
     getIt.registerLazySingleton<LocalBookRepository>(() =>
         LocalBookRepositoryImpl(fileSystemService: getIt(), isar: getIt()));
 
