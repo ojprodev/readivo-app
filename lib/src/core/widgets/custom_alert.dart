@@ -14,6 +14,7 @@ class CustomAlertDialog extends StatelessWidget {
   final Widget? leadingIcon;
   final bool closeButton;
   final EdgeInsets actionsPadding;
+  final bool? showTitle;
 
   const CustomAlertDialog({
     super.key,
@@ -33,6 +34,7 @@ class CustomAlertDialog extends StatelessWidget {
     this.titleTextAlign = TextAlign.center,
     this.leadingIcon,
     this.closeButton = false,
+    this.showTitle = true,
   });
 
   @override
@@ -56,13 +58,14 @@ class CustomAlertDialog extends StatelessWidget {
                     },
                     icon: const Icon(Icons.clear),
                   ),
-                Expanded(
-                  child: Text(
-                    title,
-                    textAlign: titleTextAlign,
-                    style: titleTextStyle,
+                if (showTitle == true)
+                  Expanded(
+                    child: Text(
+                      title,
+                      textAlign: titleTextAlign,
+                      style: titleTextStyle,
+                    ),
                   ),
-                ),
               ],
             ),
           ),

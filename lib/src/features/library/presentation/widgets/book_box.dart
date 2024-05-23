@@ -6,11 +6,8 @@ import 'package:readivo_app/src/core/constants/constants.dart';
 
 /// Widget representing a book box cover.
 class BookBox extends StatelessWidget {
-  /// URL of the cover image.
-  final String? coverUrl;
-
-  /// Local path of the cover image file.
-  final String? coverPath;
+  /// URI of the cover image.
+  final String coverUri;
 
   /// Rating of the book.
   final double? rating;
@@ -34,18 +31,16 @@ class BookBox extends StatelessWidget {
   final double borderRadius;
 
   /// Constructor for BookBoxCover.
-  const BookBox({
-    super.key,
-    this.coverUrl,
-    this.coverPath,
-    this.rating,
-    this.height = 200.0,
-    this.width = 150.0,
-    this.background = Colors.white,
-    this.icon,
-    this.borderRadius = 8.0,
-    this.iconSize = 40.0
-  });
+  const BookBox(
+      {super.key,
+      this.coverUri = '',
+      this.rating,
+      this.height = 200.0,
+      this.width = 150.0,
+      this.background = Colors.white,
+      this.icon,
+      this.borderRadius = 8.0,
+      this.iconSize = 40.0});
 
   @override
   Widget build(BuildContext context) {
@@ -61,10 +56,11 @@ class BookBox extends StatelessWidget {
   }
 
   Widget _buildImage() {
-    if (coverUrl != null && coverUrl!.isNotEmpty) {
+    Uri uri = Uri.parse(coverUri);
+    if (uri.isScheme('http') || uri.isScheme('https')) {
       return _buildNetworkImage();
-    } else if (coverPath != null && File(coverPath!).existsSync()) {
-      return _buildLocalImage();
+    } else if (uri.isScheme('file') && File(uri.path).existsSync()) {
+      return _buildLocalImage(uri.path);
     } else {
       return _buildPlaceholderImage();
     }
@@ -72,7 +68,7 @@ class BookBox extends StatelessWidget {
 
   Widget _buildNetworkImage() {
     return Image.network(
-      coverUrl!,
+      coverUri,
       fit: BoxFit.fill,
       height: height,
       width: width,
@@ -89,9 +85,9 @@ class BookBox extends StatelessWidget {
     );
   }
 
-  Widget _buildLocalImage() {
+  Widget _buildLocalImage(String path) {
     return Image.file(
-      File(coverPath!),
+      File(path),
       fit: BoxFit.fill,
       height: height,
       width: width,
@@ -108,11 +104,13 @@ class BookBox extends StatelessWidget {
       width: width,
       color: background,
       child: Center(
-        child: icon ?? SvgPicture.asset(
-          AppIcons.photo,
-          width: iconSize,
-          colorFilter: const ColorFilter.mode(AppColors.grey, BlendMode.srcIn),
-        ),
+        child: icon ??
+            SvgPicture.asset(
+              AppIcons.photo,
+              width: iconSize,
+              colorFilter:
+                  const ColorFilter.mode(AppColors.grey, BlendMode.srcIn),
+            ),
       ),
     );
   }

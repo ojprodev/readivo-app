@@ -2,12 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:readivo_app/src/core/constants/constants.dart';
 import 'package:readivo_app/src/core/widgets/custom_text.dart';
-import 'package:readivo_app/src/features/library/domain/entities/book_entity.dart';
+import 'package:readivo_app/src/features/library/domain/entities/book.dart';
 
 import 'book_box.dart';
 
 class BookGridItem extends StatelessWidget {
-  final BookEntity book;
+  final Book book;
   final double? titleFontSize;
   final double? authorFontSize;
   final double? coverWidth;
@@ -63,7 +63,7 @@ class BookGridItem extends StatelessWidget {
           width: coverWidth,
           height: coverHeight,
           background: AppColors.lightGrey,
-          coverUrl: book.coverURI,
+          coverUri: book.coverURI ?? '',
         ),
         if (showInfo)
           Container(

@@ -2,11 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:readivo_app/src/core/constants/colors.dart';
 import 'package:readivo_app/src/core/constants/constants.dart';
 import 'package:readivo_app/src/core/widgets/custom_text.dart';
-import 'package:readivo_app/src/features/library/domain/entities/book_entity.dart';
+import 'package:readivo_app/src/features/library/domain/entities/book.dart';
 import 'package:readivo_app/src/features/library/presentation/widgets/book_box.dart';
 
 class BookListItem extends StatelessWidget {
-  final BookEntity book;
+  final Book book;
 
   const BookListItem({
     super.key,
@@ -42,7 +42,7 @@ class BookListItem extends StatelessWidget {
               borderRadius: const BorderRadius.all(Radius.circular(4.0)),
             ),
             child: BookBox(
-              coverUrl: book.coverURI,
+              coverUri: book.coverURI ?? '',
             ),
           ),
           const SizedBox(width: 16.0),
