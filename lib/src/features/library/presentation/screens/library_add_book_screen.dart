@@ -15,12 +15,13 @@ import 'package:readivo_app/src/core/widgets/custom_chip.dart';
 import 'package:readivo_app/src/core/widgets/custom_input_field.dart';
 import 'package:readivo_app/src/core/widgets/custom_list_item.dart';
 import 'package:readivo_app/src/core/widgets/partials/bottom_sheet_item.dart';
-import 'package:readivo_app/src/features/library/domain/entities/book_entity.dart';
+import 'package:readivo_app/src/features/library/domain/entities/book.dart';
 import 'package:readivo_app/src/features/library/presentation/widgets/book_box.dart';
 import 'package:readivo_app/src/features/library/presentation/widgets/book_cover.dart';
 
 class LibraryAddBookScreen extends StatefulWidget {
-  final BookEntity? book;
+  final Book? book;
+
   const LibraryAddBookScreen({super.key, this.book});
 
   @override
@@ -83,8 +84,6 @@ class _LibraryAddBookScreenState extends State<LibraryAddBookScreen> {
     'Spirituality',
   ];
   double bottomSheetFullHeight = 0.0;
-
-
 
   // controllers
   final TextEditingController titleController = TextEditingController();
@@ -218,7 +217,7 @@ class _LibraryAddBookScreenState extends State<LibraryAddBookScreen> {
         width: 180,
         height: 260,
         child: BookBox(
-          coverUrl: widget.book?.coverURI,
+          coverUri: widget.book?.coverURI ?? '',
           iconSize: 64,
         ),
       ),
@@ -255,7 +254,7 @@ class _LibraryAddBookScreenState extends State<LibraryAddBookScreen> {
               child: SvgPicture.asset(
                 AppIcons.chevronUpDown,
                 colorFilter:
-                const ColorFilter.mode(Colors.white, BlendMode.srcIn),
+                    const ColorFilter.mode(Colors.white, BlendMode.srcIn),
               ),
             )
           ],
@@ -282,8 +281,9 @@ class _LibraryAddBookScreenState extends State<LibraryAddBookScreen> {
   List<BottomSheetItem> _buildBottomSheetItems(List<String> statuses) {
     return statuses.map((status) {
       return BottomSheetItem(
-        borderColor:
-        status == selectedStatus ? AppColors.grey : AppColors.lightGrey.withOpacity(0.4),
+        borderColor: status == selectedStatus
+            ? AppColors.grey
+            : AppColors.lightGrey.withOpacity(0.4),
         icon: _getStatusIcon(status),
         label: status,
         appendIcon: _getAppendIcon(status),
@@ -466,7 +466,8 @@ class _LibraryAddBookScreenState extends State<LibraryAddBookScreen> {
       ],
     );
   }
-  Widget _buildNewTagBottomSheetButton(){
+
+  Widget _buildNewTagBottomSheetButton() {
     return CustomButton(
       text: 'new tag',
       width: 48,
@@ -481,7 +482,7 @@ class _LibraryAddBookScreenState extends State<LibraryAddBookScreen> {
             content: const CustomInputField(
               placeholder: 'Tag name',
               contentPadding:
-              EdgeInsets.symmetric(horizontal: 6.0, vertical: 14.0),
+                  EdgeInsets.symmetric(horizontal: 6.0, vertical: 14.0),
             ),
             actions: [
               Expanded(
@@ -1057,7 +1058,7 @@ class _LibraryAddBookScreenState extends State<LibraryAddBookScreen> {
             child: ConditionalBuilder(
               condition: date != null,
               builder: (context) => Text(
-                formatDate(date!),
+                Utils.formatDate(date!),
                 textAlign: TextAlign.center,
                 style: const TextStyle(color: AppColors.grey, fontSize: 20),
               ),
@@ -1084,7 +1085,9 @@ class _LibraryAddBookScreenState extends State<LibraryAddBookScreen> {
   Widget _getAppendIcon(String status) {
     return Icon(
       selectedStatus == status ? Icons.check_circle : Icons.circle_outlined,
-      color: selectedStatus == status ? AppColors.grey : AppColors.lightGrey.withOpacity(0.4),
+      color: selectedStatus == status
+          ? AppColors.grey
+          : AppColors.lightGrey.withOpacity(0.4),
     );
   }
 

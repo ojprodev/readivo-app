@@ -7,10 +7,12 @@ import 'package:readivo_app/src/core/bloc/app_cubit.dart';
 import 'package:readivo_app/src/core/constants/constants.dart';
 import 'package:readivo_app/src/core/enums/enums.dart';
 import 'package:readivo_app/src/core/layouts/basic_layout.dart';
+import 'package:readivo_app/src/core/services/permission_service.dart';
+import 'package:readivo_app/src/core/widgets/custom_alert.dart';
 import 'package:readivo_app/src/core/widgets/custom_button.dart';
 import 'package:readivo_app/src/core/widgets/custom_input_field.dart';
 import 'package:readivo_app/src/core/widgets/custom_text.dart';
-import 'package:readivo_app/src/features/library/domain/entities/book_entity.dart';
+import 'package:readivo_app/src/features/library/domain/entities/book.dart';
 import 'package:readivo_app/src/features/library/presentation/bloc/library_cubit.dart';
 import 'package:readivo_app/src/features/library/presentation/screens/library_add_book_screen.dart';
 import 'package:readivo_app/src/features/library/presentation/widgets/book_grid_item.dart';
@@ -28,7 +30,8 @@ class _LibrarySearchScreenState extends State<LibrarySearchScreen> {
   late LibraryCubit libraryCubit;
   SearchDisplayOption searchDisplayOption = SearchDisplayOption.list;
   bool showFilters = false;
-  SearchSourceEnums searchSource = SearchSourceEnums.online;
+  bool initialLoad = true;
+  List<Book> books = [];
 
   // controllers
   TextEditingController searchBooksController = TextEditingController();
@@ -38,6 +41,12 @@ class _LibrarySearchScreenState extends State<LibrarySearchScreen> {
     super.initState();
     appCubit = AppCubit.get(context);
     libraryCubit = LibraryCubit.get(context);
+  }
+
+  @override
+  void dispose() {
+    print('dispose');
+    super.dispose();
   }
 
   @override
@@ -101,7 +110,8 @@ class _LibrarySearchScreenState extends State<LibrarySearchScreen> {
           displacement: 0,
           color: AppColors.grey,
           onRefresh: () async {
-            await Future.delayed(const Duration(seconds: 2));
+             // perform scanning
+            await libraryCubit.performLocalBooksScanning();
           },
           child: SingleChildScrollView(
             child: Column(
@@ -119,23 +129,57 @@ class _LibrarySearchScreenState extends State<LibrarySearchScreen> {
     );
   }
 
-  void _buildChangeListener(BuildContext context, state) {}
+  void _buildChangeListener(BuildContext context, state) {
+    if (state is LibraryStoragePermissionGrantedState) {
+      libraryCubit.performLocalBooksScanning();
+    }
+    if (state is LibraryStoragePermissionDeniedState) {
+      _showStoragePermissionDialog();
+    }
+    if (state is LibraryNewBookDetectedState) {
+      if(!books.any((book) => book.id == state.book.id)){
+        books.add(state.book);
+      }
+    }
+
+    if (state is LibraryBookSourceChangeState) {
+      if (libraryCubit.bookSource == BookSourceEnums.online) {
+        books = libraryCubit.remoteBooks;
+      } else {
+        books = libraryCubit.localBooks;
+        // first time loaded
+        if (initialLoad) {
+
+          // perform scanning
+          libraryCubit.handleStoragePermission(action: PermissionAction.check);
+
+          // prevent reputation
+          setState(() {
+            initialLoad = false;
+          });
+        }
+      }
+    }
+  }
 
   Widget _buildLibrarySearchContainer(BuildContext context, state) {
-    if (state is LibrarySearchLoadingState) {
-      return const Text('handle loading screen state');
-    }
     if (state is LibrarySearchLoadedState) {
-      return Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          _buildHeadSection(booksCount: state.books.length),
-          _buildSearchList(books: state.books),
-        ],
-      );
-    } else {
-      return const Text('handle empty screen before search');
+      books = state.books;
     }
+
+    return ConditionalBuilder(
+      condition: books.isNotEmpty,
+      builder: (context) {
+        return Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            _buildHeadSection(booksCount: books.length),
+            _buildSearchList(books: books),
+          ],
+        );
+      },
+      fallback: (context) => const Text('Empty library'),
+    );
   }
 
   Widget _buildFiltersSection() {
@@ -154,14 +198,16 @@ class _LibrarySearchScreenState extends State<LibrarySearchScreen> {
                 children: [
                   Expanded(
                     child: CustomButton(
-                      styleType: searchSource == SearchSourceEnums.online
-                          ? ButtonStyleType.filled
-                          : ButtonStyleType.outline,
+                      styleType:
+                          libraryCubit.bookSource == BookSourceEnums.online
+                              ? ButtonStyleType.filled
+                              : ButtonStyleType.outline,
                       color: AppColors.grey,
                       text: 'Online',
                       onPressed: () {
                         setState(() {
-                          searchSource = SearchSourceEnums.online;
+                          libraryCubit
+                              .changeBookSearchSource(BookSourceEnums.online);
                         });
                       },
                     ),
@@ -169,14 +215,16 @@ class _LibrarySearchScreenState extends State<LibrarySearchScreen> {
                   const SizedBox(width: 8.0),
                   Expanded(
                     child: CustomButton(
-                      styleType: searchSource == SearchSourceEnums.local
-                          ? ButtonStyleType.filled
-                          : ButtonStyleType.outline,
+                      styleType:
+                          libraryCubit.bookSource == BookSourceEnums.local
+                              ? ButtonStyleType.filled
+                              : ButtonStyleType.outline,
                       color: AppColors.grey,
                       text: 'Local',
                       onPressed: () {
                         setState(() {
-                          searchSource = SearchSourceEnums.local;
+                          libraryCubit
+                              .changeBookSearchSource(BookSourceEnums.local);
                         });
                       },
                     ),
@@ -225,7 +273,7 @@ class _LibrarySearchScreenState extends State<LibrarySearchScreen> {
     );
   }
 
-  Widget _buildSearchList({required List<BookEntity> books}) {
+  Widget _buildSearchList({required List<Book> books}) {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 6.0, vertical: 4.0),
       child: ConditionalBuilder(
@@ -278,6 +326,51 @@ class _LibrarySearchScreenState extends State<LibrarySearchScreen> {
             },
           );
         },
+      ),
+    );
+  }
+
+  void _showStoragePermissionDialog() {
+    showDialog(
+      context: context,
+      builder: (context) => CustomAlertDialog(
+        showTitle: false,
+        title: 'Storage Permission Needed',
+        contentPadding: EdgeInsets.zero,
+        content: const Column(
+          children: [
+            Text('Storage Permission'),
+            Text(
+                'We need you to grant storage permission in order to perform a scan for books available in your device'),
+          ],
+        ),
+        actions: [
+          Expanded(
+            child: CustomButton(
+              text: 'Cancel',
+              styleType: ButtonStyleType.ghost,
+              onPressed: () {
+                Navigator.pop(context);
+              },
+            ),
+          ),
+          const SizedBox(
+            width: 6.0,
+          ),
+          Expanded(
+            child: CustomButton(
+              text: 'Grant Permission',
+              onPressed: () {
+                // redirect to the storage permission setting
+                libraryCubit.handleStoragePermission(
+                    action: PermissionAction.request);
+
+                // close the alert
+                Navigator.pop(context);
+              },
+            ),
+          ),
+        ],
       ),
     );
   }

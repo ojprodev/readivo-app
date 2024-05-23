@@ -10,8 +10,12 @@ class LibraryInitState extends LibraryStates {}
 
 class LibrarySearchLoadingState extends LibraryStates {}
 
+class LibraryStoragePermissionGrantedState extends LibraryStates {}
+
+class LibraryStoragePermissionDeniedState extends LibraryStates {}
+
 class LibrarySearchLoadedState extends LibraryStates {
-  final List<BookEntity> books;
+  final List<Book> books;
 
   LibrarySearchLoadedState(this.books);
 
@@ -26,4 +30,22 @@ class LibrarySearchErrorState extends LibraryStates {
 
   @override
   List<Object> get props => [message];
+}
+
+class LibraryBookSourceChangeState extends LibraryStates{
+  final BookSourceEnums source;
+
+  LibraryBookSourceChangeState(this.source);
+
+  @override
+  List<Object> get props => [source];
+}
+
+class LibraryNewBookDetectedState extends LibraryStates{
+  final Book book;
+
+  LibraryNewBookDetectedState(this.book);
+
+  @override
+  List<Object> get props => [book];
 }

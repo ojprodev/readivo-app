@@ -1,5 +1,5 @@
-import 'package:readivo_app/src/features/library/domain/entities/book_entity.dart';
+import 'package:readivo_app/src/features/library/domain/entities/book.dart';
 
 abstract class RemoteBookRepository{
-  Future<List<BookEntity>> searchBooks(String query);
+  Future<List<Book>> searchBooks(String query);
 }
