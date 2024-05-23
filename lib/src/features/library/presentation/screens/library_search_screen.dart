@@ -85,6 +85,9 @@ class _LibrarySearchScreenState extends State<LibrarySearchScreen> {
         onEndIconPress: () {
           if (searchBooksController.text.isNotEmpty) {
             setState(() {
+              if (libraryCubit.bookSource == BookSourceEnums.local) {
+                libraryCubit.search('');
+              }
               searchBooksController.clear();
             });
           }
@@ -111,7 +114,7 @@ class _LibrarySearchScreenState extends State<LibrarySearchScreen> {
           displacement: 0,
           color: AppColors.grey,
           onRefresh: () async {
-             // perform scanning
+            // perform scanning
             await libraryCubit.performLocalBooksScanning();
           },
           child: SingleChildScrollView(
@@ -138,7 +141,7 @@ class _LibrarySearchScreenState extends State<LibrarySearchScreen> {
       _showStoragePermissionDialog();
     }
     if (state is LibraryNewBookDetectedState) {
-      if(!books.any((book) => book.id == state.book.id)){
+      if (!books.any((book) => book.id == state.book.id)) {
         books.add(state.book);
       }
     }

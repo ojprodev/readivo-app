@@ -40,7 +40,14 @@ class LibraryCubit extends Cubit<LibraryStates> {
 
       emit(LibrarySearchLoadedState(remoteBooks));
     } else {
-      emit(LibrarySearchLoadedState(localBooks));
+      // search on the localBooks list
+      List<Book> localResult = localBooks
+          .where((book) =>
+              book.title.toLowerCase().contains(query.toLowerCase()) ||
+              (book.author != null && book.author!.contains(query.toLowerCase())))
+          .toList();
+
+      emit(LibrarySearchLoadedState(localResult));
     }
   }
 
@@ -53,7 +60,6 @@ class LibraryCubit extends Cubit<LibraryStates> {
 
   Future<bool> handleStoragePermission(
       {required PermissionAction action}) async {
-
     bool permissionGranted;
     // perform based on the selected action
     if (action == PermissionAction.request) {
@@ -113,9 +119,9 @@ class LibraryCubit extends Cubit<LibraryStates> {
         .whenComplete(() => null)
         .then((books) {
       if (books != null && books.isNotEmpty) {
-       // fill the local books
+        // fill the local books
         localBooks = books;
       }
-    }).then((_)=> emit(LibrarySearchLoadedState(localBooks)));
+    }).then((_) => emit(LibrarySearchLoadedState(localBooks)));
   }
 }
