@@ -109,25 +109,41 @@ class _LibrarySearchScreenState extends State<LibrarySearchScreen> {
       ],
       body: Container(
         color: Colors.white,
-        child: RefreshIndicator(
-          strokeWidth: 3,
-          displacement: 0,
-          color: AppColors.grey,
-          onRefresh: () async {
-            // perform scanning
-            await libraryCubit.performLocalBooksScanning();
+        child: BlocBuilder<LibraryCubit, LibraryStates>(
+          builder: (context, state) {
+            bool showRefresh = libraryCubit.bookSource == BookSourceEnums.local;
+
+            Widget content = SingleChildScrollView(
+              child: Column(
+                children: [
+                  if (showFilters) _buildFiltersSection(),
+                  BlocConsumer<LibraryCubit, LibraryStates>(
+                    listener: _buildChangeListener,
+                    builder: _buildLibrarySearchContainer,
+                  ),
+                ],
+              ),
+            );
+
+            return ConditionalBuilder(
+                condition: showRefresh,
+                builder: (context) {
+                  return RefreshIndicator(
+                    strokeWidth: 3,
+                    displacement: 0,
+                    color: AppColors.grey,
+                    backgroundColor: Colors.white,
+                    onRefresh: () async {
+                      if (libraryCubit.bookSource == BookSourceEnums.local) {
+                        // perform scanning
+                        await libraryCubit.performLocalBooksScanning();
+                      }
+                    },
+                    child: content,
+                  );
+                },
+                fallback: (context) => content);
           },
-          child: SingleChildScrollView(
-            child: Column(
-              children: [
-                if (showFilters) _buildFiltersSection(),
-                BlocConsumer<LibraryCubit, LibraryStates>(
-                  listener: _buildChangeListener,
-                  builder: _buildLibrarySearchContainer,
-                ),
-              ],
-            ),
-          ),
         ),
       ),
     );
