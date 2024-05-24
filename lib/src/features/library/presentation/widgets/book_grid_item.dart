@@ -35,7 +35,7 @@ class BookGridItem extends StatelessWidget {
           _buildBookBoxWithRating(),
           if (showInfo)
             CustomText(
-              text: book.title,
+              book.title,
               maxLines: 2,
               softWrap: true,
               overflow: TextOverflow.ellipsis,
@@ -44,7 +44,7 @@ class BookGridItem extends StatelessWidget {
             ),
           if (showInfo)
             CustomText(
-              text: '${book.author}',
+              '${book.author}',
               maxLines: 1,
               overflow: TextOverflow.ellipsis,
               color: AppColors.grey,

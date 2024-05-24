@@ -8,6 +8,12 @@ class Utils {
     return formatter.format(date);
   }
 
+  static DateTime todayDate() {
+    DateTime now = DateTime.now();
+
+    return DateTime(now.year, now.month, now.day);
+  }
+
   static double parseRatingsAverage(String rating) {
     return double.tryParse(
             double.tryParse(rating)?.toStringAsFixed(2) ?? '0.0') ??
@@ -75,7 +81,7 @@ class Utils {
       }
     }
 
-  // Replace dashes with spaces if the option is enabled
+    // Replace dashes with spaces if the option is enabled
     if (removeDashes == true) {
       fileName = fileName.replaceAll('-', ' ');
     }

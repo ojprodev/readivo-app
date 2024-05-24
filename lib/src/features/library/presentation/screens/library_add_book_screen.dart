@@ -14,6 +14,7 @@ import 'package:readivo_app/src/core/widgets/custom_button.dart';
 import 'package:readivo_app/src/core/widgets/custom_chip.dart';
 import 'package:readivo_app/src/core/widgets/custom_input_field.dart';
 import 'package:readivo_app/src/core/widgets/custom_list_item.dart';
+import 'package:readivo_app/src/core/widgets/custom_text.dart';
 import 'package:readivo_app/src/core/widgets/partials/bottom_sheet_item.dart';
 import 'package:readivo_app/src/features/library/domain/entities/book.dart';
 import 'package:readivo_app/src/features/library/presentation/widgets/book_box.dart';
@@ -40,50 +41,10 @@ class _LibraryAddBookScreenState extends State<LibraryAddBookScreen> {
   List<Map<String, dynamic>> tempSelectedBooksShelves = [];
   List<Map<String, dynamic>> booksShelvesSearchResult = [];
   List<String> tagsSearchResult = [];
-  final List<Map<String, dynamic>> booksShelves = [
-    {'text': 'Chip 1', 'icon': Icons.star, 'color': Colors.blue},
-    {'text': 'Short', 'icon': Icons.ac_unit, 'color': Colors.purple},
-    {'text': 'Another', 'icon': Icons.favorite, 'color': Colors.red},
-    {'text': 'More', 'icon': Icons.thumb_up, 'color': Colors.green},
-    {
-      'text': 'This is a very long chip',
-      'icon': Icons.alarm,
-      'color': Colors.orange
-    }
-  ];
-  final List<String> tagsList = [
-    'Fiction',
-    'Non-fiction',
-    'Mystery',
-    'Thriller',
-    'Romance',
-    'Science Fiction',
-    'Fantasy',
-    'Historical Fiction',
-    'Biography',
-    'Autobiography',
-    'Memoir',
-    'Self-Help',
-    'Psychology',
-    'Philosophy',
-    'Business',
-    'Leadership',
-    'Entrepreneurship',
-    'Finance',
-    'Economics',
-    'History',
-    'Travel',
-    'Cooking',
-    'Health',
-    'Fitness',
-    'Parenting',
-    'Education',
-    'Poetry',
-    'Art',
-    'Religion',
-    'Spirituality',
-  ];
-  double bottomSheetFullHeight = 0.0;
+  final List<Map<String, dynamic>> booksShelves = [];
+  final List<String> tagsList = [];
+  bool invalidStartDate = false;
+  bool invalidFinishDate = false;
 
   // controllers
   final TextEditingController titleController = TextEditingController();
@@ -122,9 +83,6 @@ class _LibraryAddBookScreenState extends State<LibraryAddBookScreen> {
 
   @override
   Widget build(BuildContext context) {
-    bottomSheetFullHeight = MediaQuery.sizeOf(context).height -
-        MediaQuery.paddingOf(context).top -
-        4;
     return BasicLayout(
       extendBody: true,
       appBarBackground:
@@ -151,10 +109,14 @@ class _LibraryAddBookScreenState extends State<LibraryAddBookScreen> {
           child: CustomButton(
             text: 'add book',
             color: _scrollPosition >= 1 ? Colors.black : Colors.white,
-            onPressed: () {
-              // Add book logic here
-            },
             width: 80,
+            onPressed: () {
+              // 1. check if all the data is valid
+
+              // 2. save all added info the provided book object
+
+              // 3. call the cubit update book method
+            },
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: [
@@ -297,6 +259,7 @@ class _LibraryAddBookScreenState extends State<LibraryAddBookScreen> {
     }).toList();
   }
 
+  // TODO: use a global way
   Widget _getStatusIcon(String status) {
     switch (status) {
       case 'Want to read':
@@ -510,7 +473,9 @@ class _LibraryAddBookScreenState extends State<LibraryAddBookScreen> {
   void _showAddTagsBottomSheet(BuildContext context) {
     CustomBottomSheet.show(
       context: context,
-      height: bottomSheetFullHeight,
+      height: MediaQuery.sizeOf(context).height -
+          MediaQuery.paddingOf(context).top -
+          4,
       showDragHandle: false,
       child: StatefulBuilder(
         builder: (context, updateState) => Column(
@@ -645,7 +610,9 @@ class _LibraryAddBookScreenState extends State<LibraryAddBookScreen> {
   void _showAddBooksShelvesBottomSheet(BuildContext context) {
     CustomBottomSheet.show(
       context: context,
-      height: bottomSheetFullHeight,
+      height: MediaQuery.sizeOf(context).height -
+          MediaQuery.paddingOf(context).top -
+          4,
       showDragHandle: false,
       child: StatefulBuilder(
         builder: (context, updateState) {
@@ -989,38 +956,80 @@ class _LibraryAddBookScreenState extends State<LibraryAddBookScreen> {
           decoration: BoxDecoration(
             color: AppColors.lightGrey.withOpacity(0.4),
             borderRadius: BorderRadius.circular(8.0),
-            border: Border.all(color: AppColors.lightGrey, width: 2),
+            border: Border.all(
+              color: invalidStartDate || invalidFinishDate
+                  ? AppColors.lightRed.withOpacity(0.4)
+                  : AppColors.lightGrey,
+              width: 2,
+            ),
           ),
-          child: Row(
+          child: Column(
             children: [
-              _buildDateColumn(
-                'Started',
-                startDate,
-                'Start Date',
-                () => _pickDate(context, startDate, (date) {
-                  setState(() {
-                    startDate = date;
-                  });
-                }),
+              Row(
+                children: [
+                  _buildDateColumn(
+                    title: 'Started',
+                    date: startDate,
+                    buttonText: 'Start Date',
+                    onPressed: () => _pickDate(context, startDate, (date) {
+                      setState(() {
+                        if (finishDate != null && date.isAfter(finishDate!)) {
+                          invalidStartDate = true;
+                        } else {
+                          invalidFinishDate = false;
+                          invalidStartDate = false;
+                        }
+
+                        startDate = date;
+                      });
+                    }),
+                  ),
+                  Container(
+                    width: 2,
+                    height: 64,
+                    color: selectedStatus != 'Reading'
+                        ? AppColors.lightGrey
+                        : Colors.transparent,
+                  ),
+                  if (selectedStatus != 'Want to read' &&
+                      selectedStatus != 'Reading')
+                    _buildDateColumn(
+                      title: 'Finished',
+                      date: finishDate,
+                      buttonText: 'Finish Date',
+                      onPressed: () => _pickDate(
+                        context,
+                        finishDate,
+                        (date) {
+                          setState(() {
+                            if (startDate != null &&
+                                date.isBefore(startDate!)) {
+                              invalidFinishDate = true;
+                            } else {
+                              invalidFinishDate = false;
+                              invalidStartDate = false;
+                            }
+
+                            finishDate = date;
+                          });
+                        },
+                      ),
+                    ),
+                ],
               ),
-              Container(
-                width: 2,
-                height: 64,
-                color: selectedStatus != 'Reading'
-                    ? AppColors.lightGrey
-                    : Colors.transparent,
-              ),
-              if (selectedStatus != 'Want to read' &&
-                  selectedStatus != 'Reading')
-                _buildDateColumn(
-                  'Finished',
-                  finishDate,
-                  'Finish Date',
-                  () => _pickDate(context, finishDate, (date) {
-                    setState(() {
-                      finishDate = date;
-                    });
-                  }),
+              if (invalidStartDate || invalidFinishDate)
+                const SizedBox(height: 8.0),
+              if (invalidStartDate)
+                const CustomText(
+                  'Start date should be older than finish date.',
+                  color: AppColors.lightRed,
+                  fontSize: 14,
+                ),
+              if (invalidFinishDate)
+                const CustomText(
+                  'Finish date should be more recent than start date.',
+                  color: AppColors.lightRed,
+                  fontSize: 14,
                 ),
             ],
           ),
@@ -1037,13 +1046,16 @@ class _LibraryAddBookScreenState extends State<LibraryAddBookScreen> {
       showTitleActions: true,
       minTime: DateTime(DateTime.now().year - 100),
       maxTime: DateTime.now(),
+      currentTime: currentDate,
       onConfirm: onConfirm,
-      currentTime: DateTime.now(),
     );
   }
 
   Widget _buildDateColumn(
-      String title, DateTime? date, String buttonText, Function() onPressed) {
+      {required String title,
+      DateTime? date,
+      required String buttonText,
+      required Function() onPressed}) {
     return Expanded(
       child: Column(
         mainAxisAlignment: MainAxisAlignment.spaceEvenly,

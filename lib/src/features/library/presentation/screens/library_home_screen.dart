@@ -167,12 +167,12 @@ class _LibraryHomeScreenState extends State<LibraryHomeScreen> {
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
           CustomText(
-            text: 'Continue Reading',
+            'Continue Reading',
             fontSize: 20,
             fontWeight: FontWeight.w400,
           ),
           CustomText(
-            text: 'See all',
+            'See all',
             fontSize: 16,
             color: AppColors.lightBlue,
           ),
@@ -243,12 +243,12 @@ class _LibraryHomeScreenState extends State<LibraryHomeScreen> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       CustomText(
-                        text: 'The Alchemist',
+                        'The Alchemist',
                         fontWeight: FontWeight.w500,
                         fontSize: 20,
                       ),
                       CustomText(
-                        text: 'By Paulo Coelho',
+                        'By Paulo Coelho',
                         color: AppColors.grey,
                       ),
                     ],
@@ -264,7 +264,7 @@ class _LibraryHomeScreenState extends State<LibraryHomeScreen> {
                             size: 16,
                           ),
                           SizedBox(width: 4.0),
-                          CustomText(text: '2 weeks'),
+                          CustomText('2 weeks'),
                         ],
                       ),
                       Expanded(
@@ -272,8 +272,8 @@ class _LibraryHomeScreenState extends State<LibraryHomeScreen> {
                           mainAxisSize: MainAxisSize.max,
                           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                           children: [
-                            CustomText(text: '5 Quotes', color: AppColors.grey),
-                            CustomText(text: '3 Notes', color: AppColors.grey),
+                            CustomText('5 Quotes', color: AppColors.grey),
+                            CustomText('3 Notes', color: AppColors.grey),
                           ],
                         ),
                       )
@@ -293,7 +293,7 @@ class _LibraryHomeScreenState extends State<LibraryHomeScreen> {
                         ),
                       ),
                       const SizedBox(width: 8.0),
-                      const CustomText(text: '35%', fontSize: 14),
+                      const CustomText('35%', fontSize: 14),
                     ],
                   ),
                   const CustomButton(
@@ -305,7 +305,7 @@ class _LibraryHomeScreenState extends State<LibraryHomeScreen> {
                       children: [
                         Expanded(
                             child: CustomText(
-                          text: 'Start a Session',
+                          'Start a Session',
                           textAlign: TextAlign.center,
                         )),
                         CustomButton(
@@ -353,15 +353,9 @@ class _LibraryHomeScreenState extends State<LibraryHomeScreen> {
           const Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              CustomText(
-                text: 'Suggestions',
-                fontSize: 20,
-                fontWeight: FontWeight.w500,
-              ),
-              CustomText(
-                text: 'Browse all',
-                color: AppColors.lightBlue,
-              ),
+              CustomText('Suggestions',
+                  fontSize: 20, fontWeight: FontWeight.w500),
+              CustomText('Browse all', color: AppColors.lightBlue),
             ],
           ),
           const SizedBox(height: 6.0),
@@ -474,11 +468,13 @@ class _LibraryHomeScreenState extends State<LibraryHomeScreen> {
           );
         },
         separatorBuilder: (context, index) {
-          return index != readingStatus.length -1 ? Container(
-            color: AppColors.lightGrey.withOpacity(0.6),
-            margin: const EdgeInsets.symmetric(horizontal: 24.0),
-            height: 1,
-          ) : const SizedBox();
+          return index != readingStatus.length - 1
+              ? Container(
+                  color: AppColors.lightGrey.withOpacity(0.6),
+                  margin: const EdgeInsets.symmetric(horizontal: 24.0),
+                  height: 1,
+                )
+              : const SizedBox();
         },
         itemCount: readingStatus.length,
       ),

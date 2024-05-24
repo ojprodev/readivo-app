@@ -56,14 +56,14 @@ class BookListItem extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     CustomText(
-                      text: book.title,
+                      book.title,
                       fontWeight: FontWeight.bold,
                       fontSize: 18.0,
                       maxLines: 2,
                       overflow: TextOverflow.ellipsis,
                     ),
                     CustomText(
-                      text: '${book.author}',
+                      '${book.author}',
                       fontSize: 16.0,
                       color: AppColors.grey,
                       maxLines: 1,

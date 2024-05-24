@@ -272,7 +272,7 @@ class _LibrarySearchScreenState extends State<LibrarySearchScreen> {
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
           CustomText(
-            text: 'Found $booksCount Books',
+            'Found $booksCount Books',
             fontWeight: FontWeight.w500,
             fontSize: 16,
             color: AppColors.grey,
