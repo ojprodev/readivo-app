@@ -45,6 +45,7 @@ class _LibraryAddBookScreenState extends State<LibraryAddBookScreen> {
   final List<String> tagsList = [];
   bool invalidStartDate = false;
   bool invalidFinishDate = false;
+  bool invalidPagesCount = false;
 
   // controllers
   final TextEditingController titleController = TextEditingController();
@@ -1132,7 +1133,7 @@ class _LibraryAddBookScreenState extends State<LibraryAddBookScreen> {
         "defaultValue": '12233445566',
       },
       {
-        "label": "Publish date",
+        "label": "Publish Year",
         "value": widget.book?.publishDate,
         "type": 'date',
         "controller": publishedAtController,
@@ -1164,6 +1165,19 @@ class _LibraryAddBookScreenState extends State<LibraryAddBookScreen> {
               controller: controller,
               label: field['label'].toString(),
               placeholder: 'Enter text',
+              validator: (value) {
+                if (field['label'] == 'Total Pages') {
+                  if(value!.isEmpty || int.parse(value) <= 0){
+                    return 'Invalid total pages';
+                  }
+                }else if(field['label'] == 'ISBN'){
+                  if(value!.isEmpty || !Utils.validISBN(value)){
+                    return 'Invalid ISBN';
+                  }
+                }
+                return null;
+              },
+              dismissibleKeyboard: true,
               keyboardType: field['type'].toString(),
               minLines: field['type'].toString() == 'textarea' ? 3 : null,
               maxLines: field['type'].toString() == 'textarea' ? 30 : null,

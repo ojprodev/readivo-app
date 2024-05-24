@@ -8,6 +8,9 @@ class Utils {
     return formatter.format(date);
   }
 
+  static bool validISBN(String isbn){
+    return (isbn.length == 10 || isbn.length == 13);
+  }
   static DateTime todayDate() {
     DateTime now = DateTime.now();
 

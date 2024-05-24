@@ -2,7 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:readivo_app/src/core/constants/colors.dart';
 import 'package:readivo_app/src/core/constants/constants.dart';
 
-class CustomInputField extends StatelessWidget {
+import 'custom_text.dart';
+
+class CustomInputField extends StatefulWidget {
   final String? label;
   final TextEditingController? controller;
   final IconData? startIcon;
@@ -31,9 +33,10 @@ class CustomInputField extends StatelessWidget {
   final Widget? prefix;
   final Widget? suffix;
   final TextStyle? labelTextStyle;
+  final String? Function(String?)? validator;
 
   const CustomInputField({
-    super.key,
+    Key? key,
     this.label,
     this.controller,
     this.startIcon,
@@ -54,7 +57,7 @@ class CustomInputField extends StatelessWidget {
     this.textStyle,
     this.contentPadding =
         const EdgeInsets.symmetric(vertical: 12.0, horizontal: 10.0),
-    this.labelTextStyle =const  TextStyle(
+    this.labelTextStyle = const TextStyle(
       color: Colors.black54,
       fontSize: 16,
       fontWeight: FontWeight.bold,
@@ -67,82 +70,119 @@ class CustomInputField extends StatelessWidget {
     this.minLines = 1,
     this.prefix,
     this.suffix,
-  });
+    this.validator,
+  }) : super(key: key);
+
+  @override
+  _CustomInputFieldState createState() => _CustomInputFieldState();
+}
+
+class _CustomInputFieldState extends State<CustomInputField> {
+  TextEditingController? _controller;
+  String? _errorText;
+
+  @override
+  void initState() {
+    super.initState();
+    _controller = widget.controller ?? TextEditingController();
+  }
+
+  @override
+  void dispose() {
+    _controller?.dispose();
+    super.dispose();
+  }
+
+  void _handleChanged(String value) {
+    setState(() {
+        _errorText = widget.validator?.call(value);
+    });
+    if (widget.onChanged != null) {
+      widget.onChanged!(value);
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
-      onTap:
-          dismissibleKeyboard ? () => FocusScope.of(context).unfocus() : null,
+      onTap: widget.dismissibleKeyboard
+          ? () => FocusScope.of(context).unfocus()
+          : null,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          if (label != null)
+          if (widget.label != null)
             Padding(
               padding: const EdgeInsets.only(bottom: 8.0),
               child: Text(
-                label!,
-                style: labelTextStyle,
+                widget.label!,
+                style: widget.labelTextStyle,
               ),
             ),
           Container(
             decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(borderRadius),
-              color: filled ? fillColor : Colors.transparent,
+              borderRadius: BorderRadius.circular(widget.borderRadius),
+              color: widget.filled ? widget.fillColor : Colors.transparent,
               border: Border.all(
-                color: borderColor,
-                width: borderWidth,
+                color: _errorText != null ? AppColors.lightRed :widget.borderColor,
+                width: widget.borderWidth,
               ),
             ),
             child: Row(
               children: [
-                if (prefix != null) prefix!,
-                if (startIcon != null)
+                if (widget.prefix != null) widget.prefix!,
+                if (widget.startIcon != null)
                   GestureDetector(
-                    onTap: onStartIconPress,
+                    onTap: widget.onStartIconPress,
                     child: Padding(
                       padding: const EdgeInsets.only(left: 8.0),
                       child: Icon(
-                        startIcon,
-                        color: startIconColor,
+                        widget.startIcon,
+                        color: widget.startIconColor,
                       ),
                     ),
                   ),
                 const SizedBox(width: 8.0),
                 Expanded(
                   child: TextField(
-                    controller: controller,
-                    autofocus: autoFocus,
-                    onChanged: onChanged,
-                    onSubmitted: onSubmit,
-                    textInputAction: textInputAction,
-                    keyboardType: _getKeyboardType(keyboardType),
-                    maxLines: maxLines,
-                    minLines: minLines,
+                    controller: _controller,
+                    autofocus: widget.autoFocus,
+                    onChanged: _handleChanged,
+                    onSubmitted: widget.onSubmit,
+                    textInputAction: widget.textInputAction,
+                    keyboardType: _getKeyboardType(widget.keyboardType),
+                    maxLines: widget.maxLines,
+                    minLines: widget.minLines,
                     decoration: InputDecoration(
-                      hintText: placeholder,
+                      hintText: widget.placeholder,
                       border: InputBorder.none,
                       isDense: true,
-                      contentPadding: contentPadding,
+                      contentPadding: widget.contentPadding,
                     ),
-                    style: textStyle ?? TextStyle(color: textColor),
+                    style:
+                        widget.textStyle ?? TextStyle(color: widget.textColor),
                   ),
                 ),
-                if (endIcon != null)
+                if (widget.endIcon != null)
                   GestureDetector(
-                    onTap: onEndIconPress,
+                    onTap: widget.onEndIconPress,
                     child: Padding(
                       padding: const EdgeInsets.only(right: 8.0),
                       child: Icon(
-                        endIcon,
-                        color: endIconColor,
+                        widget.endIcon,
+                        color: widget.endIconColor,
                       ),
                     ),
                   ),
-                if (suffix != null) suffix!,
+                if (widget.suffix != null) widget.suffix!,
               ],
             ),
           ),
+          if (_errorText != null)
+            Padding(
+              padding: const EdgeInsets.only(top: 6.0),
+              child: CustomText(_errorText!, color: Colors.red, fontSize: 12),
+            ),
         ],
       ),
     );
