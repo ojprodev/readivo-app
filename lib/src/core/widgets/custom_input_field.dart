@@ -9,7 +9,7 @@ class CustomInputField extends StatefulWidget {
   final TextEditingController? controller;
   final IconData? startIcon;
   final Function()? onStartIconPress;
-  final IconData? endIcon;
+  final Widget? endIcon;
   final Function()? onEndIconPress;
   final ValueChanged<String>? onSubmit;
   final ValueChanged<String>? onChanged;
@@ -36,7 +36,7 @@ class CustomInputField extends StatefulWidget {
   final String? Function(String?)? validator;
 
   const CustomInputField({
-    Key? key,
+    super.key,
     this.label,
     this.controller,
     this.startIcon,
@@ -71,7 +71,7 @@ class CustomInputField extends StatefulWidget {
     this.prefix,
     this.suffix,
     this.validator,
-  }) : super(key: key);
+  });
 
   @override
   _CustomInputFieldState createState() => _CustomInputFieldState();
@@ -168,10 +168,7 @@ class _CustomInputFieldState extends State<CustomInputField> {
                     onTap: widget.onEndIconPress,
                     child: Padding(
                       padding: const EdgeInsets.only(right: 8.0),
-                      child: Icon(
-                        widget.endIcon,
-                        color: widget.endIconColor,
-                      ),
+                      child: widget.endIcon,
                     ),
                   ),
                 if (widget.suffix != null) widget.suffix!,

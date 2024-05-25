@@ -2,9 +2,11 @@ import 'package:conditional_builder_null_safety/conditional_builder_null_safety.
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:readivo_app/src/core/animations/animations.dart';
 
 import 'package:readivo_app/src/core/bloc/app_cubit.dart';
 import 'package:readivo_app/src/core/constants/constants.dart';
+import 'package:readivo_app/src/core/constants/images.dart';
 import 'package:readivo_app/src/core/enums/enums.dart';
 import 'package:readivo_app/src/core/layouts/basic_layout.dart';
 import 'package:readivo_app/src/core/services/permission_service.dart';
@@ -25,13 +27,16 @@ class LibrarySearchScreen extends StatefulWidget {
   State<LibrarySearchScreen> createState() => _LibrarySearchScreenState();
 }
 
-class _LibrarySearchScreenState extends State<LibrarySearchScreen> {
+class _LibrarySearchScreenState extends State<LibrarySearchScreen>
+    with SingleTickerProviderStateMixin {
   late AppCubit appCubit;
   late LibraryCubit libraryCubit;
   SearchDisplayOption searchDisplayOption = SearchDisplayOption.list;
   bool showFilters = false;
   bool initialLoad = true;
+  bool isLoading = false;
   List<Book> books = [];
+  late AnimationController _loadingController;
 
   // controllers
   TextEditingController searchBooksController = TextEditingController();
@@ -42,6 +47,12 @@ class _LibrarySearchScreenState extends State<LibrarySearchScreen> {
     appCubit = AppCubit.get(context);
     libraryCubit = LibraryCubit.get(context);
     initialLoad = true;
+
+    // define the loading animation
+    _loadingController = AnimationController(
+      duration: const Duration(seconds: 1),
+      vsync: this,
+    )..repeat();
   }
 
   @override
@@ -70,9 +81,17 @@ class _LibrarySearchScreenState extends State<LibrarySearchScreen> {
         placeholder: "Search for a book",
         textInputAction: TextInputAction.search,
         fillColor: AppColors.lightGrey.withOpacity(0.4),
-        endIcon: searchBooksController.text.isNotEmpty
-            ? Icons.clear_rounded
-            : Icons.search_outlined,
+        endIcon: searchBooksController.text.isEmpty
+            ? const Icon(Icons.search_outlined)
+            : !isLoading
+                ? const Icon(Icons.clear_rounded)
+                : AnimatedSwitcher(
+                    duration: const Duration(milliseconds: 300),
+                    child: RotationTransition(
+                      turns: _loadingController,
+                      child: SvgPicture.asset(AppIcons.reload),
+                    ),
+                  ),
         maxLines: 1,
         onChanged: (value) {
           setState(() {
@@ -150,6 +169,16 @@ class _LibrarySearchScreenState extends State<LibrarySearchScreen> {
   }
 
   void _buildChangeListener(BuildContext context, state) {
+    if (state is LibrarySearchLoadingState) {
+      setState(() {
+        isLoading = true;
+      });
+    } else {
+      setState(() {
+        isLoading = false;
+      });
+    }
+
     if (state is LibraryStoragePermissionGrantedState) {
       libraryCubit.performLocalBooksScanning();
     }
@@ -204,7 +233,44 @@ class _LibrarySearchScreenState extends State<LibrarySearchScreen> {
           ],
         );
       },
-      fallback: (context) => const Text('Empty library'),
+      fallback: !initialLoad
+          ? (context) => SizedBox(
+                height: MediaQuery.sizeOf(context).height / 1.3,
+                child: Center(
+                  child: Column(
+                    mainAxisSize: MainAxisSize.max,
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      SvgPicture.asset(
+                        AppImages.reading,
+                        width: 240,
+                      ),
+                      const SizedBox(height: 48.0),
+                      const CustomText(
+                        'No Books Found!.',
+                        fontSize: 20,
+                        fontWeight: FontWeight.w500,
+                      ),
+                      const Padding(
+                        padding: EdgeInsets.symmetric(
+                            horizontal: 64.0, vertical: 12.0),
+                        child: Text(
+                          'Unfortunately we could not find the book you are looking for, would you like to add it?.',
+                          textAlign: TextAlign.center,
+                        ),
+                      ),
+                      const SizedBox(height: 24.0),
+                      const CustomButton(
+                        text: 'Add it Manually',
+                        width: 200,
+                        color: AppColors.grey,
+                      )
+                    ],
+                  ),
+                ),
+              )
+          : null,
     );
   }
 
