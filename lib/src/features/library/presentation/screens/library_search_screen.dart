@@ -2,7 +2,6 @@ import 'package:conditional_builder_null_safety/conditional_builder_null_safety.
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:readivo_app/src/core/animations/animations.dart';
 
 import 'package:readivo_app/src/core/bloc/app_cubit.dart';
 import 'package:readivo_app/src/core/constants/constants.dart';
@@ -31,7 +30,7 @@ class _LibrarySearchScreenState extends State<LibrarySearchScreen>
     with SingleTickerProviderStateMixin {
   late AppCubit appCubit;
   late LibraryCubit libraryCubit;
-  SearchDisplayOption searchDisplayOption = SearchDisplayOption.list;
+  SearchDisplayOption searchDisplayOption = SearchDisplayOption.grid;
   bool showFilters = false;
   bool initialLoad = true;
   bool isLoading = false;
@@ -77,21 +76,12 @@ class _LibrarySearchScreenState extends State<LibrarySearchScreen>
       ),
       showBackButton: false,
       titleWidget: CustomInputField(
+        autoFocus: true,
         controller: searchBooksController,
         placeholder: "Search for a book",
         textInputAction: TextInputAction.search,
         fillColor: AppColors.lightGrey.withOpacity(0.4),
-        endIcon: searchBooksController.text.isEmpty
-            ? const Icon(Icons.search_outlined)
-            : !isLoading
-                ? const Icon(Icons.clear_rounded)
-                : AnimatedSwitcher(
-                    duration: const Duration(milliseconds: 300),
-                    child: RotationTransition(
-                      turns: _loadingController,
-                      child: SvgPicture.asset(AppIcons.reload),
-                    ),
-                  ),
+        endIcon: _buildSearchIcon(),
         maxLines: 1,
         onChanged: (value) {
           setState(() {
@@ -168,6 +158,24 @@ class _LibrarySearchScreenState extends State<LibrarySearchScreen>
     );
   }
 
+  Widget _buildSearchIcon() {
+    if (searchBooksController.text.isNotEmpty) {
+      if (isLoading) {
+        return AnimatedSwitcher(
+          duration: const Duration(milliseconds: 300),
+          child: RotationTransition(
+            turns: _loadingController,
+            child: SvgPicture.asset(AppIcons.reload),
+          ),
+        );
+      } else {
+        return const Icon(Icons.clear_rounded);
+      }
+    } else {
+      return const Icon(Icons.search_outlined);
+    }
+  }
+
   void _buildChangeListener(BuildContext context, state) {
     if (state is LibrarySearchLoadingState) {
       setState(() {
@@ -228,49 +236,51 @@ class _LibrarySearchScreenState extends State<LibrarySearchScreen>
         return Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            _buildHeadSection(booksCount: books.length),
+            // TODO: hide for this MVP
+            // _buildHeadSection(booksCount: books.length),
             _buildSearchList(books: books),
           ],
         );
       },
-      fallback: !initialLoad
-          ? (context) => SizedBox(
-                height: MediaQuery.sizeOf(context).height / 1.3,
-                child: Center(
-                  child: Column(
-                    mainAxisSize: MainAxisSize.max,
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    children: [
-                      SvgPicture.asset(
-                        AppImages.reading,
-                        width: 240,
-                      ),
-                      const SizedBox(height: 48.0),
-                      const CustomText(
-                        'No Books Found!.',
-                        fontSize: 20,
-                        fontWeight: FontWeight.w500,
-                      ),
-                      const Padding(
-                        padding: EdgeInsets.symmetric(
-                            horizontal: 64.0, vertical: 12.0),
-                        child: Text(
-                          'Unfortunately we could not find the book you are looking for, would you like to add it?.',
-                          textAlign: TextAlign.center,
-                        ),
-                      ),
-                      const SizedBox(height: 24.0),
-                      const CustomButton(
-                        text: 'Add it Manually',
-                        width: 200,
-                        color: AppColors.grey,
-                      )
-                    ],
-                  ),
-                ),
-              )
-          : null,
+      fallback: !initialLoad ? (context) => _buildEmptyScreenWidget() : null,
+    );
+  }
+
+  Widget _buildEmptyScreenWidget() {
+    return SizedBox(
+      height: MediaQuery.sizeOf(context).height / 1.3,
+      child: Center(
+        child: Column(
+          mainAxisSize: MainAxisSize.max,
+          mainAxisAlignment: MainAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            SvgPicture.asset(
+              AppImages.reading,
+              width: 240,
+            ),
+            const SizedBox(height: 48.0),
+            const CustomText(
+              'No Books Found!.',
+              fontSize: 20,
+              fontWeight: FontWeight.w500,
+            ),
+            const Padding(
+              padding: EdgeInsets.symmetric(horizontal: 64.0, vertical: 12.0),
+              child: Text(
+                'Unfortunately we could not find the book you are looking for, would you like to add it?.',
+                textAlign: TextAlign.center,
+              ),
+            ),
+            const SizedBox(height: 24.0),
+            const CustomButton(
+              text: 'Add it Manually',
+              width: 200,
+              color: AppColors.grey,
+            )
+          ],
+        ),
+      ),
     );
   }
 
