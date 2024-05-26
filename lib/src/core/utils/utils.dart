@@ -8,9 +8,10 @@ class Utils {
     return formatter.format(date);
   }
 
-  static bool validISBN(String isbn){
+  static bool validISBN(String isbn) {
     return (isbn.length == 10 || isbn.length == 13);
   }
+
   static DateTime todayDate() {
     DateTime now = DateTime.now();
 
@@ -90,5 +91,15 @@ class Utils {
     }
 
     return fileName; // Return the predicted file name
+  }
+
+  static List<String> cutArrayItems(List<String> inputList, int n) {
+    inputList = inputList.map((element) => element.toString()).toList();
+    if (inputList.length <= n) {
+      return inputList; // Return the whole list if its length is less than or equal to n
+    } else {
+      return inputList.sublist(
+          0, n); // Return the sublist of the first n elements
+    }
   }
 }

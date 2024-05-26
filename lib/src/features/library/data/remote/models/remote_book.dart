@@ -21,7 +21,7 @@ class RemoteBook extends Book {
   factory RemoteBook.fromOpenLibraryJson(Map<String, dynamic> json) {
     return RemoteBook(
       title: json['title'],
-      author: json['author_name'].toString(),
+      author: json['author_name'] != null ? json['author_name'].join(', ') : '',
       source: BookSourceEnums.online,
       globalRating:
           Utils.parseRatingsAverage(json['ratings_average'].toString()),
@@ -36,11 +36,12 @@ class RemoteBook extends Book {
     var book = json['volumeInfo'];
     return RemoteBook(
       title: book['title'],
-      author: book['authors'].toString(),
+      author: book['authors'] != null ? book['authors'].join(', ') : '',
       source: BookSourceEnums.online,
       description: book['description'],
       publishDate: book['publishedDate'].toString(),
-      coverURI:book['imageLinks'] != null ? book['imageLinks']['thumbnail'] : null,
+      coverURI:
+          book['imageLinks'] != null ? book['imageLinks']['thumbnail'] : null,
       totalPages: book['pageCount'] ?? 0,
       createdAt: DateTime.now(),
     );
