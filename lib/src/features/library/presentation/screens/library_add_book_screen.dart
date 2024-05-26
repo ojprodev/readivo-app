@@ -1176,10 +1176,10 @@ class _LibraryAddBookScreenState extends State<LibraryAddBookScreen> {
       },
       {
         "label": "Description",
-        "value": 'book description',
+        "value": widget.book?.description,
         "type": 'textarea',
         "controller": descriptionController,
-        "defaultValue": 'book description',
+        "defaultValue": widget.book?.description,
       },
     ];
 
@@ -1224,7 +1224,7 @@ class _LibraryAddBookScreenState extends State<LibraryAddBookScreen> {
               dismissibleKeyboard: true,
               keyboardType: field['type'].toString(),
               minLines: field['type'].toString() == 'textarea' ? 3 : null,
-              maxLines: field['type'].toString() == 'textarea' ? 30 : null,
+              maxLines: field['type'].toString() == 'textarea' ? 20 : null,
             ),
           );
         }).toList(),

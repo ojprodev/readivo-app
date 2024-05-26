@@ -1,0 +1,4 @@
+enum BookRemoteSource{
+  googleBooks,
+  openLibrary,
+}
