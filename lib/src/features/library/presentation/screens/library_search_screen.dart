@@ -332,7 +332,7 @@ class _LibrarySearchScreenState extends State<LibrarySearchScreen>
                     ),
                   ),
                 ],
-              )
+              ),
             ],
           ),
         ],

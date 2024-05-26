@@ -48,6 +48,7 @@ class Utils {
   /// The [removeDomains] parameter, if set to true, removes domains' URIs from the file name. Default is false.
   ///
   /// Returns the predicted file name as a string.
+
   static String fileNamePrediction(String path,
       {bool? removeUnderscores = false,
       bool? removeDashes = false,
@@ -78,10 +79,10 @@ class Utils {
 
       // Loop through all matches and remove each domain URI from the file name
       for (Match match in matches) {
-        String domain =
-            match.group(1)!; // Extract the domain URI from the match
-        fileName = fileName.replaceAll(
-            domain, ''); // Remove the domain URI from the file name
+        // Extract the domain URI from the match
+        String domain = match.group(1)!;
+        // Remove the domain URI from the file name
+        fileName = fileName.replaceAll(domain, '');
       }
     }
 
