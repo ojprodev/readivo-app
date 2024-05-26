@@ -5,11 +5,11 @@ import 'package:readivo_app/src/features/library/domain/entities/book.dart';
 import 'package:readivo_app/src/features/library/domain/repositories/local_book_repository.dart';
 import 'package:readivo_app/src/features/library/domain/repositories/remote_book_repository.dart';
 
-class SearchBooksUseCase {
+class BooksUseCase {
   final RemoteBookRepository remoteBookRepository;
   final LocalBookRepository localBookRepository;
 
-  SearchBooksUseCase(
+  BooksUseCase(
       {required this.remoteBookRepository, required this.localBookRepository});
 
   Future<List<Book>> onlineSearch(String query) async {
@@ -26,5 +26,9 @@ class SearchBooksUseCase {
 
   Future<List<Book>?> getBooks({bool localOnly = false}) async {
     return await localBookRepository.getAllBooks(localOnly: localOnly);
+  }
+
+  Future<void> updateBook(Book book) async {
+    return await localBookRepository.updateBook(book);
   }
 }

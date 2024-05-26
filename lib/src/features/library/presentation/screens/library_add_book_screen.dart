@@ -6,6 +6,7 @@ import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
 import 'package:readivo_app/src/core/constants/constants.dart';
+import 'package:readivo_app/src/core/enums/enums.dart';
 import 'package:readivo_app/src/core/layouts/basic_layout.dart';
 import 'package:readivo_app/src/core/utils/utils.dart';
 import 'package:readivo_app/src/core/widgets/bottom_sheet.dart';
@@ -17,6 +18,7 @@ import 'package:readivo_app/src/core/widgets/custom_list_item.dart';
 import 'package:readivo_app/src/core/widgets/custom_text.dart';
 import 'package:readivo_app/src/core/widgets/partials/bottom_sheet_item.dart';
 import 'package:readivo_app/src/features/library/domain/entities/book.dart';
+import 'package:readivo_app/src/features/library/presentation/bloc/library_cubit.dart';
 import 'package:readivo_app/src/features/library/presentation/widgets/book_box.dart';
 import 'package:readivo_app/src/features/library/presentation/widgets/book_cover.dart';
 
@@ -30,11 +32,10 @@ class LibraryAddBookScreen extends StatefulWidget {
 }
 
 class _LibraryAddBookScreenState extends State<LibraryAddBookScreen> {
-  String selectedStatus = 'Want to read';
+  ReadingStatus selectedStatus = ReadingStatus.wantToRead;
   DateTime? startDate;
   DateTime? finishDate;
-  List<String> bookTypes = ['paper book', 'e-book', 'audio book'];
-  String selectedBookType = 'paper book';
+  BookType selectedBookType = BookType.paperBook;
   List<Map<String, dynamic>> selectedBooksShelves = [];
   List<String> selectedTags = [];
   List<String> tempSelectedTags = [];
@@ -46,6 +47,7 @@ class _LibraryAddBookScreenState extends State<LibraryAddBookScreen> {
   bool invalidStartDate = false;
   bool invalidFinishDate = false;
   bool invalidPagesCount = false;
+  bool invalidData = false;
 
   // controllers
   final TextEditingController titleController = TextEditingController();
@@ -84,6 +86,7 @@ class _LibraryAddBookScreenState extends State<LibraryAddBookScreen> {
 
   @override
   Widget build(BuildContext context) {
+    LibraryCubit libraryCubit = LibraryCubit.get(context);
     return BasicLayout(
       extendBody: true,
       appBarBackground:
@@ -113,10 +116,40 @@ class _LibraryAddBookScreenState extends State<LibraryAddBookScreen> {
             width: 80,
             onPressed: () {
               // 1. check if all the data is valid
+              if (!invalidData &&
+                  !invalidStartDate &&
+                  !invalidFinishDate &&
+                  !invalidPagesCount) {
+                // 2. save all added info the provided book object
+                // save book related info
+                Book book = Book(
+                  title: titleController.text,
+                  author: authorController.text,
+                  totalPages: int.parse(totalPagesController.text),
+                  publishDate: publishedAtController.text,
+                  isbn: isbnController.text,
+                  description: descriptionController.text,
+                  source: widget.book!.source,
+                  bookType: selectedBookType,
+                  readingStatus: selectedStatus,
+                  path: widget.book!.path,
+                  fileSize: widget.book!.fileSize,
+                  coverURI: widget.book!.coverURI,
+                  lastTimeOpened: widget.book!.lastTimeOpened,
+                  updatedAt: DateTime.now(),
+                  createdAt: DateTime.now(),
+                );
 
-              // 2. save all added info the provided book object
+                // TODO: reading log, rating, review, books shelves and tags
 
-              // 3. call the cubit update book method
+                book.id = widget.book!.id;
+                // 3. call the cubit update book method
+                libraryCubit.updateBook( book);
+
+                Navigator.pop(context);
+              } else {
+                print('invalid data');
+              }
             },
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
@@ -201,7 +234,7 @@ class _LibraryAddBookScreenState extends State<LibraryAddBookScreen> {
           children: [
             Expanded(
               child: Text(
-                selectedStatus,
+                getReadingStatusAsString(selectedStatus),
                 textAlign: TextAlign.center,
               ),
             ),
@@ -244,7 +277,7 @@ class _LibraryAddBookScreenState extends State<LibraryAddBookScreen> {
   List<BottomSheetItem> _buildBottomSheetItems(List<String> statuses) {
     return statuses.map((status) {
       return BottomSheetItem(
-        borderColor: status == selectedStatus
+        borderColor: getReadingStatusFromString(status) == selectedStatus
             ? AppColors.grey
             : AppColors.lightGrey.withOpacity(0.4),
         icon: _getStatusIcon(status),
@@ -252,7 +285,7 @@ class _LibraryAddBookScreenState extends State<LibraryAddBookScreen> {
         appendIcon: _getAppendIcon(status),
         onTap: () {
           setState(() {
-            selectedStatus = status;
+            selectedStatus = getReadingStatusFromString(status);
           });
           Navigator.of(context).pop();
         },
@@ -306,10 +339,10 @@ class _LibraryAddBookScreenState extends State<LibraryAddBookScreen> {
                 borderRadius: BorderRadius.circular(8.0)),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceAround,
-              children: bookTypes
+              children: getBookTypes()
                   .map((status) => Expanded(
                         child: _buildTab(
-                          status,
+                          getBookTypeAsString(status),
                           isSelected: status == selectedBookType,
                         ),
                       ))
@@ -324,9 +357,9 @@ class _LibraryAddBookScreenState extends State<LibraryAddBookScreen> {
   Widget _buildTab(String type, {bool isSelected = false}) {
     return GestureDetector(
       onTap: () {
-        if (type != selectedBookType) {
+        if (getBookType(type) != selectedBookType) {
           setState(() {
-            selectedBookType = type;
+            selectedBookType = getBookType(type);
           });
         }
       },
@@ -851,7 +884,7 @@ class _LibraryAddBookScreenState extends State<LibraryAddBookScreen> {
 
   Widget _buildRatingSection() {
     return ConditionalBuilder(
-      condition: selectedStatus != 'Want to read',
+      condition: selectedStatus != ReadingStatus.wantToRead,
       builder: (context) => Container(
         padding: const EdgeInsets.symmetric(horizontal: 16.0),
         child: Column(
@@ -948,10 +981,10 @@ class _LibraryAddBookScreenState extends State<LibraryAddBookScreen> {
 
   Widget _buildReadingDateRange() {
     return ConditionalBuilder(
-      condition: selectedStatus != 'Want to read',
+      condition: selectedStatus != ReadingStatus.wantToRead,
       builder: (context) => Center(
         child: Container(
-          width: selectedStatus == 'Reading' ? 180 : null,
+          width: selectedStatus == ReadingStatus.reading ? 180 : null,
           padding: const EdgeInsets.all(8.0),
           margin: const EdgeInsets.all(16.0),
           decoration: BoxDecoration(
@@ -988,12 +1021,12 @@ class _LibraryAddBookScreenState extends State<LibraryAddBookScreen> {
                   Container(
                     width: 2,
                     height: 64,
-                    color: selectedStatus != 'Reading'
+                    color: selectedStatus != ReadingStatus.reading
                         ? AppColors.lightGrey
                         : Colors.transparent,
                   ),
-                  if (selectedStatus != 'Want to read' &&
-                      selectedStatus != 'Reading')
+                  if (selectedStatus != ReadingStatus.wantToRead &&
+                      selectedStatus != ReadingStatus.reading)
                     _buildDateColumn(
                       title: 'Finished',
                       date: finishDate,
@@ -1097,8 +1130,10 @@ class _LibraryAddBookScreenState extends State<LibraryAddBookScreen> {
 
   Widget _getAppendIcon(String status) {
     return Icon(
-      selectedStatus == status ? Icons.check_circle : Icons.circle_outlined,
-      color: selectedStatus == status
+      selectedStatus == getReadingStatusFromString(status)
+          ? Icons.check_circle
+          : Icons.circle_outlined,
+      color: selectedStatus == getReadingStatusFromString(status)
           ? AppColors.grey
           : AppColors.lightGrey.withOpacity(0.4),
     );
@@ -1127,10 +1162,10 @@ class _LibraryAddBookScreenState extends State<LibraryAddBookScreen> {
       },
       {
         "label": "ISBN",
-        "value": '12233445566',
+        "value": null,
         "type": 'number',
         "controller": isbnController,
-        "defaultValue": '12233445566',
+        "defaultValue": null,
       },
       {
         "label": "Publish Year",
@@ -1164,17 +1199,26 @@ class _LibraryAddBookScreenState extends State<LibraryAddBookScreen> {
             child: CustomInputField(
               controller: controller,
               label: field['label'].toString(),
-              placeholder: 'Enter text',
+              placeholder: "Enter ${field['label']}",
               validator: (value) {
                 if (field['label'] == 'Total Pages') {
-                  if(value!.isEmpty || int.parse(value) <= 0){
+                  if (value!.isEmpty || int.parse(value) <= 0) {
+                    invalidData = true;
                     return 'Invalid total pages';
                   }
-                }else if(field['label'] == 'ISBN'){
-                  if(value!.isEmpty || !Utils.validISBN(value)){
+                } else if (field['label'] == 'ISBN') {
+                  if (value!.isEmpty || !Utils.validISBN(value)) {
+                    invalidData = true;
                     return 'Invalid ISBN';
                   }
+                } else if (field['label'] == 'Title') {
+                  if (value!.isEmpty) {
+                    invalidData = true;
+                    return 'Title should not be empty';
+                  }
                 }
+
+                invalidData = false;
                 return null;
               },
               dismissibleKeyboard: true,

@@ -7,14 +7,14 @@ import 'package:readivo_app/src/core/services/permission_service.dart';
 import 'package:readivo_app/src/core/services/file_system_service.dart';
 import 'package:readivo_app/src/features/library/data/local/models/local_book.dart';
 import 'package:readivo_app/src/features/library/domain/entities/book.dart';
-import 'package:readivo_app/src/features/library/domain/use_cases/search_books_use_case.dart';
+import 'package:readivo_app/src/features/library/domain/use_cases/books_use_case.dart';
 
 part 'library_states.dart';
 
 class LibraryCubit extends Cubit<LibraryStates> {
   final PermissionService permissionService;
   final FileSystemService fileSystemService;
-  final SearchBooksUseCase searchBooksUseCase;
+  final BooksUseCase booksUseCase;
 
   BookSourceEnums bookSource = BookSourceEnums.online;
   List<Book> books = [];
@@ -22,7 +22,7 @@ class LibraryCubit extends Cubit<LibraryStates> {
   List<Book> remoteBooks = [];
 
   LibraryCubit({
-    required this.searchBooksUseCase,
+    required this.booksUseCase,
     required this.permissionService,
     required this.fileSystemService,
   }) : super(LibraryInitState());
@@ -36,7 +36,7 @@ class LibraryCubit extends Cubit<LibraryStates> {
     // check the source
     if (bookSource == BookSourceEnums.online) {
       // perform search
-      remoteBooks = await searchBooksUseCase.onlineSearch(query);
+      remoteBooks = await booksUseCase.onlineSearch(query);
 
       emit(LibrarySearchLoadedState(remoteBooks));
     } else {
@@ -44,7 +44,8 @@ class LibraryCubit extends Cubit<LibraryStates> {
       List<Book> localResult = localBooks
           .where((book) =>
               book.title.toLowerCase().contains(query.toLowerCase()) ||
-              (book.author != null && book.author!.contains(query.toLowerCase())))
+              (book.author != null &&
+                  book.author!.contains(query.toLowerCase())))
           .toList();
 
       emit(LibrarySearchLoadedState(localResult));
@@ -90,11 +91,11 @@ class LibraryCubit extends Cubit<LibraryStates> {
       // only process if the book is new
       if (!localBooks.any((book) => book.path == file.path)) {
         // collect book data
-        LocalBook? detectedBook = await searchBooksUseCase.scanBook(file);
+        LocalBook? detectedBook = await booksUseCase.scanBook(file);
 
         if (detectedBook != null) {
           // add the book to the database
-          await searchBooksUseCase.addBook(detectedBook);
+          await booksUseCase.addBook(detectedBook);
 
           // add to the local list
           localBooks.add(detectedBook);
@@ -114,7 +115,7 @@ class LibraryCubit extends Cubit<LibraryStates> {
     emit(LibrarySearchLoadingState());
 
     // search in the database
-    searchBooksUseCase
+    booksUseCase
         .getBooks(localOnly: true)
         .whenComplete(() => null)
         .then((books) {
@@ -123,5 +124,9 @@ class LibraryCubit extends Cubit<LibraryStates> {
         localBooks = books;
       }
     }).then((_) => emit(LibrarySearchLoadedState(localBooks)));
+  }
+
+  void updateBook(Book book) {
+    booksUseCase.updateBook(book).then((_) => print('book added'));
   }
 }

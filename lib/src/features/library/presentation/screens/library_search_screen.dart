@@ -56,7 +56,7 @@ class _LibrarySearchScreenState extends State<LibrarySearchScreen>
 
   @override
   void dispose() {
-    print('dispose');
+    _loadingController.dispose();
     super.dispose();
   }
 

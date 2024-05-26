@@ -13,7 +13,7 @@ import 'package:readivo_app/src/features/library/data/repositories/local_book_re
 import 'package:readivo_app/src/features/library/data/repositories/remote_book_repository_impl.dart';
 import 'package:readivo_app/src/features/library/domain/repositories/local_book_repository.dart';
 import 'package:readivo_app/src/features/library/domain/repositories/remote_book_repository.dart';
-import 'package:readivo_app/src/features/library/domain/use_cases/search_books_use_case.dart';
+import 'package:readivo_app/src/features/library/domain/use_cases/books_use_case.dart';
 import 'package:readivo_app/src/features/library/presentation/bloc/library_cubit.dart';
 
 class DependencyInjection {
@@ -53,14 +53,14 @@ class DependencyInjection {
         LocalBookRepositoryImpl(fileSystemService: getIt(), isar: getIt()));
 
     // Use Cases
-    getIt.registerLazySingleton(() => SearchBooksUseCase(
+    getIt.registerLazySingleton(() => BooksUseCase(
           localBookRepository: getIt(),
           remoteBookRepository: getIt(),
         ));
 
     // Cubit
     getIt.registerFactory(() => LibraryCubit(
-          searchBooksUseCase: getIt(),
+          booksUseCase: getIt(),
           permissionService: getIt(),
           fileSystemService: getIt(),
         ));
