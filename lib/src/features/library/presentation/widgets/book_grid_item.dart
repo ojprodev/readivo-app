@@ -65,7 +65,7 @@ class BookGridItem extends StatelessWidget {
           background: AppColors.lightGrey,
           coverUri: book.coverURI ?? '',
         ),
-        if (showInfo)
+        if (showInfo && book.globalRating != null)
           Container(
             margin: const EdgeInsets.only(top: 12.0),
             width: 60,
