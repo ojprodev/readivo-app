@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:readivo_app/src/core/bloc/app_cubit.dart';
 import 'package:readivo_app/src/core/bloc/app_states.dart';
 import 'package:readivo_app/src/core/config/config.dart';
+import 'package:readivo_app/src/core/config/keyboard.dart';
 import 'package:readivo_app/src/features/library/presentation/bloc/library_cubit.dart';
 import 'package:readivo_app/src/features/library/presentation/screens/library_home_screen.dart';
 
@@ -16,11 +17,13 @@ class MyApp extends StatelessWidget {
         BlocProvider<AppCubit>(create: (context) => AppCubit()),
         BlocProvider<LibraryCubit>(create: (context) => DependencyInjection.getIt<LibraryCubit>()),
       ],
-      child: MaterialApp(
-        title: 'Readivo',
-        home: BlocConsumer<AppCubit, AppStates>(
-          builder: _buildContent,
-          listener: _handleStateChange,
+      child: DismissKeyboard(
+        child: MaterialApp(
+          title: 'Readivo',
+          home: BlocConsumer<AppCubit, AppStates>(
+            builder: _buildContent,
+            listener: _handleStateChange,
+          ),
         ),
       ),
     );

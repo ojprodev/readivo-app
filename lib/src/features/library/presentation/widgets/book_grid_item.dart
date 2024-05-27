@@ -42,7 +42,7 @@ class BookGridItem extends StatelessWidget {
               fontWeight: FontWeight.w600,
               fontSize: titleFontSize,
             ),
-          if (showInfo)
+          if (showInfo && book.author != null)
             CustomText(
               '${book.author}',
               maxLines: 1,
