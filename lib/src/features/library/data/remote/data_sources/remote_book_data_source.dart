@@ -1,3 +1,5 @@
+import 'dart:typed_data';
+
 import 'package:dio/dio.dart';
 import 'package:readivo_app/src/core/enums/book_remote_source.dart';
 import 'package:readivo_app/src/features/library/data/remote/models/remote_book.dart';
@@ -8,6 +10,8 @@ abstract class RemoteBookDataSource {
   Future<List<RemoteBook>> googleBooks(String query);
 
   Future<List<RemoteBook>> openLibrary(String query);
+
+  Future<ByteData> downloadImageAsBytes(String url);
 }
 
 class RemoteBookDataSourceImpl implements RemoteBookDataSource {
@@ -59,4 +63,19 @@ class RemoteBookDataSourceImpl implements RemoteBookDataSource {
       throw Exception('[DataSource]: Failed to load books');
     }
   }
+
+  Future<ByteData> downloadImageAsBytes(String url) async {
+  try {
+    // Download the image data as bytes
+    Response response = await dio.get(
+      url,
+      options: Options(responseType: ResponseType.bytes),
+    );
+
+    // Convert the response data to ByteData
+    return ByteData.view(response.data.buffer);
+  } catch (e) {
+    throw Exception('Failed to download image: $e');
+  }
+}
 }

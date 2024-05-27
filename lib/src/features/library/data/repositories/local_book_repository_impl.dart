@@ -39,9 +39,12 @@ class LocalBookRepositoryImpl extends LocalBookRepository {
 
   @override
   Future<List<Book>> getAllBooks({bool localOnly = false}) async {
-    if(localOnly){
-      return await isar.books.filter().sourceEqualTo(BookSourceEnums.local).findAll();
-    }else{
+    if (localOnly) {
+      return await isar.books
+          .filter()
+          .sourceEqualTo(BookSourceEnums.local)
+          .findAll();
+    } else {
       return await isar.books.where().findAll();
     }
   }
@@ -56,5 +59,10 @@ class LocalBookRepositoryImpl extends LocalBookRepository {
     await isar.writeTxn(() async {
       await isar.books.put(book);
     });
+  }
+
+  @override
+  Future<Book?> findByTitle(String title) async {
+    return await isar.books.filter().titleEqualTo(title).findFirst();
   }
 }

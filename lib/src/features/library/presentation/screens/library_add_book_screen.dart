@@ -71,13 +71,11 @@ class _LibraryAddBookScreenState extends State<LibraryAddBookScreen> {
     // set default form controllers value
     titleController = TextEditingController(text: widget.book!.title);
     authorController = TextEditingController(text: widget.book!.author);
-    titleController =
+    totalPagesController =
         TextEditingController(text: widget.book!.totalPages.toString());
-    titleController = TextEditingController(text: widget.book!.publishDate);
-    titleController = TextEditingController(text: widget.book!.description);
-    titleController = TextEditingController(text: widget.book!.isbn);
-    titleController = TextEditingController(text: widget.book!.title);
-    titleController = TextEditingController(text: widget.book!.title);
+    publishedAtController = TextEditingController(text: widget.book!.publishDate);
+    descriptionController = TextEditingController(text: widget.book!.description);
+    isbnController = TextEditingController(text: widget.book!.isbn);
 
     _scrollController.addListener(_scrollListener);
   }

@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'dart:typed_data';
 
 import 'package:readivo_app/src/features/library/data/local/models/local_book.dart';
 import 'package:readivo_app/src/features/library/domain/entities/book.dart';
@@ -30,5 +31,17 @@ class BooksUseCase {
 
   Future<void> updateBook(Book book) async {
     return await localBookRepository.updateBook(book);
+  }
+
+  Future<ByteData> downloadImageAsBytes(String url) async {
+    return await remoteBookRepository.downloadImageAsBytes(url);
+  }
+
+  Future<String?> saveBookThumbnail(Book book) async {
+    return await remoteBookRepository.saveBookThumbnail(book);
+  }
+
+  Future<bool> bookExist(Book book) async {
+    return await localBookRepository.findByTitle(book.title) != null;
   }
 }

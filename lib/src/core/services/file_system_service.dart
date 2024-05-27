@@ -17,7 +17,7 @@ class BookDataType {
 }
 
 class FileSystemService {
-  static const String localThumbnailsDirectory = 'thumbnails/local/';
+  static const String thumbnailsDirectory = 'thumbnails/';
 
   // define excluded folders
   static final RegExp excludedPattern = RegExp(
@@ -52,7 +52,7 @@ class FileSystemService {
   }
 
   /// Save a file locally as ByteData
-  Future<String> saveFileLocallyAsByte({
+  static Future<String> saveFileLocallyAsByte({
     required ByteData byteData,
     required String fileName,
   }) async {
@@ -145,7 +145,7 @@ class FileSystemService {
       FileStat fileStat = file.statSync();
       String thumbnailName = predictedName.replaceAll(' ', '-');
       String fileName =
-          '${FileSystemService.localThumbnailsDirectory}$thumbnailName.png';
+          '${FileSystemService.thumbnailsDirectory}$thumbnailName.png';
 
       // generate a thumbnail and save it locally
       String thumbnailPath = await saveFileLocallyAsByte(

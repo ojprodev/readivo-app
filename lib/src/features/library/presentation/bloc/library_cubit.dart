@@ -3,8 +3,8 @@ import 'dart:io';
 import 'package:equatable/equatable.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:readivo_app/src/core/enums/enums.dart';
-import 'package:readivo_app/src/core/services/permission_service.dart';
 import 'package:readivo_app/src/core/services/file_system_service.dart';
+import 'package:readivo_app/src/core/services/permission_service.dart';
 import 'package:readivo_app/src/features/library/data/local/models/local_book.dart';
 import 'package:readivo_app/src/features/library/domain/entities/book.dart';
 import 'package:readivo_app/src/features/library/domain/use_cases/books_use_case.dart';
@@ -126,7 +126,25 @@ class LibraryCubit extends Cubit<LibraryStates> {
     }).then((_) => emit(LibrarySearchLoadedState(localBooks)));
   }
 
-  void updateBook(Book book) {
-    booksUseCase.updateBook(book).then((_) => print('book added'));
+  void updateBook(Book book) async {
+    // if book source is online
+    if (book.source == BookSourceEnums.online) {
+      // chekc if the book already saved, (using title)
+      bool alreadyAdded = await booksUseCase.bookExist(book);
+      // if not hten proccess into
+      if (alreadyAdded == false) {
+        // save the book thumbnail
+        String? thumbnailPath = await booksUseCase.saveBookThumbnail(book);
+        if (thumbnailPath != null) {
+          // then change the book remote url to local one
+          book.coverURI = thumbnailPath;
+        }
+        // and finaly add the book
+        booksUseCase.addBook(book).then((_) => print('book added'));
+      }
+    } else {
+      // if not online just update it ;)
+      booksUseCase.updateBook(book).then((_) => print('book updated'));
+    }
   }
 }
