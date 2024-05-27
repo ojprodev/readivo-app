@@ -41,7 +41,7 @@ class BooksUseCase {
     return await remoteBookRepository.saveBookThumbnail(book);
   }
 
-  Future<bool> bookExist(Book book) async {
-    return await localBookRepository.findByTitle(book.title) != null;
+  Future<Book?> bookExist(Book book) async {
+    return await localBookRepository.findByTitle(book.title);
   }
 }

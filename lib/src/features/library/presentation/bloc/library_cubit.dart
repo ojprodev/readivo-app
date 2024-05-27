@@ -130,10 +130,18 @@ class LibraryCubit extends Cubit<LibraryStates> {
     // if book source is online
     if (book.source == BookSourceEnums.online) {
       // chekc if the book already saved, (using title)
-      bool alreadyAdded = await booksUseCase.bookExist(book);
-      // if not hten proccess into
-      if (alreadyAdded == false) {
-        // save the book thumbnail
+      Book? alreadyAddedBook = await booksUseCase.bookExist(book);
+      // if already exist
+      if (alreadyAddedBook != null) {
+        book.id = alreadyAddedBook.id;
+        book.coverURI = alreadyAddedBook.coverURI;
+        book.updatedAt = DateTime.now();
+
+        //  updated it
+        booksUseCase.updateBook(book).then((_) => print('book updated'));
+        // otherwise, proccess into
+      } else {
+        // saving the book thumbnail
         String? thumbnailPath = await booksUseCase.saveBookThumbnail(book);
         if (thumbnailPath != null) {
           // then change the book remote url to local one
