@@ -4,7 +4,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_datetime_picker_plus/flutter_datetime_picker_plus.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-
 import 'package:readivo_app/src/core/constants/constants.dart';
 import 'package:readivo_app/src/core/enums/enums.dart';
 import 'package:readivo_app/src/core/layouts/basic_layout.dart';
@@ -50,12 +49,12 @@ class _LibraryAddBookScreenState extends State<LibraryAddBookScreen> {
   bool invalidData = false;
 
   // controllers
-  final TextEditingController titleController = TextEditingController();
-  final TextEditingController authorController = TextEditingController();
-  final TextEditingController totalPagesController = TextEditingController();
-  final TextEditingController isbnController = TextEditingController();
-  final TextEditingController publishedAtController = TextEditingController();
-  final TextEditingController descriptionController = TextEditingController();
+  late TextEditingController titleController;
+  late TextEditingController authorController;
+  late TextEditingController totalPagesController;
+  late TextEditingController isbnController;
+  late TextEditingController publishedAtController;
+  late TextEditingController descriptionController;
   final TextEditingController reviewController = TextEditingController();
   final TextEditingController searchBooksShelvesController =
       TextEditingController();
@@ -68,6 +67,18 @@ class _LibraryAddBookScreenState extends State<LibraryAddBookScreen> {
   @override
   void initState() {
     super.initState();
+
+    // set default form controllers value
+    titleController = TextEditingController(text: widget.book!.title);
+    authorController = TextEditingController(text: widget.book!.author);
+    titleController =
+        TextEditingController(text: widget.book!.totalPages.toString());
+    titleController = TextEditingController(text: widget.book!.publishDate);
+    titleController = TextEditingController(text: widget.book!.description);
+    titleController = TextEditingController(text: widget.book!.isbn);
+    titleController = TextEditingController(text: widget.book!.title);
+    titleController = TextEditingController(text: widget.book!.title);
+
     _scrollController.addListener(_scrollListener);
   }
 
@@ -137,14 +148,16 @@ class _LibraryAddBookScreenState extends State<LibraryAddBookScreen> {
                   coverURI: widget.book!.coverURI,
                   lastTimeOpened: widget.book!.lastTimeOpened,
                   updatedAt: DateTime.now(),
-                  createdAt: DateTime.now(),
+                  createdAt: widget.book!.createdAt,
                 );
 
                 // TODO: reading log, rating, review, books shelves and tags
+                if (libraryCubit.bookSource == BookSourceEnums.local) {
+                  book.id = widget.book!.id;
+                }
 
-                book.id = widget.book!.id;
                 // 3. call the cubit update book method
-                libraryCubit.updateBook( book);
+                libraryCubit.updateBook(book);
 
                 Navigator.pop(context);
               } else {
@@ -1145,41 +1158,35 @@ class _LibraryAddBookScreenState extends State<LibraryAddBookScreen> {
         "label": "Title",
         "value": widget.book?.title,
         "controller": titleController,
-        "defaultValue": widget.book?.title,
       },
       {
         "label": "Author",
         "value": widget.book?.author,
         "controller": authorController,
-        "defaultValue": widget.book?.author,
       },
       {
         "label": "Total Pages",
         "value": widget.book?.totalPages,
         "type": 'number',
         "controller": totalPagesController,
-        "defaultValue": widget.book?.totalPages,
       },
       {
         "label": "ISBN",
         "value": null,
         "type": 'number',
         "controller": isbnController,
-        "defaultValue": null,
       },
       {
         "label": "Publish Year",
         "value": widget.book?.publishDate,
         "type": 'date',
         "controller": publishedAtController,
-        "defaultValue": widget.book?.publishDate,
       },
       {
         "label": "Description",
         "value": widget.book?.description,
         "type": 'textarea',
         "controller": descriptionController,
-        "defaultValue": widget.book?.description,
       },
     ];
 
@@ -1191,9 +1198,6 @@ class _LibraryAddBookScreenState extends State<LibraryAddBookScreen> {
           TextEditingController controller =
               field["controller"] as TextEditingController;
 
-          if (field['defaultValue'] != null) {
-            controller.text = field['defaultValue'].toString();
-          }
           return Container(
             margin: const EdgeInsets.symmetric(vertical: 8.0),
             child: CustomInputField(
