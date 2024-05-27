@@ -3,19 +3,19 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:percent_indicator/linear_percent_indicator.dart';
-
 import 'package:readivo_app/src/core/bloc/app_cubit.dart';
 import 'package:readivo_app/src/core/bloc/app_states.dart';
 import 'package:readivo_app/src/core/constants/constants.dart';
 import 'package:readivo_app/src/core/layouts/basic_layout.dart';
-import 'package:readivo_app/src/core/widgets/custom_chip.dart';
-import 'package:readivo_app/src/core/widgets/custom_list_item.dart';
-import 'package:readivo_app/src/core/widgets/custom_text.dart';
-import 'package:readivo_app/src/features/library/presentation/widgets/book_box.dart';
 import 'package:readivo_app/src/core/widgets/bottom_sheet.dart';
 import 'package:readivo_app/src/core/widgets/custom_button.dart';
+import 'package:readivo_app/src/core/widgets/custom_chip.dart';
+import 'package:readivo_app/src/core/widgets/custom_container.dart';
+import 'package:readivo_app/src/core/widgets/custom_list_item.dart';
+import 'package:readivo_app/src/core/widgets/custom_text.dart';
 import 'package:readivo_app/src/core/widgets/partials/bottom_sheet_item.dart';
 import 'package:readivo_app/src/features/library/presentation/screens/library_search_screen.dart';
+import 'package:readivo_app/src/features/library/presentation/widgets/book_box.dart';
 
 class LibraryHomeScreen extends StatefulWidget {
   const LibraryHomeScreen({super.key});
@@ -32,7 +32,7 @@ class _LibraryHomeScreenState extends State<LibraryHomeScreen> {
     'Art',
     'Philosophy',
     'Health',
-    ' Programming',
+    'Programming',
     'Communication',
     'Fiction',
     'Cooking',
@@ -62,6 +62,7 @@ class _LibraryHomeScreenState extends State<LibraryHomeScreen> {
       title: 'Good morning',
       showBackButton: false,
       isPinned: false,
+      appBarBackground: Colors.white,
       actions: [
         _buildAddButton(),
       ],
@@ -148,7 +149,7 @@ class _LibraryHomeScreenState extends State<LibraryHomeScreen> {
 
   Widget _buildContinueReadingSection() {
     return Container(
-      color: AppColors.lightGrey.withOpacity(0.4),
+      color: Colors.black,
       height: 300.0,
       child: Column(
         children: [
@@ -197,130 +198,90 @@ class _LibraryHomeScreenState extends State<LibraryHomeScreen> {
   }
 
   Widget _buildReadingBookCard() {
-    return Container(
-      width: 300,
-      height: 200,
-      padding: const EdgeInsets.symmetric(vertical: 6.0, horizontal: 4.0),
-      margin: const EdgeInsets.only(left: 16.0, bottom: 8.0, right: 8.0),
-      clipBehavior: Clip.none,
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(12),
-        boxShadow: [
-          BoxShadow(
-            color: AppColors.lightGrey.withOpacity(0.4),
-            blurRadius: 8,
-            offset: const Offset(0, 2),
-          ),
-        ],
-      ),
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
+    return Padding(
+      padding: const EdgeInsets.all(10.0),
+      child: Stack(
         children: [
-          SizedBox(
-            width: 130,
-            child: OverflowBox(
-              alignment: Alignment.centerRight,
-              maxWidth: double.infinity,
-              minWidth: 130,
-              child: Container(
-                margin: const EdgeInsets.only(right: 12.0),
-                child: const BookBox(
-                  borderRadius: 6.0,
-                  width: 130,
-                ),
-              ),
+          RotationTransition(
+            turns: const AlwaysStoppedAnimation(-2.6 / 360),
+            child: CustomContainer(
+              color: AppColors.lightWhite.withOpacity(0.5),
             ),
           ),
-          Expanded(
-            child: Padding(
-              padding: const EdgeInsets.only(right: 4.0),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                mainAxisAlignment: MainAxisAlignment.spaceAround,
-                children: [
-                  const Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      CustomText(
-                        'The Alchemist',
-                        fontWeight: FontWeight.w500,
-                        fontSize: 20,
-                      ),
-                      CustomText(
-                        'By Paulo Coelho',
-                        color: AppColors.grey,
-                      ),
-                    ],
-                  ),
-                  const Row(
-                    mainAxisAlignment: MainAxisAlignment.start,
-                    children: [
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.start,
-                        children: [
-                          Icon(
-                            Icons.access_time_filled_rounded,
-                            size: 16,
-                          ),
-                          SizedBox(width: 4.0),
-                          CustomText('2 weeks'),
-                        ],
-                      ),
-                      Expanded(
-                        child: Row(
-                          mainAxisSize: MainAxisSize.max,
+          CustomContainer(
+            width: double.infinity,
+            height: double.infinity,
+            color: AppColors.lightWhite,
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              // mainAxisSize: MainAxisSize.max,
+              children: [
+                const BookBox(
+                  width: 121,
+                  height: 190,
+                ),
+                Expanded(
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 14.0),
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.spaceAround,
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        const CustomText(
+                          'The Almanack of naval ravikant',
+                          maxLines: 2,
+                        ),
+                        Column(
                           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                           children: [
-                            CustomText('5 Quotes', color: AppColors.grey),
-                            CustomText('3 Notes', color: AppColors.grey),
+                            const Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                CustomText('page 230 of 345'),
+                                CustomText('63%'),
+                              ],
+                            ),
+                            const SizedBox(
+                              height: 8.0,
+                            ),
+                            CustomContainer(
+                              padding: const EdgeInsets.all(6.0),
+                              color: AppColors.lightGrey,
+                              borderRadius: 12.0,
+                              child: LinearPercentIndicator(
+                                lineHeight: 8.0,
+                                percent: 0.63,
+                                barRadius: const Radius.circular(4.0),
+                                backgroundColor: Colors.white,
+                                progressColor: AppColors.grey,
+                                padding: EdgeInsets.zero,
+                              ),
+                            ),
                           ],
                         ),
-                      )
-                    ],
-                  ),
-                  Row(
-                    children: [
-                      Expanded(
-                        child: LinearPercentIndicator(
-                          // width: 140.0,
-                          lineHeight: 12.0,
-                          percent: 0.35,
-                          barRadius: const Radius.circular(6.0),
-                          backgroundColor: AppColors.lightGrey,
-                          progressColor: AppColors.grey,
-                          padding: EdgeInsets.zero,
+                        const Row(
+                          mainAxisAlignment: MainAxisAlignment.end,
+                          crossAxisAlignment: CrossAxisAlignment.end,
+                          children: [
+                            CustomButton(
+                              text: 'Continue Reading',
+                              styleType: ButtonStyleType.ghost,
+                              width: 140,
+                              child: CustomText(
+                                'Continue Reading',
+                                textAlign: TextAlign.end,
+                                color: Colors.black,
+                              ),
+                            )
+                          ],
                         ),
-                      ),
-                      const SizedBox(width: 8.0),
-                      const CustomText('35%', fontSize: 14),
-                    ],
-                  ),
-                  const CustomButton(
-                    text: 'Start a session',
-                    color: AppColors.grey,
-                    width: 240,
-                    child: Row(
-                      mainAxisSize: MainAxisSize.max,
-                      children: [
-                        Expanded(
-                            child: CustomText(
-                          'Start a Session',
-                          textAlign: TextAlign.center,
-                        )),
-                        CustomButton(
-                          text: 'start session icon',
-                          width: 40,
-                          color: Colors.black,
-                          child: Icon(Icons.play_circle_fill_rounded),
-                        )
                       ],
                     ),
                   ),
-                ],
-              ),
+                )
+              ],
             ),
-          )
+          ),
         ],
       ),
     );
