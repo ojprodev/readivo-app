@@ -4,6 +4,7 @@ import 'package:readivo_app/src/features/library/domain/entities/book.dart';
 
 class RemoteBook extends Book {
   RemoteBook({
+    super.uid,
     required super.title,
     required super.createdAt,
     super.author,
@@ -35,9 +36,11 @@ class RemoteBook extends Book {
   factory RemoteBook.fromGoogleBooksJson(Map<String, dynamic> json) {
     var book = json['volumeInfo'];
     return RemoteBook(
+      uid: json['id'],
       title: book['title'],
       author: book['authors'] != null ? book['authors'].join(', ') : '',
       source: BookSourceEnums.online,
+      globalRating: Utils.safeConvertToDouble(book['averageRating']),
       description: book['description'],
       publishDate: book['publishedDate'].toString(),
       coverURI:

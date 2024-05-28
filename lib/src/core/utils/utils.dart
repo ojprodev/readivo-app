@@ -36,6 +36,19 @@ class Utils {
     }
   }
 
+  static double? safeConvertToDouble(dynamic value) {
+    if (value == null) {
+      return null;
+    }
+    if (value is int) {
+      return value.toDouble();
+    }
+    if (value is double) {
+      return value;
+    }
+    throw ArgumentError('Value is neither int nor double: $value');
+  }
+
   /// A function to predict a file name from a given file path with optional modifications.
   ///
   /// This function takes a file [path] as input and predicts the file name by extracting it from the path.
