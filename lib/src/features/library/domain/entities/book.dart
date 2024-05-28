@@ -1,11 +1,18 @@
 import 'package:isar/isar.dart';
 import 'package:readivo_app/src/core/enums/enums.dart';
+import 'package:readivo_app/src/features/library/domain/entities/note.dart';
+import 'package:readivo_app/src/features/library/domain/entities/reading_session.dart';
+import 'package:readivo_app/src/features/library/domain/entities/review.dart';
+import 'package:readivo_app/src/features/library/domain/entities/shelf.dart';
+import 'package:readivo_app/src/features/library/domain/entities/tag.dart';
 
 part 'book.g.dart';
 
 @collection
+@Name('books')
 class Book {
   Id id = Isar.autoIncrement;
+  late String? uid;
   late String title;
   late String? author;
   late String? coverURI;
@@ -27,8 +34,16 @@ class Book {
   late DateTime? updatedAt;
   late DateTime createdAt;
 
+  // links
+  final shelves = IsarLinks<Shelf>();
+  final tags = IsarLinks<Tag>();
+  final review = IsarLink<Review>();
+  final readingSessions = IsarLinks<ReadingSession>();
+  final notes = IsarLinks<Note>();
+
   Book({
     required this.title,
+    this.uid,
     this.author,
     this.coverURI,
     this.isbn,
