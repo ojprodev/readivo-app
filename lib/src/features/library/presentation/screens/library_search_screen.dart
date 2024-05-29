@@ -2,13 +2,13 @@ import 'package:conditional_builder_null_safety/conditional_builder_null_safety.
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-
 import 'package:readivo_app/src/core/bloc/app_cubit.dart';
 import 'package:readivo_app/src/core/constants/constants.dart';
 import 'package:readivo_app/src/core/constants/images.dart';
 import 'package:readivo_app/src/core/enums/enums.dart';
 import 'package:readivo_app/src/core/layouts/basic_layout.dart';
 import 'package:readivo_app/src/core/services/permission_service.dart';
+import 'package:readivo_app/src/core/widgets/bottom_sheet.dart';
 import 'package:readivo_app/src/core/widgets/custom_alert.dart';
 import 'package:readivo_app/src/core/widgets/custom_button.dart';
 import 'package:readivo_app/src/core/widgets/custom_input_field.dart';
@@ -17,7 +17,6 @@ import 'package:readivo_app/src/features/library/domain/entities/book.dart';
 import 'package:readivo_app/src/features/library/presentation/bloc/library_cubit.dart';
 import 'package:readivo_app/src/features/library/presentation/screens/library_add_book_screen.dart';
 import 'package:readivo_app/src/features/library/presentation/widgets/book_grid_item.dart';
-import 'package:readivo_app/src/features/library/presentation/widgets/book_list_item.dart';
 
 class LibrarySearchScreen extends StatefulWidget {
   const LibrarySearchScreen({super.key});
@@ -31,7 +30,6 @@ class _LibrarySearchScreenState extends State<LibrarySearchScreen>
   late AppCubit appCubit;
   late LibraryCubit libraryCubit;
   SearchDisplayOption searchDisplayOption = SearchDisplayOption.grid;
-  bool showFilters = false;
   bool initialLoad = true;
   bool isLoading = false;
   List<Book> books = [];
@@ -71,7 +69,7 @@ class _LibrarySearchScreenState extends State<LibrarySearchScreen>
         child: SvgPicture.asset(AppIcons.chevronLeft),
         onPressed: () {
           // redirect to previous screen
-          Navigator.of(context).pop();
+          Navigator.pop(context);
         },
       ),
       showBackButton: false,
@@ -80,7 +78,7 @@ class _LibrarySearchScreenState extends State<LibrarySearchScreen>
         controller: searchBooksController,
         placeholder: "Search for a book",
         textInputAction: TextInputAction.search,
-        fillColor: AppColors.lightGrey.withOpacity(0.4),
+        fillColor: AppColors.lightWhite.withOpacity(0.2),
         endIcon: _buildSearchIcon(),
         maxLines: 1,
         onChanged: (value) {
@@ -110,9 +108,11 @@ class _LibrarySearchScreenState extends State<LibrarySearchScreen>
           width: 40,
           child: SvgPicture.asset(AppIcons.adjustments),
           onPressed: () {
-            setState(() {
-              showFilters = !showFilters;
-            });
+            CustomBottomSheet.show(
+              context: context,
+              height: 90,
+              child: _buildSearchAdjustements(),
+            );
           },
         ),
       ],
@@ -123,14 +123,9 @@ class _LibrarySearchScreenState extends State<LibrarySearchScreen>
             bool showRefresh = libraryCubit.bookSource == BookSourceEnums.local;
 
             Widget content = SingleChildScrollView(
-              child: Column(
-                children: [
-                  if (showFilters) _buildFiltersSection(),
-                  BlocConsumer<LibraryCubit, LibraryStates>(
-                    listener: _buildChangeListener,
-                    builder: _buildLibrarySearchContainer,
-                  ),
-                ],
+              child: BlocConsumer<LibraryCubit, LibraryStates>(
+                listener: _buildChangeListener,
+                builder: _buildLibrarySearchContainer,
               ),
             );
 
@@ -165,7 +160,13 @@ class _LibrarySearchScreenState extends State<LibrarySearchScreen>
           duration: const Duration(milliseconds: 300),
           child: RotationTransition(
             turns: _loadingController,
-            child: SvgPicture.asset(AppIcons.reload),
+            child: SvgPicture.asset(
+              AppIcons.reload,
+              colorFilter: ColorFilter.mode(
+                AppColors.grey.withOpacity(0.4),
+                BlendMode.srcIn,
+              ),
+            ),
           ),
         );
       } else {
@@ -200,10 +201,6 @@ class _LibrarySearchScreenState extends State<LibrarySearchScreen>
     }
 
     if (state is LibraryBookSourceChangeState) {
-      setState(() {
-        showFilters = false;
-      });
-
       if (libraryCubit.bookSource == BookSourceEnums.online) {
         books = libraryCubit.remoteBooks;
       } else {
@@ -236,8 +233,6 @@ class _LibrarySearchScreenState extends State<LibrarySearchScreen>
         return Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            // TODO: hide for this MVP
-            // _buildHeadSection(booksCount: books.length),
             _buildSearchList(books: books),
           ],
         );
@@ -284,54 +279,52 @@ class _LibrarySearchScreenState extends State<LibrarySearchScreen>
     );
   }
 
-  Widget _buildFiltersSection() {
+  Widget _buildSearchAdjustements() {
     return Container(
-      color: AppColors.lightGrey.withOpacity(0.2),
-      padding: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 14.0),
+      color: Colors.white,
+      padding: const EdgeInsets.symmetric(horizontal: 14.0),
       child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
+          const CustomText('Source', fontSize: 18),
+          const SizedBox(height: 6.0),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              const Text('Source'),
-              const SizedBox(height: 4.0),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Expanded(
-                    child: CustomButton(
-                      styleType:
-                          libraryCubit.bookSource == BookSourceEnums.online
-                              ? ButtonStyleType.filled
-                              : ButtonStyleType.outline,
-                      color: AppColors.grey,
-                      text: 'Online',
-                      onPressed: () {
-                        setState(() {
-                          libraryCubit
-                              .changeBookSearchSource(BookSourceEnums.online);
-                        });
-                      },
-                    ),
-                  ),
-                  const SizedBox(width: 8.0),
-                  Expanded(
-                    child: CustomButton(
-                      styleType:
-                          libraryCubit.bookSource == BookSourceEnums.local
-                              ? ButtonStyleType.filled
-                              : ButtonStyleType.outline,
-                      color: AppColors.grey,
-                      text: 'Local',
-                      onPressed: () {
-                        setState(() {
-                          libraryCubit
-                              .changeBookSearchSource(BookSourceEnums.local);
-                        });
-                      },
-                    ),
-                  ),
-                ],
+              Expanded(
+                child: CustomButton(
+                  styleType:
+                      libraryCubit.bookSource == BookSourceEnums.online
+                          ? ButtonStyleType.filled
+                          : ButtonStyleType.outline,
+                  color: AppColors.grey,
+                  text: 'Online',
+                  onPressed: () {
+                    setState(() {
+                      libraryCubit
+                          .changeBookSearchSource(BookSourceEnums.online);
+                    });
+                    Navigator.pop(context);
+                  },
+                ),
+              ),
+              const SizedBox(width: 8.0),
+              Expanded(
+                child: CustomButton(
+                  styleType:
+                      libraryCubit.bookSource == BookSourceEnums.local
+                          ? ButtonStyleType.filled
+                          : ButtonStyleType.outline,
+                  color: AppColors.grey,
+                  text: 'Local',
+                  onPressed: () {
+                    setState(() {
+                      libraryCubit
+                          .changeBookSearchSource(BookSourceEnums.local);
+                    });
+                    Navigator.pop(context);
+                  },
+                ),
               ),
             ],
           ),
@@ -340,94 +333,34 @@ class _LibrarySearchScreenState extends State<LibrarySearchScreen>
     );
   }
 
-  Widget _buildHeadSection({required int booksCount}) {
-    return Padding(
-      padding: const EdgeInsets.only(left: 14.0),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        crossAxisAlignment: CrossAxisAlignment.center,
-        children: [
-          CustomText(
-            'Found $booksCount Books',
-            fontWeight: FontWeight.w500,
-            fontSize: 16,
-            color: AppColors.grey,
-          ),
-          IconButton(
-            onPressed: () {
-              setState(() {
-                if (searchDisplayOption == SearchDisplayOption.list) {
-                  searchDisplayOption = SearchDisplayOption.grid;
-                } else {
-                  searchDisplayOption = SearchDisplayOption.list;
-                }
-              });
-            },
-            icon: Icon(
-              searchDisplayOption == SearchDisplayOption.list
-                  ? Icons.grid_view_rounded
-                  : Icons.format_list_bulleted_sharp,
-              size: 20,
-            ),
-          )
-        ],
-      ),
-    );
-  }
-
   Widget _buildSearchList({required List<Book> books}) {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 6.0, vertical: 4.0),
-      child: ConditionalBuilder(
-        condition: searchDisplayOption == SearchDisplayOption.grid,
-        builder: (context) {
-          return GridView.builder(
-            shrinkWrap: true,
-            physics: const NeverScrollableScrollPhysics(),
-            gridDelegate: const SliverGridDelegateWithMaxCrossAxisExtent(
-              maxCrossAxisExtent: 240,
-              mainAxisSpacing: 8.0,
-              crossAxisSpacing: 8.0,
-              mainAxisExtent: 310,
-            ),
-            padding: const EdgeInsets.all(8.0),
-            itemCount: books.length,
-            itemBuilder: (gridContext, index) => GestureDetector(
-              onTap: () {
-                appCubit.changeScreen(LibraryAddBookScreen(
-                  book: books[index],
-                ));
-              },
-              child: BookGridItem(
-                book: books[index],
-                coverWidth: 180,
-                coverHeight: 240,
-                titleFontSize: 16,
-                authorFontSize: 14,
-              ),
-            ),
-          );
-        },
-        fallback: (context) {
-          return ListView.builder(
-            shrinkWrap: true,
-            itemCount: books.length,
-            physics: const NeverScrollableScrollPhysics(),
-            itemBuilder: (context, index) {
-              return GestureDetector(
-                onTap: () {
-                  appCubit.changeScreen(LibraryAddBookScreen(
-                    book: books[index],
-                  ));
-                },
-                child: BookListItem(
-                  key: UniqueKey(),
-                  book: books[index],
-                ),
-              );
-            },
-          );
-        },
+      child: GridView.builder(
+        shrinkWrap: true,
+        physics: const NeverScrollableScrollPhysics(),
+        gridDelegate: const SliverGridDelegateWithMaxCrossAxisExtent(
+          maxCrossAxisExtent: 240,
+          mainAxisSpacing: 8.0,
+          crossAxisSpacing: 8.0,
+          mainAxisExtent: 310,
+        ),
+        padding: const EdgeInsets.all(8.0),
+        itemCount: books.length,
+        itemBuilder: (gridContext, index) => GestureDetector(
+          onTap: () {
+            appCubit.changeScreen(LibraryAddBookScreen(
+              book: books[index],
+            ));
+          },
+          child: BookGridItem(
+            book: books[index],
+            coverWidth: 180,
+            coverHeight: 240,
+            titleFontSize: 16,
+            authorFontSize: 14,
+          ),
+        ),
       ),
     );
   }

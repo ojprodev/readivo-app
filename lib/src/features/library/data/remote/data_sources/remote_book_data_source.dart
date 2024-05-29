@@ -64,6 +64,7 @@ class RemoteBookDataSourceImpl implements RemoteBookDataSource {
     }
   }
 
+  @override
   Future<ByteData> downloadImageAsBytes(String url) async {
   try {
     // Download the image data as bytes

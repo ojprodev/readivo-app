@@ -16,6 +16,7 @@ class CustomBottomSheet {
     showModalBottomSheet<void>(
       context: context,
       showDragHandle: showDragHandle,
+      useSafeArea: true,
       enableDrag: true,
       isScrollControlled: true,
       shape: const RoundedRectangleBorder(
