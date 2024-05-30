@@ -78,35 +78,40 @@ const BookSchema = CollectionSchema(
       name: r'ratingCount',
       type: IsarType.long,
     ),
-    r'readingStatus': PropertySchema(
+    r'readCount': PropertySchema(
       id: 12,
+      name: r'readCount',
+      type: IsarType.long,
+    ),
+    r'readingStatus': PropertySchema(
+      id: 13,
       name: r'readingStatus',
       type: IsarType.string,
       enumMap: _BookreadingStatusEnumValueMap,
     ),
     r'source': PropertySchema(
-      id: 13,
+      id: 14,
       name: r'source',
       type: IsarType.string,
       enumMap: _BooksourceEnumValueMap,
     ),
     r'title': PropertySchema(
-      id: 14,
+      id: 15,
       name: r'title',
       type: IsarType.string,
     ),
     r'totalPages': PropertySchema(
-      id: 15,
+      id: 16,
       name: r'totalPages',
       type: IsarType.long,
     ),
     r'uid': PropertySchema(
-      id: 16,
+      id: 17,
       name: r'uid',
       type: IsarType.string,
     ),
     r'updatedAt': PropertySchema(
-      id: 17,
+      id: 18,
       name: r'updatedAt',
       type: IsarType.dateTime,
     )
@@ -239,12 +244,13 @@ void _bookSerialize(
   writer.writeString(offsets[9], object.path);
   writer.writeString(offsets[10], object.publishDate);
   writer.writeLong(offsets[11], object.ratingCount);
-  writer.writeString(offsets[12], object.readingStatus?.name);
-  writer.writeString(offsets[13], object.source.name);
-  writer.writeString(offsets[14], object.title);
-  writer.writeLong(offsets[15], object.totalPages);
-  writer.writeString(offsets[16], object.uid);
-  writer.writeDateTime(offsets[17], object.updatedAt);
+  writer.writeLong(offsets[12], object.readCount);
+  writer.writeString(offsets[13], object.readingStatus?.name);
+  writer.writeString(offsets[14], object.source.name);
+  writer.writeString(offsets[15], object.title);
+  writer.writeLong(offsets[16], object.totalPages);
+  writer.writeString(offsets[17], object.uid);
+  writer.writeDateTime(offsets[18], object.updatedAt);
 }
 
 Book _bookDeserialize(
@@ -266,14 +272,15 @@ Book _bookDeserialize(
     path: reader.readStringOrNull(offsets[9]),
     publishDate: reader.readStringOrNull(offsets[10]),
     ratingCount: reader.readLongOrNull(offsets[11]),
+    readCount: reader.readLongOrNull(offsets[12]),
     readingStatus:
-        _BookreadingStatusValueEnumMap[reader.readStringOrNull(offsets[12])],
-    source: _BooksourceValueEnumMap[reader.readStringOrNull(offsets[13])] ??
+        _BookreadingStatusValueEnumMap[reader.readStringOrNull(offsets[13])],
+    source: _BooksourceValueEnumMap[reader.readStringOrNull(offsets[14])] ??
         BookSourceEnums.online,
-    title: reader.readString(offsets[14]),
-    totalPages: reader.readLongOrNull(offsets[15]),
-    uid: reader.readStringOrNull(offsets[16]),
-    updatedAt: reader.readDateTimeOrNull(offsets[17]),
+    title: reader.readString(offsets[15]),
+    totalPages: reader.readLongOrNull(offsets[16]),
+    uid: reader.readStringOrNull(offsets[17]),
+    updatedAt: reader.readDateTimeOrNull(offsets[18]),
   );
   object.id = id;
   return object;
@@ -311,18 +318,20 @@ P _bookDeserializeProp<P>(
     case 11:
       return (reader.readLongOrNull(offset)) as P;
     case 12:
+      return (reader.readLongOrNull(offset)) as P;
+    case 13:
       return (_BookreadingStatusValueEnumMap[reader.readStringOrNull(offset)])
           as P;
-    case 13:
+    case 14:
       return (_BooksourceValueEnumMap[reader.readStringOrNull(offset)] ??
           BookSourceEnums.online) as P;
-    case 14:
-      return (reader.readString(offset)) as P;
     case 15:
-      return (reader.readLongOrNull(offset)) as P;
+      return (reader.readString(offset)) as P;
     case 16:
-      return (reader.readStringOrNull(offset)) as P;
+      return (reader.readLongOrNull(offset)) as P;
     case 17:
+      return (reader.readStringOrNull(offset)) as P;
+    case 18:
       return (reader.readDateTimeOrNull(offset)) as P;
     default:
       throw IsarError('Unknown property with id $propertyId');
@@ -1865,6 +1874,74 @@ extension BookQueryFilter on QueryBuilder<Book, Book, QFilterCondition> {
     });
   }
 
+  QueryBuilder<Book, Book, QAfterFilterCondition> readCountIsNull() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(const FilterCondition.isNull(
+        property: r'readCount',
+      ));
+    });
+  }
+
+  QueryBuilder<Book, Book, QAfterFilterCondition> readCountIsNotNull() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(const FilterCondition.isNotNull(
+        property: r'readCount',
+      ));
+    });
+  }
+
+  QueryBuilder<Book, Book, QAfterFilterCondition> readCountEqualTo(int? value) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.equalTo(
+        property: r'readCount',
+        value: value,
+      ));
+    });
+  }
+
+  QueryBuilder<Book, Book, QAfterFilterCondition> readCountGreaterThan(
+    int? value, {
+    bool include = false,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.greaterThan(
+        include: include,
+        property: r'readCount',
+        value: value,
+      ));
+    });
+  }
+
+  QueryBuilder<Book, Book, QAfterFilterCondition> readCountLessThan(
+    int? value, {
+    bool include = false,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.lessThan(
+        include: include,
+        property: r'readCount',
+        value: value,
+      ));
+    });
+  }
+
+  QueryBuilder<Book, Book, QAfterFilterCondition> readCountBetween(
+    int? lower,
+    int? upper, {
+    bool includeLower = true,
+    bool includeUpper = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.between(
+        property: r'readCount',
+        lower: lower,
+        includeLower: includeLower,
+        upper: upper,
+        includeUpper: includeUpper,
+      ));
+    });
+  }
+
   QueryBuilder<Book, Book, QAfterFilterCondition> readingStatusIsNull() {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(const FilterCondition.isNull(
@@ -2936,6 +3013,18 @@ extension BookQuerySortBy on QueryBuilder<Book, Book, QSortBy> {
     });
   }
 
+  QueryBuilder<Book, Book, QAfterSortBy> sortByReadCount() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'readCount', Sort.asc);
+    });
+  }
+
+  QueryBuilder<Book, Book, QAfterSortBy> sortByReadCountDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'readCount', Sort.desc);
+    });
+  }
+
   QueryBuilder<Book, Book, QAfterSortBy> sortByReadingStatus() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'readingStatus', Sort.asc);
@@ -3166,6 +3255,18 @@ extension BookQuerySortThenBy on QueryBuilder<Book, Book, QSortThenBy> {
     });
   }
 
+  QueryBuilder<Book, Book, QAfterSortBy> thenByReadCount() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'readCount', Sort.asc);
+    });
+  }
+
+  QueryBuilder<Book, Book, QAfterSortBy> thenByReadCountDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'readCount', Sort.desc);
+    });
+  }
+
   QueryBuilder<Book, Book, QAfterSortBy> thenByReadingStatus() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'readingStatus', Sort.asc);
@@ -3319,6 +3420,12 @@ extension BookQueryWhereDistinct on QueryBuilder<Book, Book, QDistinct> {
     });
   }
 
+  QueryBuilder<Book, Book, QDistinct> distinctByReadCount() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addDistinctBy(r'readCount');
+    });
+  }
+
   QueryBuilder<Book, Book, QDistinct> distinctByReadingStatus(
       {bool caseSensitive = true}) {
     return QueryBuilder.apply(this, (query) {
@@ -3437,6 +3544,12 @@ extension BookQueryProperty on QueryBuilder<Book, Book, QQueryProperty> {
   QueryBuilder<Book, int?, QQueryOperations> ratingCountProperty() {
     return QueryBuilder.apply(this, (query) {
       return query.addPropertyName(r'ratingCount');
+    });
+  }
+
+  QueryBuilder<Book, int?, QQueryOperations> readCountProperty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addPropertyName(r'readCount');
     });
   }
 

@@ -25,6 +25,7 @@ class Book {
   late int? totalPages;
   late String? description;
   late String? publishDate;
+  late int? readCount;
   @Enumerated(EnumType.name)
   late ReadingStatus? readingStatus;
   late double? globalRating;
@@ -58,6 +59,7 @@ class Book {
     this.globalRating,
     this.ratingCount,
     this.bookType,
+    this.readCount,
     this.updatedAt,
     required this.createdAt,
   });
