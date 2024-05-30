@@ -1,302 +1,299 @@
-import 'package:collection/collection.dart';
+import 'dart:io';
+import 'dart:ui';
+
 import 'package:conditional_builder_null_safety/conditional_builder_null_safety.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_datetime_picker_plus/flutter_datetime_picker_plus.dart';
-import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:readivo_app/src/core/constants/constants.dart';
+import 'package:readivo_app/src/core/constants/colors.dart';
+import 'package:readivo_app/src/core/constants/icons.dart';
 import 'package:readivo_app/src/core/enums/enums.dart';
 import 'package:readivo_app/src/core/layouts/basic_layout.dart';
 import 'package:readivo_app/src/core/utils/utils.dart';
 import 'package:readivo_app/src/core/widgets/bottom_sheet.dart';
-import 'package:readivo_app/src/core/widgets/custom_alert.dart';
 import 'package:readivo_app/src/core/widgets/custom_button.dart';
-import 'package:readivo_app/src/core/widgets/custom_chip.dart';
-import 'package:readivo_app/src/core/widgets/custom_input_field.dart';
-import 'package:readivo_app/src/core/widgets/custom_list_item.dart';
+import 'package:readivo_app/src/core/widgets/custom_container.dart';
 import 'package:readivo_app/src/core/widgets/custom_text.dart';
 import 'package:readivo_app/src/core/widgets/partials/bottom_sheet_item.dart';
+import 'package:readivo_app/src/core/widgets/toast.dart';
 import 'package:readivo_app/src/features/library/domain/entities/book.dart';
-import 'package:readivo_app/src/features/library/presentation/bloc/library_cubit.dart';
 import 'package:readivo_app/src/features/library/presentation/widgets/book_box.dart';
 import 'package:readivo_app/src/features/library/presentation/widgets/book_cover.dart';
 
 class LibraryAddBookScreen extends StatefulWidget {
-  final Book? book;
-
-  const LibraryAddBookScreen({super.key, this.book});
+  final Book book;
+  const LibraryAddBookScreen({super.key, required this.book});
 
   @override
   State<LibraryAddBookScreen> createState() => _LibraryAddBookScreenState();
 }
 
 class _LibraryAddBookScreenState extends State<LibraryAddBookScreen> {
-  ReadingStatus selectedStatus = ReadingStatus.wantToRead;
-  DateTime? startDate;
-  DateTime? finishDate;
-  BookType selectedBookType = BookType.paperBook;
-  List<Map<String, dynamic>> selectedBooksShelves = [];
-  List<String> selectedTags = [];
-  List<String> tempSelectedTags = [];
-  List<Map<String, dynamic>> tempSelectedBooksShelves = [];
-  List<Map<String, dynamic>> booksShelvesSearchResult = [];
-  List<String> tagsSearchResult = [];
-  final List<Map<String, dynamic>> booksShelves = [];
-  final List<String> tagsList = [];
+  ReadingStatus selectedReadingStatus = ReadingStatus.wantToRead;
+  bool isReadingStatusActive = false;
   bool invalidStartDate = false;
   bool invalidFinishDate = false;
   bool invalidPagesCount = false;
   bool invalidData = false;
-
-  // controllers
-  late TextEditingController titleController;
-  late TextEditingController authorController;
-  late TextEditingController totalPagesController;
-  late TextEditingController isbnController;
-  late TextEditingController publishedAtController;
-  late TextEditingController descriptionController;
-  final TextEditingController reviewController = TextEditingController();
-  final TextEditingController searchBooksShelvesController =
-      TextEditingController();
-  final TextEditingController searchTagsController = TextEditingController();
-
-  // handle scroll change
-  final ScrollController _scrollController = ScrollController();
-  double _scrollPosition = 0;
-
-  @override
-  void initState() {
-    super.initState();
-
-    // set default form controllers value
-    titleController = TextEditingController(text: widget.book!.title);
-    authorController = TextEditingController(text: widget.book!.author);
-    totalPagesController =
-        TextEditingController(text: widget.book!.totalPages.toString());
-    publishedAtController = TextEditingController(text: widget.book!.publishDate);
-    descriptionController = TextEditingController(text: widget.book!.description);
-    isbnController = TextEditingController(text: widget.book!.isbn);
-
-    _scrollController.addListener(_scrollListener);
-  }
-
-  void _scrollListener() {
-    setState(() {
-      _scrollPosition = _scrollController.position.pixels;
-    });
-  }
-
-  @override
-  void dispose() {
-    _scrollController.removeListener(_scrollListener);
-    _scrollController.dispose();
-    super.dispose();
-  }
+  DateTime? startDate;
+  DateTime? finishDate;
 
   @override
   Widget build(BuildContext context) {
-    LibraryCubit libraryCubit = LibraryCubit.get(context);
     return BasicLayout(
+      title: 'Add Book',
+      isPinned: false,
+      isTransparent: true,
+      titleWidget: const SizedBox(),
       extendBody: true,
-      appBarBackground:
-          _scrollPosition >= 1 ? Colors.white : Colors.transparent,
-      leading: IconButton(
-        onPressed: () => Navigator.of(context).pop(),
-        icon: Icon(
-          Icons.chevron_left_sharp,
-          size: 36,
-          color: _scrollPosition >= 1 ? Colors.black : Colors.white,
+      leading: CustomButton(
+        text: 'Back',
+        height: 20,
+        width: 30,
+        borderRadius: 10,
+        styleType: ButtonStyleType.ghost,
+        onPressed: () {
+          Navigator.pop(context);
+        },
+        child: SvgPicture.asset(
+          AppIcons.chevronLeft,
+          colorFilter: const ColorFilter.mode(Colors.white, BlendMode.srcIn),
         ),
       ),
-      title: 'Add This Book',
-      titleWidget: Text(
-        'Add This book',
-        style: TextStyle(
-          color: _scrollPosition >= 1 ? Colors.black : Colors.white,
-        ),
-      ),
-      centerTitle: true,
       actions: [
-        Padding(
-          padding: const EdgeInsets.only(right: 8.0),
-          child: CustomButton(
-            text: 'add book',
-            color: _scrollPosition >= 1 ? Colors.black : Colors.white,
-            width: 80,
-            onPressed: () {
-              // 1. check if all the data is valid
-              if (!invalidData &&
-                  !invalidStartDate &&
-                  !invalidFinishDate &&
-                  !invalidPagesCount) {
-                // 2. save all added info the provided book object
-                // save book related info
-                Book book = Book(
-                  title: titleController.text,
-                  author: authorController.text,
-                  totalPages: int.parse(totalPagesController.text),
-                  publishDate: publishedAtController.text,
-                  isbn: isbnController.text,
-                  description: descriptionController.text,
-                  source: widget.book!.source,
-                  bookType: selectedBookType,
-                  readingStatus: selectedStatus,
-                  path: widget.book!.path,
-                  fileSize: widget.book!.fileSize,
-                  coverURI: widget.book!.coverURI,
-                  lastTimeOpened: widget.book!.lastTimeOpened,
-                  updatedAt: DateTime.now(),
-                  createdAt: widget.book!.createdAt,
-                );
-
-                // TODO: reading log, rating, review, books shelves and tags
-                if (libraryCubit.bookSource == BookSourceEnums.local) {
-                  book.id = widget.book!.id;
-                }
-
-                // 3. call the cubit update book method
-                libraryCubit.updateBook(book);
-
-                Navigator.pop(context);
-              } else {
-                print('invalid data');
-              }
-            },
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-              children: [
-                Icon(Icons.add_circle,
-                    color: _scrollPosition >= 1 ? Colors.white : Colors.black),
-                Text(
-                  'Add',
-                  style: TextStyle(
-                    color: _scrollPosition >= 1 ? Colors.white : Colors.black,
-                    fontSize: 16,
-                  ),
-                ),
-              ],
-            ),
+        CustomButton(
+          text: 'Edit',
+          width: 60,
+          styleType: ButtonStyleType.ghost,
+          child: SvgPicture.asset(
+            AppIcons.edit,
+            colorFilter: const ColorFilter.mode(Colors.white, BlendMode.srcIn),
           ),
         ),
       ],
-      body: SingleChildScrollView(
-        controller: _scrollController,
-        child: Container(
-          color: Colors.white,
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              _buildBookCoverSection(),
-              _buildReadingStatusButton(),
-              const SizedBox(height: 8.0),
-              _buildReadingDateRange(),
-              const SizedBox(height: 8.0),
-              _buildRatingSection(),
-              _buildBookTypeTabs(),
-              _buildAddToBooksShelvesSection(),
-              _buildBookTagsSection(),
-              _buildBookInfoFields(),
-              const SizedBox(height: 8.0),
-            ],
-          ),
+      body: Container(
+        color: Colors.white,
+        child: Column(
+          children: [
+            _buildBookCoverSection(),
+            const SizedBox(height: 16),
+            _buildBookTitleAndAuthor(),
+            const SizedBox(height: 16.0),
+            _buildReadingStatusButton(),
+            _buildReadingDateRange(),
+            const SizedBox(height: 24),
+            _buildBookInfoCard(),
+            const SizedBox(height: 24),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 20.0),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const CustomText(
+                    'Description',
+                    fontSize: 18,
+                    fontWeight: FontWeight.bold,
+                  ),
+                  CustomText(
+                    '${widget.book.description}',
+                    maxLines: 8,
+                    color: AppColors.grey,
+                  ),
+                ],
+              ),
+            ),
+          ],
         ),
       ),
     );
   }
 
   Widget _buildBookCoverSection() {
-    return Container(
-      padding: const EdgeInsets.only(top: 36.0),
-      height: 350,
-      decoration: BoxDecoration(
-        gradient: LinearGradient(
-          begin: Alignment.topCenter,
-          end: Alignment.bottomCenter,
-          stops: const [0.0, 0.5, 0.8],
-          colors: [
-            AppColors.grey.withOpacity(0.9),
-            AppColors.lightGrey.withOpacity(0.8),
-            Colors.white,
-          ],
+    return Stack(
+      alignment: Alignment.bottomCenter,
+      children: [
+        // Blurred background image with gradient
+        SizedBox(
+          height: 340.0,
+          width: double.infinity,
+          child: _buildBlurredImageWithGradient(widget.book.coverURI ?? ''),
         ),
-      ),
-      child: BookCover(
-        width: 180,
-        height: 260,
-        child: BookBox(
-          coverUri: widget.book?.coverURI ?? '',
-          iconSize: 64,
+        Container(
+          margin: const EdgeInsets.only(bottom: 16.0),
+          child: BookCover(
+            width: 170,
+            height: 250,
+            child: BookBox(
+              coverUri: widget.book.coverURI ?? '',
+            ),
+          ),
         ),
+      ],
+    );
+  }
+
+  Widget _buildBlurredImageWithGradient(String uri) {
+    return ClipRRect(
+      borderRadius: BorderRadius.circular(0.0), // Ensure no rounded corners
+      child: Stack(
+        children: [
+          Positioned.fill(
+            child: Image(
+              image: _getImageProvider(uri),
+              fit: BoxFit.cover,
+            ),
+          ),
+          Positioned.fill(
+            child: BackdropFilter(
+              filter: ImageFilter.blur(sigmaX: 10.0, sigmaY: 10.0),
+              child: Container(
+                color:
+                    Colors.white.withOpacity(0.2), // Adjust opacity if needed
+              ),
+            ),
+          ),
+          Positioned.fill(
+            child: Container(
+              decoration: BoxDecoration(
+                gradient: LinearGradient(
+                  begin: Alignment.topCenter,
+                  end: Alignment.bottomCenter,
+                  colors: [
+                    Colors.black.withOpacity(0.4),
+                    Colors.black.withOpacity(0.01),
+                  ],
+                  stops: const [1.0, 0.8],
+                ),
+              ),
+            ),
+          ),
+        ],
       ),
+    );
+  }
+
+  ImageProvider _getImageProvider(String uri) {
+    Uri parsedUri = Uri.parse(uri);
+    if (parsedUri.isScheme('file')) {
+      return FileImage(File(parsedUri.path));
+    } else {
+      return NetworkImage(uri);
+    }
+  }
+
+  Widget _buildBookTitleAndAuthor() {
+    return Column(
+      children: [
+        CustomText(
+          widget.book.title,
+          fontSize: 20,
+          fontWeight: FontWeight.bold,
+        ),
+        const SizedBox(height: 4),
+        CustomText(
+          widget.book.author ?? 'unknown',
+          color: AppColors.grey,
+        ),
+      ],
     );
   }
 
   Widget _buildReadingStatusButton() {
     return Center(
       child: CustomButton(
-        borderColor: AppColors.grey,
-        textColor: AppColors.grey,
+        borderColor:
+            isReadingStatusActive ? Colors.black87 : Colors.transparent,
+        textColor: isReadingStatusActive ? Colors.black87 : Colors.white,
         text: 'Reading Status',
-        color: Colors.white,
+        color: isReadingStatusActive ? Colors.white : Colors.black87,
         height: 42,
         width: 200,
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
           children: [
             Expanded(
-              child: Text(
-                getReadingStatusAsString(selectedStatus),
+              child: CustomText(
+                getReadingStatusAsString(selectedReadingStatus),
+                fontWeight: FontWeight.w400,
                 textAlign: TextAlign.center,
               ),
             ),
-            Container(
-              padding: const EdgeInsets.all(8.0),
-              decoration: const BoxDecoration(
-                color: AppColors.grey,
-                borderRadius: BorderRadius.only(
-                  topRight: Radius.circular(4.0),
-                  bottomRight: Radius.circular(4.0),
+            CustomButton(
+              width: 40,
+              text: 'Change Reading Status',
+              child: Container(
+                padding: const EdgeInsets.all(8.0),
+                decoration: const BoxDecoration(
+                  color: Colors.black,
+                  borderRadius: BorderRadius.only(
+                    topRight: Radius.circular(4.0),
+                    bottomRight: Radius.circular(4.0),
+                  ),
+                ),
+                child: SvgPicture.asset(
+                  AppIcons.chevronUpDown,
+                  colorFilter:
+                      const ColorFilter.mode(Colors.white, BlendMode.srcIn),
                 ),
               ),
-              child: SvgPicture.asset(
-                AppIcons.chevronUpDown,
-                colorFilter:
-                    const ColorFilter.mode(Colors.white, BlendMode.srcIn),
-              ),
+              onPressed: () {
+                CustomBottomSheet.show(
+                  context: context,
+                  bottomSheetItems: _buildReadingStatusBottomSheet(),
+                );
+              },
             )
           ],
         ),
         onPressed: () {
-          CustomBottomSheet.show(
-            context: context,
-            bottomSheetItems: _buildReadingStatusBottomSheet(),
-          );
+          // change the active status state
+          setState(() {
+            isReadingStatusActive = !isReadingStatusActive;
+          });
+
+          String readingStatus =
+              getReadingStatusAsString(selectedReadingStatus);
+          // show informing toast
+          if (isReadingStatusActive) {
+            Toast.show(
+                context: context,
+                message: 'Book added to $readingStatus list',
+                backgroundColor: AppColors.grey);
+          } else {
+            Toast.show(
+                context: context,
+                message: 'Book removed from the $readingStatus list',
+                backgroundColor: AppColors.grey);
+          }
         },
       ),
     );
   }
 
   List<BottomSheetItem> _buildReadingStatusBottomSheet() {
-    return _buildBottomSheetItems([
-      'Want to read',
-      'Reading',
-      'Finished',
-      'Gave up',
-    ]);
+    return _buildBottomSheetItems(
+      [
+        'Want to read',
+        'Reading',
+        'Finished',
+        'Gave up',
+      ],
+    );
   }
 
   List<BottomSheetItem> _buildBottomSheetItems(List<String> statuses) {
     return statuses.map((status) {
       return BottomSheetItem(
-        borderColor: getReadingStatusFromString(status) == selectedStatus
-            ? AppColors.grey
+        borderColor: getReadingStatusFromString(status) == selectedReadingStatus
+            ? Colors.black
             : AppColors.lightGrey.withOpacity(0.4),
-        icon: _getStatusIcon(status),
+        icon: _getReadingStatusIcon(status),
         label: status,
-        appendIcon: _getAppendIcon(status),
+        appendIcon: _getReadingBottomSheetSelectedItemIcon(status),
         onTap: () {
           setState(() {
-            selectedStatus = getReadingStatusFromString(status);
+            selectedReadingStatus = getReadingStatusFromString(status);
           });
           Navigator.of(context).pop();
         },
@@ -304,8 +301,7 @@ class _LibraryAddBookScreenState extends State<LibraryAddBookScreen> {
     }).toList();
   }
 
-  // TODO: use a global way
-  Widget _getStatusIcon(String status) {
+  Widget _getReadingStatusIcon(String status) {
     switch (status) {
       case 'Want to read':
         return const Icon(
@@ -335,764 +331,115 @@ class _LibraryAddBookScreenState extends State<LibraryAddBookScreen> {
     }
   }
 
-  Widget _buildBookTypeTabs() {
-    return Container(
-      margin: const EdgeInsets.all(16.0),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          _buildInputLabel('Book Type'),
-          const SizedBox(height: 6.0),
-          Container(
-            padding: const EdgeInsets.all(6.0),
-            decoration: BoxDecoration(
-                color: AppColors.lightGrey.withOpacity(0.4),
-                borderRadius: BorderRadius.circular(8.0)),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceAround,
-              children: getBookTypes()
-                  .map((status) => Expanded(
-                        child: _buildTab(
-                          getBookTypeAsString(status),
-                          isSelected: status == selectedBookType,
-                        ),
-                      ))
-                  .toList(),
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildTab(String type, {bool isSelected = false}) {
-    return GestureDetector(
-      onTap: () {
-        if (getBookType(type) != selectedBookType) {
-          setState(() {
-            selectedBookType = getBookType(type);
-          });
-        }
-      },
-      child: Container(
-        padding: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 4.0),
-        margin: const EdgeInsets.symmetric(horizontal: 4.0),
-        decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(6.0),
-          boxShadow: [
-            if (isSelected)
-              BoxShadow(
-                  color: AppColors.lightGrey.withOpacity(0.4),
-                  blurRadius: 4,
-                  spreadRadius: 2)
-          ],
-          color: isSelected
-              ? Colors.white
-              : Colors.transparent, // Darker background for unselected tabs
-        ),
-        child: Center(
-          child: Text(
-            type,
-            style: TextStyle(
-                color: isSelected
-                    ? Colors.black
-                    : AppColors.grey // Lighter text color for unselected tabs
-                ),
-          ),
-        ),
-      ),
-    );
-  }
-
-  Widget _buildAddTagsBottomSheetList(StateSetter updateState) {
-    List<String> tags =
-        searchTagsController.text != '' ? tagsSearchResult : tagsList;
-    return Container(
-      padding: const EdgeInsets.symmetric(vertical: 8.0),
-      child: Wrap(
-        spacing: 8.0,
-        runSpacing: 4.0,
-        children: [
-          for (var tag in tags)
-            GestureDetector(
-              onTap: () {
-                updateState(() {
-                  if (!tempSelectedTags.contains(tag)) {
-                    tempSelectedTags.add(tag);
-                  } else {
-                    tempSelectedTags.remove(tag);
-                  }
-                });
-              },
-              child: CustomChip(
-                text: tag,
-                textColor: tempSelectedTags.contains(tag) ? Colors.white : null,
-                backgroundColor: tempSelectedTags.contains(tag)
-                    ? AppColors.grey
-                    : AppColors.lightGrey.withOpacity(0.4),
-                icon: Icons.local_offer_rounded,
-                iconColor: tempSelectedTags.contains(tag)
-                    ? AppColors.lightGrey
-                    : AppColors.grey.withOpacity(0.6),
-              ),
-            ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildAddTagsBottomSheetContent(StateSetter updateState) {
-    return Column(
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        Row(
-          children: [
-            Expanded(
-              child: _buildSearchField(
-                controller: searchTagsController,
-                placeholder: 'Search for a tags',
-                onChanged: (value) {
-                  updateState(
-                    () {
-                      if (value.isEmpty) {
-                        tagsSearchResult = List.from(tagsList);
-                      } else {
-                        tagsSearchResult = tagsList.where((tag) {
-                          String tagText = tag.toString().toLowerCase();
-                          return tagText.contains(value.toLowerCase());
-                        }).toList();
-                      }
-                    },
-                  );
-                },
-              ),
-            ),
-            _buildNewTagBottomSheetButton(),
-          ],
-        ),
-        _buildAddTagsBottomSheetList(updateState),
-      ],
-    );
-  }
-
-  Widget _buildNewTagBottomSheetButton() {
-    return CustomButton(
-      text: 'new tag',
-      width: 48,
-      height: 48,
-      borderRadius: 4,
-      child: const Icon(Icons.add_circle_rounded, size: 32),
-      onPressed: () {
-        showDialog(
-          context: context,
-          builder: (context) => CustomAlertDialog(
-            title: 'Add New Tag',
-            content: const CustomInputField(
-              placeholder: 'Tag name',
-              contentPadding:
-                  EdgeInsets.symmetric(horizontal: 6.0, vertical: 14.0),
-            ),
-            actions: [
-              Expanded(
-                child: CustomButton(
-                  styleType: ButtonStyleType.ghost,
-                  text: 'Close',
-                  onPressed: () {
-                    Navigator.of(context).pop();
-                  },
-                ),
-              ),
-              const SizedBox(width: 8.0),
-              const Expanded(
-                child: CustomButton(
-                  text: 'Save',
-                ),
-              ),
-            ],
-          ),
-        );
-      },
-    );
-  }
-
-  void _showAddTagsBottomSheet(BuildContext context) {
-    CustomBottomSheet.show(
-      context: context,
-      height: MediaQuery.sizeOf(context).height -
-          MediaQuery.paddingOf(context).top -
-          4,
-      showDragHandle: false,
-      child: StatefulBuilder(
-        builder: (context, updateState) => Column(
-          children: [
-            _buildBottomSheetHeader(
-              context: context,
-              title: 'Add Tags',
-              tempSelectedList: tempSelectedTags,
-              updateFinalSelectedList: (List<dynamic> updatedList) {
-                selectedTags = updatedList as List<String>;
-              },
-            ),
-            _buildAddTagsBottomSheetContent(updateState),
-          ],
-        ),
-      ),
-    );
-  }
-
-  Widget _buildBottomSheetHeader({
-    required BuildContext context,
-    required String title,
-    String submitTitle = 'Save',
-    required List<dynamic> tempSelectedList,
-    required Function(List<dynamic>) updateFinalSelectedList,
-  }) {
-    return Padding(
-      padding: const EdgeInsets.all(8.0),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          CustomButton(
-            width: 30,
-            text: 'Back',
-            styleType: ButtonStyleType.ghost,
-            onPressed: () {
-              Navigator.of(context).pop();
-            },
-            child: const Icon(
-              Icons.chevron_left,
-              size: 36,
-              color: Colors.black,
-            ),
-          ),
-          Text(
-            title,
-            style: const TextStyle(
-              fontSize: 18,
-              fontWeight: FontWeight.w500,
-            ),
-          ),
-          CustomButton(
-            width: 80,
-            text: submitTitle,
-            onPressed: () {
-              setState(() {
-                searchTagsController.clear();
-
-                updateFinalSelectedList(tempSelectedList);
-
-                Navigator.of(context).pop();
-              });
-            },
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildBookTagsSection() {
-    return Container(
-      margin: const EdgeInsets.symmetric(horizontal: 16.0),
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.start,
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            mainAxisSize: MainAxisSize.max,
-            children: [
-              _buildInputLabel('Add tags'),
-              CustomButton(
-                text: 'Add Tags',
-                width: 30,
-                height: 30,
-                styleType: ButtonStyleType.ghost,
-                borderRadius: 15,
-                onPressed: () {
-                  _showAddTagsBottomSheet(context);
-                },
-                child: const Icon(Icons.add),
-              ),
-            ],
-          ),
-          selectedTags.isNotEmpty
-              ? Wrap(
-                  spacing: 6.0,
-                  children: [
-                    for (String tag in selectedTags)
-                      CustomChip(
-                        text: tag,
-                        icon: Icons.tag,
-                        iconColor: AppColors.grey,
-                        backgroundColor: AppColors.lightGrey,
-                        deleteIcon: CustomButton(
-                          text: 'remove $tag',
-                          borderRadius: 18,
-                          width: 20,
-                          height: 20,
-                          color: Colors.redAccent.withOpacity(0.8),
-                          child: const Icon(
-                            Icons.clear_rounded,
-                            size: 18,
-                          ),
-                        ),
-                        onDeleted: () {
-                          setState(() {
-                            if (selectedTags.contains(tag)) {
-                              selectedTags.remove(tag);
-                            }
-                          });
-                        },
-                      )
-                  ],
-                )
-              : const SizedBox(),
-        ],
-      ),
-    );
-  }
-
-  void _showAddBooksShelvesBottomSheet(BuildContext context) {
-    CustomBottomSheet.show(
-      context: context,
-      height: MediaQuery.sizeOf(context).height -
-          MediaQuery.paddingOf(context).top -
-          4,
-      showDragHandle: false,
-      child: StatefulBuilder(
-        builder: (context, updateState) {
-          return Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              _buildBottomSheetHeader(
-                context: context,
-                title: 'Add to BooksShelves',
-                tempSelectedList: tempSelectedBooksShelves,
-                updateFinalSelectedList: (List<dynamic> updatedList) {
-                  selectedBooksShelves =
-                      updatedList as List<Map<String, dynamic>>;
-                },
-              ),
-              _buildAddBooksShelvesBottomSheetContent(context, updateState),
-            ],
-          );
-        },
-      ),
-    );
-  }
-
-  Widget _buildAddToBooksShelvesSection() {
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 16.0),
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.start,
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              _buildInputLabel('Add to a Books Shelves'),
-              _buildAddToBookShelfButton(),
-            ],
-          ),
-          selectedBooksShelves.isNotEmpty
-              ? _buildBooksShelvesContainer(selectedBooksShelves)
-              : const SizedBox(),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildAddToBookShelfButton() {
-    return CustomButton(
-      text: 'Add to a bookshelf',
-      width: 30,
-      height: 30,
-      styleType: ButtonStyleType.ghost,
-      borderRadius: 15,
-      onPressed: () {
-        // fill the temp list with the already selected bookshelf
-        tempSelectedBooksShelves = selectedBooksShelves;
-
-        // show the bottom sheet
-        _showAddBooksShelvesBottomSheet(context);
-      },
-      child: const Icon(
-        Icons.create_new_folder,
-        color: AppColors.goldenYellow,
-      ),
-    );
-  }
-
-  Widget _buildAddBooksShelvesBottomSheetContent(
-      BuildContext context, StateSetter updateState) {
-    final List<Map<String, dynamic>> bookshelves =
-        searchBooksShelvesController.text != ''
-            ? booksShelvesSearchResult
-            : booksShelves;
-
-    return Expanded(
-      child: Column(
-        mainAxisSize: MainAxisSize.max,
-        crossAxisAlignment: CrossAxisAlignment.start,
-        mainAxisAlignment: MainAxisAlignment.spaceAround,
-        children: [
-          Padding(
-            padding: const EdgeInsets.only(left: 4.0, right: 12.0),
-            child: Row(
-              children: [
-                Expanded(
-                  child: _buildSearchField(
-                    controller: searchBooksShelvesController,
-                    placeholder: 'Search for tags',
-                    onChanged: (value) {
-                      updateState(() {
-                        if (value.isEmpty) {
-                          booksShelvesSearchResult = List.from(booksShelves);
-                        } else {
-                          booksShelvesSearchResult =
-                              booksShelves.where((bookShelf) {
-                            String bookShelfText =
-                                bookShelf['text'].toString().toLowerCase();
-                            return bookShelfText.contains(value.toLowerCase());
-                          }).toList();
-                        }
-                      });
-                    },
-                  ),
-                ),
-                _buildNewBookShelfBottomSheetButton(),
-              ],
-            ),
-          ),
-          _buildBooksShelvesList(context, updateState, bookshelves),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildSearchField({
-    required TextEditingController controller,
-    required String placeholder,
-    required Function(String) onChanged,
-  }) {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 8.0),
-      child: CustomInputField(
-        controller: controller,
-        placeholder: placeholder,
-        borderRadius: 8,
-        contentPadding:
-            const EdgeInsets.symmetric(horizontal: 8.0, vertical: 14.0),
-        suffix: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 6.0),
-          child: CustomButton(
-            text: 'clear search',
-            color: AppColors.grey.withOpacity(0.6),
-            width: 24,
-            height: 24,
-            borderRadius: 8,
-            child: const Icon(
-              Icons.clear_rounded,
-              size: 18,
-            ),
-            onPressed: () {
-              controller.clear();
-              onChanged('');
-            },
-          ),
-        ),
-        onChanged: onChanged,
-      ),
-    );
-  }
-
-  Widget _buildBooksShelvesList(BuildContext context, StateSetter updateState,
-      List<Map<String, dynamic>> booksShelves) {
-    return Expanded(
-      child: Container(
-        padding: const EdgeInsets.symmetric(vertical: 8.0),
-        child: ListView.builder(
-          shrinkWrap: true,
-          itemCount: booksShelves.length,
-          itemBuilder: (context, index) {
-            bool isSelected =
-                tempSelectedBooksShelves.contains(booksShelves[index]);
-            return Container(
-              margin: const EdgeInsets.symmetric(horizontal: 8.0),
-              child: CustomListItem(
-                padding: const EdgeInsets.symmetric(
-                    horizontal: 12.0, vertical: 18.0),
-                label: booksShelves[index]['text'].toString(),
-                iconBackground: isSelected
-                    ? AppColors.lighterGreen
-                    : AppColors.lightGrey.withOpacity(0.4),
-                appendIcon: const Text('12'),
-                borderColor: isSelected
-                    ? AppColors.lightGreen
-                    : AppColors.lightGrey.withOpacity(0.5),
-                borderRadius: 12.0,
-                backgroundColor:
-                    isSelected ? AppColors.extraLightGreen : Colors.white,
-                textStyle: const TextStyle(
-                  fontSize: 18,
-                  fontWeight: FontWeight.w400,
-                  color: AppColors.grey,
-                ),
-                shadow: [
-                  BoxShadow(
-                    color: isSelected
-                        ? AppColors.extraLightGreen.withOpacity(0.2)
-                        : AppColors.lightGrey.withOpacity(0.2),
-                    blurRadius: 8,
-                    spreadRadius: 4,
-                  )
-                ],
-                onTap: () {
-                  updateState(() {
-                    if (!tempSelectedBooksShelves
-                        .contains(booksShelves[index])) {
-                      tempSelectedBooksShelves.add(booksShelves[index]);
-                    } else {
-                      tempSelectedBooksShelves.remove(booksShelves[index]);
-                    }
-                  });
-                },
-              ),
-            );
-          },
-        ),
-      ),
-    );
-  }
-
-  Widget _buildBooksShelvesContainer(List<Map<String, dynamic>> booksShelves) {
-    return Container(
-      width: double.infinity,
-      padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 2.0),
-      decoration: BoxDecoration(
-        color: Colors.grey[50],
-        borderRadius: BorderRadius.circular(4.0),
-        border: Border.all(
-          color: AppColors.lightGrey.withOpacity(0.4),
-          width: 2,
-        ),
-      ),
-      child: Wrap(
-        spacing: 8.0,
-        runSpacing: 4.0,
-        children: booksShelves.map((chip) {
-          return CustomChip(
-            text: chip['text'],
-            iconColor: chip['color'],
-            backgroundColor: AppColors.lightGrey.withOpacity(0.6),
-            borderRadius: 4.0,
-          );
-        }).toList(),
-      ),
-    );
-  }
-
-  Widget _buildRatingSection() {
-    return ConditionalBuilder(
-      condition: selectedStatus != ReadingStatus.wantToRead,
-      builder: (context) => Container(
-        padding: const EdgeInsets.symmetric(horizontal: 16.0),
-        child: Column(
-          children: [
-            Row(
-              mainAxisSize: MainAxisSize.max,
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                const Text(
-                  'Add rating',
-                  style: TextStyle(fontSize: 20),
-                ),
-                Container(
-                  decoration: BoxDecoration(
-                      color: AppColors.lightGrey.withOpacity(0.2),
-                      borderRadius: BorderRadius.circular(6.0)),
-                  child: RatingBar.builder(
-                    initialRating: 0,
-                    minRating: 1,
-                    direction: Axis.horizontal,
-                    allowHalfRating: true,
-                    itemSize: 32,
-                    glowColor: AppColors.lightGrey.withOpacity(0.8),
-                    unratedColor: AppColors.lightGrey,
-                    itemCount: 5,
-                    itemPadding: const EdgeInsets.symmetric(horizontal: 4.0),
-                    itemBuilder: (context, _) => const Icon(
-                      Icons.star_rounded,
-                      color: AppColors.goldenYellow,
-                    ),
-                    onRatingUpdate: (rating) {
-                      print(rating);
-                    },
-                  ),
-                ),
-              ],
-            ),
-            const SizedBox(height: 12.0),
-            CustomInputField(
-              controller: reviewController,
-              label: 'Write a review',
-              placeholder: 'Add your review for this book',
-              keyboardType: 'textarea',
-              minLines: 3,
-              maxLines: 10,
-            ),
-          ],
-        ),
-      ),
-      fallback: null,
-    );
-  }
-
-  Widget _buildNewBookShelfBottomSheetButton() {
-    return CustomButton(
-      text: 'new bookshelf',
-      width: 48,
-      height: 48,
-      borderRadius: 4,
-      child: const Icon(Icons.add_circle_rounded, size: 32),
-      onPressed: () {
-        showDialog(
-          context: context,
-          builder: (context) => CustomAlertDialog(
-            title: 'New Books Shelf',
-            content: const CustomInputField(
-              placeholder: 'BookShelf name',
-              contentPadding:
-                  EdgeInsets.symmetric(horizontal: 6.0, vertical: 14.0),
-            ),
-            actions: [
-              Expanded(
-                child: CustomButton(
-                  styleType: ButtonStyleType.ghost,
-                  text: 'Close',
-                  onPressed: () {
-                    Navigator.of(context).pop();
-                  },
-                ),
-              ),
-              const SizedBox(width: 8.0),
-              const Expanded(
-                child: CustomButton(
-                  text: 'Save',
-                ),
-              ),
-            ],
-          ),
-        );
-      },
+  Widget _getReadingBottomSheetSelectedItemIcon(String status) {
+    return Icon(
+      selectedReadingStatus == getReadingStatusFromString(status)
+          ? Icons.check_circle
+          : Icons.circle_outlined,
+      color: selectedReadingStatus == getReadingStatusFromString(status)
+          ? Colors.black
+          : AppColors.lightGrey.withOpacity(0.4),
     );
   }
 
   Widget _buildReadingDateRange() {
     return ConditionalBuilder(
-      condition: selectedStatus != ReadingStatus.wantToRead,
+      condition: selectedReadingStatus != ReadingStatus.wantToRead,
       builder: (context) => Center(
-        child: Container(
-          width: selectedStatus == ReadingStatus.reading ? 180 : null,
-          padding: const EdgeInsets.all(8.0),
-          margin: const EdgeInsets.all(16.0),
-          decoration: BoxDecoration(
-            color: AppColors.lightGrey.withOpacity(0.4),
-            borderRadius: BorderRadius.circular(8.0),
-            border: Border.all(
-              color: invalidStartDate || invalidFinishDate
-                  ? AppColors.lightRed.withOpacity(0.4)
-                  : AppColors.lightGrey,
-              width: 2,
-            ),
-          ),
-          child: Column(
-            children: [
-              Row(
+        child: Column(
+          children: [
+            Container(
+              width:
+                  selectedReadingStatus == ReadingStatus.reading ? 160 : null,
+              padding: const EdgeInsets.all(4.0),
+              margin: const EdgeInsets.only(
+                  top: 24.0, left: 24.0, bottom: 4.0, right: 24.0),
+              decoration: BoxDecoration(
+                color: AppColors.lightGrey.withOpacity(0.2),
+                borderRadius: BorderRadius.circular(4.0),
+                border: Border.all(
+                  color: invalidStartDate || invalidFinishDate
+                      ? AppColors.lightRed.withOpacity(0.4)
+                      : AppColors.lightGrey.withOpacity(0.6),
+                  width: 1,
+                ),
+              ),
+              child: Column(
                 children: [
-                  _buildDateColumn(
-                    title: 'Started',
-                    date: startDate,
-                    buttonText: 'Start Date',
-                    onPressed: () => _pickDate(context, startDate, (date) {
-                      setState(() {
-                        if (finishDate != null && date.isAfter(finishDate!)) {
-                          invalidStartDate = true;
-                        } else {
-                          invalidFinishDate = false;
-                          invalidStartDate = false;
-                        }
-
-                        startDate = date;
-                      });
-                    }),
-                  ),
-                  Container(
-                    width: 2,
-                    height: 64,
-                    color: selectedStatus != ReadingStatus.reading
-                        ? AppColors.lightGrey
-                        : Colors.transparent,
-                  ),
-                  if (selectedStatus != ReadingStatus.wantToRead &&
-                      selectedStatus != ReadingStatus.reading)
-                    _buildDateColumn(
-                      title: 'Finished',
-                      date: finishDate,
-                      buttonText: 'Finish Date',
-                      onPressed: () => _pickDate(
-                        context,
-                        finishDate,
-                        (date) {
+                  Row(
+                    children: [
+                      _buildDateColumn(
+                        title: 'Started',
+                        date: startDate,
+                        buttonText: 'Start Date',
+                        onPressed: () => _pickDate(context, startDate, (date) {
                           setState(() {
-                            if (startDate != null &&
-                                date.isBefore(startDate!)) {
-                              invalidFinishDate = true;
+                            if (finishDate != null &&
+                                date.isAfter(finishDate!)) {
+                              invalidStartDate = true;
                             } else {
                               invalidFinishDate = false;
                               invalidStartDate = false;
                             }
 
-                            finishDate = date;
+                            startDate = date;
                           });
-                        },
+                        }),
                       ),
-                    ),
+                      Container(
+                        width: 2,
+                        height: 64,
+                        color: selectedReadingStatus != ReadingStatus.reading
+                            ? AppColors.lightGrey.withOpacity(0.4)
+                            : Colors.transparent,
+                      ),
+                      if (selectedReadingStatus != ReadingStatus.wantToRead &&
+                          selectedReadingStatus != ReadingStatus.reading)
+                        _buildDateColumn(
+                          title: 'Finished',
+                          date: finishDate,
+                          buttonText: 'Finish Date',
+                          onPressed: () => _pickDate(
+                            context,
+                            finishDate,
+                            (date) {
+                              setState(() {
+                                if (startDate != null &&
+                                    date.isBefore(startDate!)) {
+                                  invalidFinishDate = true;
+                                } else {
+                                  invalidFinishDate = false;
+                                  invalidStartDate = false;
+                                }
+
+                                finishDate = date;
+                              });
+                            },
+                          ),
+                        ),
+                    ],
+                  ),
                 ],
               ),
-              if (invalidStartDate || invalidFinishDate)
-                const SizedBox(height: 8.0),
-              if (invalidStartDate)
-                const CustomText(
-                  'Start date should be older than finish date.',
-                  color: AppColors.lightRed,
-                  fontSize: 14,
-                ),
-              if (invalidFinishDate)
-                const CustomText(
-                  'Finish date should be more recent than start date.',
-                  color: AppColors.lightRed,
-                  fontSize: 14,
-                ),
-            ],
-          ),
+            ),
+            if (invalidStartDate || invalidFinishDate)
+              const SizedBox(height: 8.0),
+            if (invalidStartDate)
+              const CustomText(
+                'Start date should be older than finish date.',
+                color: AppColors.lightRed,
+                fontSize: 14,
+              ),
+            if (invalidFinishDate)
+              const CustomText(
+                'Finish date should be more recent than start date.',
+                color: AppColors.lightRed,
+                fontSize: 14,
+              ),
+          ],
         ),
       ),
       fallback: null,
-    );
-  }
-
-  void _pickDate(BuildContext context, DateTime? currentDate,
-      Function(DateTime) onConfirm) async {
-    await DatePicker.showDatePicker(
-      context,
-      showTitleActions: true,
-      minTime: DateTime(DateTime.now().year - 100),
-      maxTime: DateTime.now(),
-      currentTime: currentDate,
-      onConfirm: onConfirm,
     );
   }
 
@@ -1139,112 +486,116 @@ class _LibraryAddBookScreenState extends State<LibraryAddBookScreen> {
     );
   }
 
-  Widget _getAppendIcon(String status) {
-    return Icon(
-      selectedStatus == getReadingStatusFromString(status)
-          ? Icons.check_circle
-          : Icons.circle_outlined,
-      color: selectedStatus == getReadingStatusFromString(status)
-          ? AppColors.grey
-          : AppColors.lightGrey.withOpacity(0.4),
+  void _pickDate(BuildContext context, DateTime? currentDate,
+      Function(DateTime) onConfirm) async {
+    await DatePicker.showDatePicker(
+      context,
+      showTitleActions: true,
+      minTime: DateTime(DateTime.now().year - 100),
+      maxTime: DateTime.now(),
+      currentTime: currentDate,
+      onConfirm: onConfirm,
     );
   }
 
-  Widget _buildBookInfoFields() {
-    final bookFields = [
-      {
-        "label": "Title",
-        "value": widget.book?.title,
-        "controller": titleController,
-      },
-      {
-        "label": "Author",
-        "value": widget.book?.author,
-        "controller": authorController,
-      },
-      {
-        "label": "Total Pages",
-        "value": widget.book?.totalPages,
-        "type": 'number',
-        "controller": totalPagesController,
-      },
-      {
-        "label": "ISBN",
-        "value": null,
-        "type": 'number',
-        "controller": isbnController,
-      },
-      {
-        "label": "Publish Year",
-        "value": widget.book?.publishDate,
-        "type": 'date',
-        "controller": publishedAtController,
-      },
-      {
-        "label": "Description",
-        "value": widget.book?.description,
-        "type": 'textarea',
-        "controller": descriptionController,
-      },
-    ];
-
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 16),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: bookFields.mapIndexed((index, field) {
-          TextEditingController controller =
-              field["controller"] as TextEditingController;
-
-          return Container(
-            margin: const EdgeInsets.symmetric(vertical: 8.0),
-            child: CustomInputField(
-              controller: controller,
-              label: field['label'].toString(),
-              placeholder: "Enter ${field['label']}",
-              validator: (value) {
-                if (field['label'] == 'Total Pages') {
-                  if (value!.isEmpty || int.parse(value) <= 0) {
-                    invalidData = true;
-                    return 'Invalid total pages';
-                  }
-                } else if (field['label'] == 'ISBN') {
-                  if (value!.isEmpty || !Utils.validISBN(value)) {
-                    invalidData = true;
-                    return 'Invalid ISBN';
-                  }
-                } else if (field['label'] == 'Title') {
-                  if (value!.isEmpty) {
-                    invalidData = true;
-                    return 'Title should not be empty';
-                  }
-                }
-
-                invalidData = false;
-                return null;
-              },
-              dismissibleKeyboard: true,
-              keyboardType: field['type'].toString(),
-              minLines: field['type'].toString() == 'textarea' ? 3 : null,
-              maxLines: field['type'].toString() == 'textarea' ? 20 : null,
-            ),
-          );
-        }).toList(),
+  Widget _buildBookInfoCard() {
+    return CustomContainer(
+      margin: const EdgeInsets.symmetric(horizontal: 12.0),
+      borderColor: AppColors.lightGrey.withOpacity(0.6),
+      borderWidth: 1,
+      borderRadius: 6,
+      boxShadow: BoxShadow(
+        color: AppColors.lightGrey.withOpacity(0.2),
+        blurRadius: 4,
+        spreadRadius: 1,
+        offset: const Offset(0, 0),
       ),
-    );
-  }
-
-  Widget _buildInputLabel(String label) {
-    return Padding(
-      padding:
-          const EdgeInsets.only(top: 14.0, bottom: 4.0, left: 2.0, right: 2.0),
-      child: Text(
-        label,
-        style: TextStyle(
-          color: Colors.grey[700],
-          fontSize: 16,
-          fontWeight: FontWeight.bold,
-        ),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceAround,
+        children: [
+          if (widget.book.globalRating != null)
+            Column(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                const CustomText(
+                  'Rating',
+                  color: AppColors.grey,
+                ),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    SvgPicture.asset(
+                      AppIcons.microStar,
+                      colorFilter: const ColorFilter.mode(
+                          AppColors.goldenYellow, BlendMode.srcIn),
+                    ),
+                    const SizedBox(
+                      width: 4.0,
+                    ),
+                    CustomText(
+                      '${widget.book.globalRating}',
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ],
+                ),
+              ],
+            ),
+          if (widget.book.globalRating != null)
+            Container(
+              width: 1,
+              height: 24,
+              color: AppColors.lightGrey,
+            ),
+          const Column(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              CustomText(
+                'Pages',
+                color: AppColors.grey,
+              ),
+              CustomText(
+                '209',
+                fontWeight: FontWeight.bold,
+              ),
+            ],
+          ),
+          Container(
+            width: 1,
+            height: 24,
+            color: AppColors.lightGrey,
+          ),
+          const Column(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              CustomText(
+                'Publish',
+                color: AppColors.grey,
+              ),
+              CustomText(
+                '2004',
+                fontWeight: FontWeight.bold,
+              ),
+            ],
+          ),
+          Container(
+            width: 1,
+            height: 24,
+            color: AppColors.lightGrey,
+          ),
+          const Column(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              CustomText(
+                'Language',
+                color: AppColors.grey,
+              ),
+              CustomText(
+                'EN',
+                fontWeight: FontWeight.bold,
+              ),
+            ],
+          ),
+        ],
       ),
     );
   }

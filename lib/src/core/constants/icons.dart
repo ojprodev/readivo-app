@@ -9,4 +9,5 @@ class AppIcons {
   static const String chevronLeft = "assets/images/icons/chevron-left.svg";
   static const String chevronUpDown = "assets/images/icons/chevron-up-down.svg";
   static const String reload = "assets/images/icons/reload.svg";
+  static const String edit = "assets/images/icons/edit.svg";
 }

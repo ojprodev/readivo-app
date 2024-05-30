@@ -29,7 +29,7 @@ class BookCover extends StatelessWidget {
           children: [
             // Bottom layer (representing the right side of the book)
             Container(
-              width: width + 7,
+              width: width + 5,
               height: height,
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(8),
@@ -48,7 +48,7 @@ class BookCover extends StatelessWidget {
             // Middle layer (representing book pages)
             Positioned(
               top: 0,
-              bottom: 3,
+              bottom: 2,
               left: 0,
               child: Container(
                 width: width - 3,

@@ -13,6 +13,8 @@ class CustomContainer extends StatelessWidget {
   final BoxShape shape;
   final AlignmentGeometry? alignment;
   final Widget? child;
+  final Color? borderColor; // New property for border color
+  final double? borderWidth; // New property for border width
 
   const CustomContainer({
     super.key,
@@ -28,6 +30,8 @@ class CustomContainer extends StatelessWidget {
     this.shape = BoxShape.rectangle,
     this.alignment,
     this.child,
+    this.borderColor,
+    this.borderWidth,
   });
 
   @override
@@ -40,10 +44,13 @@ class CustomContainer extends StatelessWidget {
       decoration: boxDecoration ??
           BoxDecoration(
             color: color,
-            borderRadius: BorderRadius.all(Radius.circular(borderRadius)),
+            borderRadius: shape == BoxShape.rectangle ? BorderRadius.all(Radius.circular(borderRadius)) : null,
             boxShadow: boxShadow != null ? [boxShadow!] : [],
             gradient: gradient,
             shape: shape,
+            border: borderColor != null && borderWidth != null
+                ? Border.all(color: borderColor!, width: borderWidth!)
+                : null,
           ),
       alignment: alignment,
       child: child,

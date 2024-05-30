@@ -146,9 +146,9 @@ class CustomButton extends StatelessWidget {
       case ButtonStyleType.filled:
         return textColor ?? AppColors.white;
       case ButtonStyleType.outline:
-        return color ?? theme.primaryColor;
+        return textColor ?? (color ?? theme.primaryColor);
       case ButtonStyleType.ghost:
-        return color ?? theme.primaryColor;
+        return textColor ?? (color ?? theme.primaryColor);
     }
   }
 }
