@@ -1,5 +1,8 @@
 library utils;
 
+import 'dart:io';
+
+import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
 class Utils {
@@ -114,6 +117,15 @@ class Utils {
     } else {
       return inputList.sublist(
           0, n); // Return the sublist of the first n elements
+    }
+  }
+
+  static  ImageProvider determineImageProviderByUri(String uri) {
+    Uri parsedUri = Uri.parse(uri);
+    if (parsedUri.isScheme('file')) {
+      return FileImage(File(parsedUri.path));
+    } else {
+      return NetworkImage(uri);
     }
   }
 }

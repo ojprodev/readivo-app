@@ -6,6 +6,16 @@ enum ReadingStatus {
   finished,
 }
 
+List<ReadingStatus> getReadingStatuesList() {
+  return [
+    ReadingStatus.wantToRead,
+    ReadingStatus.reading,
+    ReadingStatus.paused,
+    ReadingStatus.gaveUp,
+    ReadingStatus.finished
+  ];
+}
+
 String getReadingStatusAsString(ReadingStatus status) {
   switch (status) {
     case ReadingStatus.reading:

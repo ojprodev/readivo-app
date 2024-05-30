@@ -87,12 +87,6 @@ class _CustomInputFieldState extends State<CustomInputField> {
     _controller = widget.controller ?? TextEditingController();
   }
 
-  @override
-  void dispose() {
-    _controller?.dispose();
-    super.dispose();
-  }
-
   void _handleChanged(String value) {
     setState(() {
         _errorText = widget.validator?.call(value);

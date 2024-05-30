@@ -1,10 +1,11 @@
-import 'dart:io';
 import 'dart:ui';
 
 import 'package:conditional_builder_null_safety/conditional_builder_null_safety.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_datetime_picker_plus/flutter_datetime_picker_plus.dart';
+import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:readivo_app/src/core/bloc/app_cubit.dart';
 import 'package:readivo_app/src/core/constants/colors.dart';
 import 'package:readivo_app/src/core/constants/icons.dart';
 import 'package:readivo_app/src/core/enums/enums.dart';
@@ -13,16 +14,19 @@ import 'package:readivo_app/src/core/utils/utils.dart';
 import 'package:readivo_app/src/core/widgets/bottom_sheet.dart';
 import 'package:readivo_app/src/core/widgets/custom_button.dart';
 import 'package:readivo_app/src/core/widgets/custom_container.dart';
+import 'package:readivo_app/src/core/widgets/custom_input_field.dart';
 import 'package:readivo_app/src/core/widgets/custom_text.dart';
 import 'package:readivo_app/src/core/widgets/partials/bottom_sheet_item.dart';
 import 'package:readivo_app/src/core/widgets/toast.dart';
 import 'package:readivo_app/src/features/library/domain/entities/book.dart';
+import 'package:readivo_app/src/features/library/presentation/screens/library_edit_book_screen.dart';
 import 'package:readivo_app/src/features/library/presentation/widgets/book_box.dart';
 import 'package:readivo_app/src/features/library/presentation/widgets/book_cover.dart';
 
 class LibraryAddBookScreen extends StatefulWidget {
   final Book book;
-  const LibraryAddBookScreen({super.key, required this.book});
+  final TextEditingController reviewController = TextEditingController();
+  LibraryAddBookScreen({super.key, required this.book});
 
   @override
   State<LibraryAddBookScreen> createState() => _LibraryAddBookScreenState();
@@ -40,70 +44,71 @@ class _LibraryAddBookScreenState extends State<LibraryAddBookScreen> {
 
   @override
   Widget build(BuildContext context) {
+    AppCubit appCubit = AppCubit.get(context);
     return BasicLayout(
       title: 'Add Book',
       isPinned: false,
       isTransparent: true,
       titleWidget: const SizedBox(),
       extendBody: true,
-      leading: CustomButton(
-        text: 'Back',
-        height: 20,
-        width: 30,
-        borderRadius: 10,
-        styleType: ButtonStyleType.ghost,
-        onPressed: () {
-          Navigator.pop(context);
-        },
-        child: SvgPicture.asset(
-          AppIcons.chevronLeft,
-          colorFilter: const ColorFilter.mode(Colors.white, BlendMode.srcIn),
+      leadingWidth: 54,
+      leading: Container(
+        padding: const EdgeInsets.all(4.0),
+        margin: const EdgeInsets.only(left: 8.0, top: 4.0, bottom: 4.0),
+        child: CustomButton(
+          text: 'Back',
+          borderRadius: 40,
+          color: Colors.black.withOpacity(0.3),
+          onPressed: () {
+            Navigator.pop(context);
+          },
+          child: SvgPicture.asset(
+            AppIcons.chevronLeft,
+            colorFilter: const ColorFilter.mode(Colors.white, BlendMode.srcIn),
+          ),
         ),
       ),
       actions: [
-        CustomButton(
-          text: 'Edit',
-          width: 60,
-          styleType: ButtonStyleType.ghost,
-          child: SvgPicture.asset(
-            AppIcons.edit,
-            colorFilter: const ColorFilter.mode(Colors.white, BlendMode.srcIn),
+        Container(
+          margin: const EdgeInsets.only(right: 16.0),
+          child: CustomButton(
+            text: 'Edit',
+            width: 40,
+            height: 40,
+            borderRadius: 30,
+            color: Colors.black.withOpacity(0.3),
+            onPressed: () {
+              appCubit.changeScreen(LibraryEditBookScreen(book: widget.book));
+            },
+            child: SvgPicture.asset(
+              AppIcons.edit,
+              colorFilter:
+                  const ColorFilter.mode(Colors.white, BlendMode.srcIn),
+            ),
           ),
         ),
       ],
       body: Container(
         color: Colors.white,
-        child: Column(
-          children: [
-            _buildBookCoverSection(),
-            const SizedBox(height: 16),
-            _buildBookTitleAndAuthor(),
-            const SizedBox(height: 16.0),
-            _buildReadingStatusButton(),
-            _buildReadingDateRange(),
-            const SizedBox(height: 24),
-            _buildBookInfoCard(),
-            const SizedBox(height: 24),
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 20.0),
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  const CustomText(
-                    'Description',
-                    fontSize: 18,
-                    fontWeight: FontWeight.bold,
-                  ),
-                  CustomText(
-                    '${widget.book.description}',
-                    maxLines: 8,
-                    color: AppColors.grey,
-                  ),
-                ],
-              ),
-            ),
-          ],
+        height: double.infinity,
+        child: SingleChildScrollView(
+          child: Column(
+            children: [
+              _buildBookCoverSection(),
+              const SizedBox(height: 16),
+              _buildBookTitleAndAuthor(),
+              const SizedBox(height: 16.0),
+              _buildReadingStatusButton(),
+              _buildReadingDateRange(),
+              if (selectedReadingStatus == ReadingStatus.finished ||
+                  selectedReadingStatus == ReadingStatus.gaveUp)
+                _buildRatingSection(),
+              const SizedBox(height: 16.0),
+              _buildBookInfoCard(),
+              const SizedBox(height: 24),
+              _buildBookDescription(),
+            ],
+          ),
         ),
       ),
     );
@@ -140,46 +145,21 @@ class _LibraryAddBookScreenState extends State<LibraryAddBookScreen> {
         children: [
           Positioned.fill(
             child: Image(
-              image: _getImageProvider(uri),
+              image: Utils.determineImageProviderByUri(uri),
               fit: BoxFit.cover,
             ),
           ),
           Positioned.fill(
             child: BackdropFilter(
-              filter: ImageFilter.blur(sigmaX: 10.0, sigmaY: 10.0),
+              filter: ImageFilter.blur(sigmaX: 8.0, sigmaY: 8.0),
               child: Container(
-                color:
-                    Colors.white.withOpacity(0.2), // Adjust opacity if needed
-              ),
-            ),
-          ),
-          Positioned.fill(
-            child: Container(
-              decoration: BoxDecoration(
-                gradient: LinearGradient(
-                  begin: Alignment.topCenter,
-                  end: Alignment.bottomCenter,
-                  colors: [
-                    Colors.black.withOpacity(0.4),
-                    Colors.black.withOpacity(0.01),
-                  ],
-                  stops: const [1.0, 0.8],
-                ),
+                color: Colors.white.withOpacity(0), // Adjust opacity if needed
               ),
             ),
           ),
         ],
       ),
     );
-  }
-
-  ImageProvider _getImageProvider(String uri) {
-    Uri parsedUri = Uri.parse(uri);
-    if (parsedUri.isScheme('file')) {
-      return FileImage(File(parsedUri.path));
-    } else {
-      return NetworkImage(uri);
-    }
   }
 
   Widget _buildBookTitleAndAuthor() {
@@ -272,28 +252,17 @@ class _LibraryAddBookScreenState extends State<LibraryAddBookScreen> {
   }
 
   List<BottomSheetItem> _buildReadingStatusBottomSheet() {
-    return _buildBottomSheetItems(
-      [
-        'Want to read',
-        'Reading',
-        'Finished',
-        'Gave up',
-      ],
-    );
-  }
-
-  List<BottomSheetItem> _buildBottomSheetItems(List<String> statuses) {
-    return statuses.map((status) {
+    return getReadingStatuesList().map((status) {
       return BottomSheetItem(
-        borderColor: getReadingStatusFromString(status) == selectedReadingStatus
+        borderColor: status == selectedReadingStatus
             ? Colors.black
             : AppColors.lightGrey.withOpacity(0.4),
         icon: _getReadingStatusIcon(status),
-        label: status,
+        label: getReadingStatusAsString(status),
         appendIcon: _getReadingBottomSheetSelectedItemIcon(status),
         onTap: () {
           setState(() {
-            selectedReadingStatus = getReadingStatusFromString(status);
+            selectedReadingStatus = status;
           });
           Navigator.of(context).pop();
         },
@@ -301,24 +270,29 @@ class _LibraryAddBookScreenState extends State<LibraryAddBookScreen> {
     }).toList();
   }
 
-  Widget _getReadingStatusIcon(String status) {
+  Widget _getReadingStatusIcon(ReadingStatus status) {
     switch (status) {
-      case 'Want to read':
+      case ReadingStatus.wantToRead:
         return const Icon(
           Icons.library_add_outlined,
           color: AppColors.grey,
         );
-      case 'Reading':
+      case ReadingStatus.paused:
+        return const Icon(
+          Icons.pause_rounded,
+          color: AppColors.grey,
+        );
+      case ReadingStatus.reading:
         return const Icon(
           Icons.local_library_outlined,
           color: AppColors.grey,
         );
-      case 'Finished':
+      case ReadingStatus.finished:
         return const Icon(
           Icons.library_add_check_outlined,
           color: AppColors.grey,
         );
-      case 'Gave up':
+      case ReadingStatus.gaveUp:
         return const Icon(
           Icons.flag_outlined,
           color: AppColors.grey,
@@ -331,12 +305,12 @@ class _LibraryAddBookScreenState extends State<LibraryAddBookScreen> {
     }
   }
 
-  Widget _getReadingBottomSheetSelectedItemIcon(String status) {
+  Widget _getReadingBottomSheetSelectedItemIcon(ReadingStatus status) {
     return Icon(
-      selectedReadingStatus == getReadingStatusFromString(status)
+      selectedReadingStatus == status
           ? Icons.check_circle
           : Icons.circle_outlined,
-      color: selectedReadingStatus == getReadingStatusFromString(status)
+      color: selectedReadingStatus == status
           ? Colors.black
           : AppColors.lightGrey.withOpacity(0.4),
     );
@@ -349,8 +323,10 @@ class _LibraryAddBookScreenState extends State<LibraryAddBookScreen> {
         child: Column(
           children: [
             Container(
-              width:
-                  selectedReadingStatus == ReadingStatus.reading ? 160 : null,
+              width: selectedReadingStatus == ReadingStatus.reading ||
+                      selectedReadingStatus == ReadingStatus.paused
+                  ? 160
+                  : null,
               padding: const EdgeInsets.all(4.0),
               margin: const EdgeInsets.only(
                   top: 24.0, left: 24.0, bottom: 4.0, right: 24.0),
@@ -389,12 +365,14 @@ class _LibraryAddBookScreenState extends State<LibraryAddBookScreen> {
                       Container(
                         width: 2,
                         height: 64,
-                        color: selectedReadingStatus != ReadingStatus.reading
+                        color: selectedReadingStatus != ReadingStatus.reading &&
+                                selectedReadingStatus != ReadingStatus.paused
                             ? AppColors.lightGrey.withOpacity(0.4)
                             : Colors.transparent,
                       ),
                       if (selectedReadingStatus != ReadingStatus.wantToRead &&
-                          selectedReadingStatus != ReadingStatus.reading)
+                          selectedReadingStatus != ReadingStatus.reading &&
+                          selectedReadingStatus != ReadingStatus.paused)
                         _buildDateColumn(
                           title: 'Finished',
                           date: finishDate,
@@ -498,6 +476,63 @@ class _LibraryAddBookScreenState extends State<LibraryAddBookScreen> {
     );
   }
 
+  Widget _buildRatingSection() {
+    return ConditionalBuilder(
+      condition: true,
+      builder: (context) => Container(
+        padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 18.0),
+        child: Column(
+          children: [
+            Row(
+              mainAxisSize: MainAxisSize.max,
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                const Text(
+                  'Add rating',
+                  style: TextStyle(fontSize: 20),
+                ),
+                Container(
+                  decoration: BoxDecoration(
+                      color: AppColors.lightGrey.withOpacity(0.2),
+                      borderRadius: BorderRadius.circular(6.0)),
+                  child: RatingBar.builder(
+                    initialRating: 0,
+                    minRating: 1,
+                    direction: Axis.horizontal,
+                    allowHalfRating: true,
+                    itemSize: 32,
+                    glowColor: AppColors.lightGrey.withOpacity(0.8),
+                    unratedColor: AppColors.lightGrey,
+                    itemCount: 5,
+                    itemPadding: const EdgeInsets.symmetric(horizontal: 4.0),
+                    itemBuilder: (context, _) => const Icon(
+                      Icons.star_rounded,
+                      color: AppColors.goldenYellow,
+                    ),
+                    onRatingUpdate: (rating) {
+                      print(rating);
+                    },
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 18.0),
+            CustomInputField(
+              controller: widget.reviewController,
+              label: 'Write a review',
+              placeholder: 'Add your review for this book',
+              keyboardType: 'textarea',
+              minLines: 3,
+              maxLines: 10,
+            ),
+          ],
+        ),
+      ),
+      fallback: null,
+    );
+  }
+
   Widget _buildBookInfoCard() {
     return CustomContainer(
       margin: const EdgeInsets.symmetric(horizontal: 12.0),
@@ -594,6 +629,28 @@ class _LibraryAddBookScreenState extends State<LibraryAddBookScreen> {
                 fontWeight: FontWeight.bold,
               ),
             ],
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildBookDescription() {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 20.0),
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          const CustomText(
+            'Description',
+            fontSize: 18,
+            fontWeight: FontWeight.bold,
+          ),
+          CustomText(
+            '${widget.book.description}',
+            maxLines: 8,
+            color: AppColors.grey,
           ),
         ],
       ),

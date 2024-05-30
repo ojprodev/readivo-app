@@ -16,6 +16,7 @@ class BasicLayout extends StatefulWidget {
   final FloatingActionButtonLocation? floatingActionButtonLocation;
   final bool extendBody;
   final bool isTransparent;
+  final double? leadingWidth;
 
   const BasicLayout({
     super.key,
@@ -33,6 +34,7 @@ class BasicLayout extends StatefulWidget {
     this.floatingActionButtonLocation,
     this.extendBody = false,
     this.isTransparent = false,
+    this.leadingWidth = 40,
   });
 
   @override
@@ -67,7 +69,7 @@ class _BasicLayoutState extends State<BasicLayout> {
       leading: widget.leading,
       primary: true,
       surfaceTintColor: Colors.white,
-      leadingWidth: 40,
+      leadingWidth: widget.leadingWidth,
       title: ConditionalBuilder(
         condition: widget.titleWidget == null,
         builder: (context) => Text(
