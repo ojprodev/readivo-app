@@ -11,4 +11,6 @@ class AppIcons {
   static const String reload = "assets/images/icons/reload.svg";
   static const String edit = "assets/images/icons/edit.svg";
   static const String camera = "assets/images/icons/camera.svg";
+  static const String quill = "assets/images/icons/quill.svg";
+  static const String close = "assets/images/icons/close.svg";
 }

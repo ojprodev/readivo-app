@@ -101,9 +101,10 @@ class _LibraryAddBookScreenState extends State<LibraryAddBookScreen> {
               const SizedBox(height: 16.0),
               _buildReadingStatusButton(),
               _buildReadingDateRange(),
+              const SizedBox(height: 16.0),
               if (selectedReadingStatus == ReadingStatus.finished ||
                   selectedReadingStatus == ReadingStatus.gaveUp)
-                _buildRatingSection(),
+                _buildAddRatingButton(),
               const SizedBox(height: 16.0),
               _buildBookInfoCard(),
               const SizedBox(height: 24),
@@ -164,31 +165,37 @@ class _LibraryAddBookScreenState extends State<LibraryAddBookScreen> {
   }
 
   Widget _buildBookTitleAndAuthor() {
-    return Column(
-      children: [
-        CustomText(
-          widget.book.title,
-          fontSize: 20,
-          maxLines: 3,
-          textAlign: TextAlign.center,
-          fontWeight: FontWeight.bold,
-        ),
-        const SizedBox(height: 4),
-        CustomText(
-          widget.book.author ?? 'unknown',
-          color: AppColors.grey,
-        ),
-        const SizedBox(height: 6.0),
-        if(widget.book.globalRating != null)
-        Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            StarRating(rating: widget.book.globalRating ?? 0),
-            const SizedBox(width: 6.0),
-            CustomText('${widget.book.globalRating ?? 0}/5', fontWeight: FontWeight.w500,),
-          ],
-        )
-      ],
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 4.0),
+      child: Column(
+        children: [
+          CustomText(
+            widget.book.title,
+            fontSize: 20,
+            maxLines: 3,
+            textAlign: TextAlign.center,
+            fontWeight: FontWeight.bold,
+          ),
+          const SizedBox(height: 4),
+          CustomText(
+            widget.book.author ?? 'unknown',
+            color: AppColors.grey,
+          ),
+          const SizedBox(height: 6.0),
+          if (widget.book.globalRating != null)
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                StarRating(rating: widget.book.globalRating ?? 0),
+                const SizedBox(width: 6.0),
+                CustomText(
+                  '${widget.book.globalRating ?? 0}/5',
+                  fontWeight: FontWeight.w500,
+                ),
+              ],
+            )
+        ],
+      ),
     );
   }
 
@@ -489,60 +496,112 @@ class _LibraryAddBookScreenState extends State<LibraryAddBookScreen> {
     );
   }
 
-  Widget _buildRatingSection() {
-    return ConditionalBuilder(
-      condition: true,
-      builder: (context) => Container(
-        padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 18.0),
+  Widget _buildAddRatingButton() {
+    return CustomButton(
+      text: 'Add Book Review',
+      width: 160,
+      styleType: ButtonStyleType.outline,
+      borderColor: AppColors.grey.withOpacity(0.6),
+      color: AppColors.grey,
+      onPressed: () {
+        _showAddReviewBottomSheet();
+      },
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+        children: [
+          SvgPicture.asset(AppIcons.quill),
+          const Text('Write a review'),
+        ],
+      ),
+    );
+  }
+
+  void _showAddReviewBottomSheet() {
+    return CustomBottomSheet.show(
+      height: MediaQuery.sizeOf(context).height,
+      showDragHandle: false,
+      context: context,
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
         child: Column(
           children: [
-            Row(
-              mainAxisSize: MainAxisSize.max,
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                const Text(
-                  'Add rating',
-                  style: TextStyle(fontSize: 20),
-                ),
-                Container(
-                  decoration: BoxDecoration(
-                      color: AppColors.lightGrey.withOpacity(0.2),
-                      borderRadius: BorderRadius.circular(6.0)),
-                  child: RatingBar.builder(
-                    initialRating: 0,
-                    minRating: 1,
-                    direction: Axis.horizontal,
-                    allowHalfRating: true,
-                    itemSize: 32,
-                    glowColor: AppColors.lightGrey.withOpacity(0.8),
-                    unratedColor: AppColors.lightGrey,
-                    itemCount: 5,
-                    itemPadding: const EdgeInsets.symmetric(horizontal: 4.0),
-                    itemBuilder: (context, _) => const Icon(
-                      Icons.star_rounded,
-                      color: AppColors.goldenYellow,
-                    ),
-                    onRatingUpdate: (rating) {
-                      print(rating);
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  CustomButton(
+                    text: 'Close',
+                    width: 20,
+                    styleType: ButtonStyleType.ghost,
+                    onPressed: () {
+                      Navigator.pop(context);
                     },
+                    child: SvgPicture.asset(
+                      AppIcons.close,
+                      height: 32,
+                    ),
                   ),
-                ),
-              ],
+                  const CustomText(
+                    'How was it this book?',
+                    fontWeight: FontWeight.bold,
+                    fontSize: 20,
+                  ),
+                  const CustomText(
+                    'By sharing your inshight about this book you are giving your self what you get out of it, and telling other what they could excpect',
+                    color: AppColors.grey,
+                    maxLines: 5,
+                  ),
+                  const SizedBox(height: 24.0),
+                  const CustomText(
+                    'Rating',
+                    fontWeight: FontWeight.w500,
+                  ),
+                  Center(
+                    child: RatingBar.builder(
+                      initialRating: 0,
+                      minRating: 1,
+                      direction: Axis.horizontal,
+                      allowHalfRating: true,
+                      itemSize: 48,
+                      glowColor: AppColors.lightGrey.withOpacity(0.4),
+                      unratedColor: AppColors.lightGrey,
+                      itemCount: 5,
+                      itemPadding: const EdgeInsets.symmetric(horizontal: 4.0),
+                      itemBuilder: (context, _) => const Icon(
+                        Icons.star_rounded,
+                        color: AppColors.goldenYellow,
+                      ),
+                      onRatingUpdate: (rating) {
+                        print(rating);
+                      },
+                    ),
+                  ),
+                  const SizedBox(height: 12.0),
+                  const CustomText(
+                    'Review',
+                    fontWeight: FontWeight.w500,
+                  ),
+                  const CustomInputField(
+                    placeholder: 'Write your review...',
+                    keyboardType: 'textarea',
+                    minLines: 5,
+                    maxLines: 20,
+                  ),
+                ],
+              ),
             ),
-            const SizedBox(height: 18.0),
-            CustomInputField(
-              controller: widget.reviewController,
-              label: 'Write a review',
-              placeholder: 'Add your review for this book',
-              keyboardType: 'textarea',
-              minLines: 3,
-              maxLines: 10,
-            ),
+            CustomButton(
+              text: 'Save Review',
+              width: double.infinity,
+              height: 48,
+              color: Colors.black,
+              onPressed: () {
+                Navigator.pop(context);
+              },
+            )
           ],
         ),
       ),
-      fallback: null,
     );
   }
 
@@ -561,7 +620,7 @@ class _LibraryAddBookScreenState extends State<LibraryAddBookScreen> {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceAround,
         children: [
-           Column(
+          Column(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               const CustomText(
@@ -579,7 +638,7 @@ class _LibraryAddBookScreenState extends State<LibraryAddBookScreen> {
             height: 24,
             color: AppColors.lightGrey,
           ),
-           Column(
+          Column(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               const CustomText(
@@ -587,7 +646,7 @@ class _LibraryAddBookScreenState extends State<LibraryAddBookScreen> {
                 color: AppColors.grey,
               ),
               CustomText(
-               widget.book.publishYear ?? '-',
+                widget.book.publishYear ?? '-',
                 fontWeight: FontWeight.bold,
               ),
             ],
@@ -605,7 +664,7 @@ class _LibraryAddBookScreenState extends State<LibraryAddBookScreen> {
                 color: AppColors.grey,
               ),
               CustomText(
-               widget.book.language ?? '-',
+                widget.book.language ?? '-',
                 fontWeight: FontWeight.bold,
               ),
             ],
@@ -628,7 +687,8 @@ class _LibraryAddBookScreenState extends State<LibraryAddBookScreen> {
             fontWeight: FontWeight.bold,
           ),
           CustomText(
-            '${widget.book.description}',
+            widget.book.description ?? '-',
+            textAlign: TextAlign.start,
             maxLines: 8,
             color: AppColors.grey,
           ),

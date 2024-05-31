@@ -44,7 +44,7 @@ class CustomButton extends StatelessWidget {
   final double borderRadius;
 
   /// The border color
-  final Color borderColor;
+  final Color? borderColor;
 
   /// The border width
   final double borderWidth;
@@ -107,7 +107,7 @@ class CustomButton extends StatelessWidget {
               side: styleType == ButtonStyleType.outline
                   ? BorderSide(
                       color: _getBorderColor(theme), width: borderWidth)
-                  : BorderSide(color: borderColor, width: borderWidth),
+                  : BorderSide(color: _getBorderColor(theme), width: borderWidth),
             ),
           ),
         ),
@@ -138,7 +138,7 @@ class CustomButton extends StatelessWidget {
   }
 
   Color _getBorderColor(ThemeData theme) {
-    return color ?? theme.primaryColor;
+    return borderColor ?? theme.primaryColor;
   }
 
   Color _getTextColor(ThemeData theme) {
