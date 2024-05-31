@@ -15,18 +15,22 @@ class RemoteBook extends Book {
     super.publishDate,
     super.globalRating,
     super.ratingCount,
+    super.publishYear,
+    super.language,
     super.bookType,
     required super.source,
   });
 
   factory RemoteBook.fromOpenLibraryJson(Map<String, dynamic> json) {
+    DateTime? publishDate = Utils.parseToDate(json['first_publish_year']);
     return RemoteBook(
       title: json['title'],
       author: json['author_name'] != null ? json['author_name'].join(', ') : '',
       source: BookSourceEnums.online,
       globalRating:
           Utils.parseRatingsAverage(json['ratings_average'].toString()),
-      publishDate: json['first_publish_year'].toString(),
+      publishDate: publishDate,
+      publishYear: publishDate?.year.toString(),
       coverURI: "https://covers.openlibrary.org/b/id/${json['cover_i']}-M.jpg",
       totalPages: Utils.parseTotalPages(json['number_of_pages_median']),
       createdAt: DateTime.now(),
@@ -35,14 +39,18 @@ class RemoteBook extends Book {
 
   factory RemoteBook.fromGoogleBooksJson(Map<String, dynamic> json) {
     var book = json['volumeInfo'];
+    DateTime? publishDate = Utils.parseToDate(book['publishedDate']);
     return RemoteBook(
       uid: json['id'],
       title: book['title'],
       author: book['authors'] != null ? book['authors'].join(', ') : '',
       source: BookSourceEnums.online,
+      bookType: BookType.paperBook,
       globalRating: Utils.safeConvertToDouble(book['averageRating']),
       description: book['description'],
-      publishDate: book['publishedDate'].toString(),
+      publishDate: publishDate,
+      publishYear: publishDate?.year.toString(),
+      language: book['language'].toString().toUpperCase(),
       coverURI:
           book['imageLinks'] != null ? book['imageLinks']['thumbnail'] : null,
       totalPages: book['pageCount'] ?? 0,

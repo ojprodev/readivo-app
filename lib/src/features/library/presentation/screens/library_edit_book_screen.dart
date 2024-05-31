@@ -58,7 +58,7 @@ class _LibraryEditBookScreenState extends State<LibraryEditBookScreen> {
     totalPagesController =
         TextEditingController(text: widget.book.totalPages.toString());
     publishedAtController =
-        TextEditingController(text: widget.book.publishDate);
+        TextEditingController(text: widget.book.publishDate.toString());
     descriptionController =
         TextEditingController(text: widget.book.description);
     isbnController = TextEditingController(text: widget.book.isbn);

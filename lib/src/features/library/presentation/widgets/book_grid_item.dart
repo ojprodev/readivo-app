@@ -36,7 +36,7 @@ class BookGridItem extends StatelessWidget {
           if (showInfo)
             CustomText(
               book.title,
-              maxLines: 2,
+              maxLines: 1,
               softWrap: true,
               overflow: TextOverflow.ellipsis,
               fontWeight: FontWeight.w600,

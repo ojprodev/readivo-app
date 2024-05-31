@@ -17,6 +17,7 @@ import 'package:readivo_app/src/core/widgets/custom_container.dart';
 import 'package:readivo_app/src/core/widgets/custom_input_field.dart';
 import 'package:readivo_app/src/core/widgets/custom_text.dart';
 import 'package:readivo_app/src/core/widgets/partials/bottom_sheet_item.dart';
+import 'package:readivo_app/src/core/widgets/star_rating.dart';
 import 'package:readivo_app/src/core/widgets/toast.dart';
 import 'package:readivo_app/src/features/library/domain/entities/book.dart';
 import 'package:readivo_app/src/features/library/presentation/screens/library_edit_book_screen.dart';
@@ -168,6 +169,8 @@ class _LibraryAddBookScreenState extends State<LibraryAddBookScreen> {
         CustomText(
           widget.book.title,
           fontSize: 20,
+          maxLines: 3,
+          textAlign: TextAlign.center,
           fontWeight: FontWeight.bold,
         ),
         const SizedBox(height: 4),
@@ -175,6 +178,16 @@ class _LibraryAddBookScreenState extends State<LibraryAddBookScreen> {
           widget.book.author ?? 'unknown',
           color: AppColors.grey,
         ),
+        const SizedBox(height: 6.0),
+        if(widget.book.globalRating != null)
+        Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            StarRating(rating: widget.book.globalRating ?? 0),
+            const SizedBox(width: 6.0),
+            CustomText('${widget.book.globalRating ?? 0}/5', fontWeight: FontWeight.w500,),
+          ],
+        )
       ],
     );
   }
@@ -548,48 +561,15 @@ class _LibraryAddBookScreenState extends State<LibraryAddBookScreen> {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceAround,
         children: [
-          if (widget.book.globalRating != null)
-            Column(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                const CustomText(
-                  'Rating',
-                  color: AppColors.grey,
-                ),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    SvgPicture.asset(
-                      AppIcons.microStar,
-                      colorFilter: const ColorFilter.mode(
-                          AppColors.goldenYellow, BlendMode.srcIn),
-                    ),
-                    const SizedBox(
-                      width: 4.0,
-                    ),
-                    CustomText(
-                      '${widget.book.globalRating}',
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ],
-                ),
-              ],
-            ),
-          if (widget.book.globalRating != null)
-            Container(
-              width: 1,
-              height: 24,
-              color: AppColors.lightGrey,
-            ),
-          const Column(
+           Column(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              CustomText(
+              const CustomText(
                 'Pages',
                 color: AppColors.grey,
               ),
               CustomText(
-                '209',
+                '${widget.book.totalPages ?? '-'}',
                 fontWeight: FontWeight.bold,
               ),
             ],
@@ -599,15 +579,15 @@ class _LibraryAddBookScreenState extends State<LibraryAddBookScreen> {
             height: 24,
             color: AppColors.lightGrey,
           ),
-          const Column(
+           Column(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              CustomText(
+              const CustomText(
                 'Publish',
                 color: AppColors.grey,
               ),
               CustomText(
-                '2004',
+               widget.book.publishYear ?? '-',
                 fontWeight: FontWeight.bold,
               ),
             ],
@@ -617,15 +597,15 @@ class _LibraryAddBookScreenState extends State<LibraryAddBookScreen> {
             height: 24,
             color: AppColors.lightGrey,
           ),
-          const Column(
+          Column(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              CustomText(
+              const CustomText(
                 'Language',
                 color: AppColors.grey,
               ),
               CustomText(
-                'EN',
+               widget.book.language ?? '-',
                 fontWeight: FontWeight.bold,
               ),
             ],

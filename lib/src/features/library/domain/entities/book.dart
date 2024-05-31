@@ -19,12 +19,13 @@ class Book {
   late String? isbn;
   late String? path;
   late int? fileSize;
+  late String? language;
   late DateTime? lastTimeOpened;
   @Enumerated(EnumType.name)
   late BookSourceEnums source;
   late int? totalPages;
   late String? description;
-  late String? publishDate;
+  late DateTime? publishDate;
   late int? readCount;
   @Enumerated(EnumType.name)
   late ReadingStatus? readingStatus;
@@ -32,6 +33,7 @@ class Book {
   late int? ratingCount;
   @Enumerated(EnumType.name)
   late BookType? bookType;
+  late String? publishYear;
   late DateTime? updatedAt;
   late DateTime createdAt;
 
@@ -56,6 +58,8 @@ class Book {
     this.description,
     this.publishDate,
     this.readingStatus,
+    this.publishYear,
+    this.language,
     this.globalRating,
     this.ratingCount,
     this.bookType,

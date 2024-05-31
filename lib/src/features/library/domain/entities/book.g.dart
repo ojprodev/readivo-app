@@ -71,47 +71,52 @@ const BookSchema = CollectionSchema(
     r'publishDate': PropertySchema(
       id: 10,
       name: r'publishDate',
+      type: IsarType.dateTime,
+    ),
+    r'publishYear': PropertySchema(
+      id: 11,
+      name: r'publishYear',
       type: IsarType.string,
     ),
     r'ratingCount': PropertySchema(
-      id: 11,
+      id: 12,
       name: r'ratingCount',
       type: IsarType.long,
     ),
     r'readCount': PropertySchema(
-      id: 12,
+      id: 13,
       name: r'readCount',
       type: IsarType.long,
     ),
     r'readingStatus': PropertySchema(
-      id: 13,
+      id: 14,
       name: r'readingStatus',
       type: IsarType.string,
       enumMap: _BookreadingStatusEnumValueMap,
     ),
     r'source': PropertySchema(
-      id: 14,
+      id: 15,
       name: r'source',
       type: IsarType.string,
       enumMap: _BooksourceEnumValueMap,
     ),
     r'title': PropertySchema(
-      id: 15,
+      id: 16,
       name: r'title',
       type: IsarType.string,
     ),
     r'totalPages': PropertySchema(
-      id: 16,
+      id: 17,
       name: r'totalPages',
       type: IsarType.long,
     ),
     r'uid': PropertySchema(
-      id: 17,
+      id: 18,
       name: r'uid',
       type: IsarType.string,
     ),
     r'updatedAt': PropertySchema(
-      id: 18,
+      id: 19,
       name: r'updatedAt',
       type: IsarType.dateTime,
     )
@@ -204,7 +209,7 @@ int _bookEstimateSize(
     }
   }
   {
-    final value = object.publishDate;
+    final value = object.publishYear;
     if (value != null) {
       bytesCount += 3 + value.length * 3;
     }
@@ -242,15 +247,16 @@ void _bookSerialize(
   writer.writeString(offsets[7], object.isbn);
   writer.writeDateTime(offsets[8], object.lastTimeOpened);
   writer.writeString(offsets[9], object.path);
-  writer.writeString(offsets[10], object.publishDate);
-  writer.writeLong(offsets[11], object.ratingCount);
-  writer.writeLong(offsets[12], object.readCount);
-  writer.writeString(offsets[13], object.readingStatus?.name);
-  writer.writeString(offsets[14], object.source.name);
-  writer.writeString(offsets[15], object.title);
-  writer.writeLong(offsets[16], object.totalPages);
-  writer.writeString(offsets[17], object.uid);
-  writer.writeDateTime(offsets[18], object.updatedAt);
+  writer.writeDateTime(offsets[10], object.publishDate);
+  writer.writeString(offsets[11], object.publishYear);
+  writer.writeLong(offsets[12], object.ratingCount);
+  writer.writeLong(offsets[13], object.readCount);
+  writer.writeString(offsets[14], object.readingStatus?.name);
+  writer.writeString(offsets[15], object.source.name);
+  writer.writeString(offsets[16], object.title);
+  writer.writeLong(offsets[17], object.totalPages);
+  writer.writeString(offsets[18], object.uid);
+  writer.writeDateTime(offsets[19], object.updatedAt);
 }
 
 Book _bookDeserialize(
@@ -270,17 +276,18 @@ Book _bookDeserialize(
     isbn: reader.readStringOrNull(offsets[7]),
     lastTimeOpened: reader.readDateTimeOrNull(offsets[8]),
     path: reader.readStringOrNull(offsets[9]),
-    publishDate: reader.readStringOrNull(offsets[10]),
-    ratingCount: reader.readLongOrNull(offsets[11]),
-    readCount: reader.readLongOrNull(offsets[12]),
+    publishDate: reader.readDateTimeOrNull(offsets[10]),
+    publishYear: reader.readStringOrNull(offsets[11]),
+    ratingCount: reader.readLongOrNull(offsets[12]),
+    readCount: reader.readLongOrNull(offsets[13]),
     readingStatus:
-        _BookreadingStatusValueEnumMap[reader.readStringOrNull(offsets[13])],
-    source: _BooksourceValueEnumMap[reader.readStringOrNull(offsets[14])] ??
+        _BookreadingStatusValueEnumMap[reader.readStringOrNull(offsets[14])],
+    source: _BooksourceValueEnumMap[reader.readStringOrNull(offsets[15])] ??
         BookSourceEnums.online,
-    title: reader.readString(offsets[15]),
-    totalPages: reader.readLongOrNull(offsets[16]),
-    uid: reader.readStringOrNull(offsets[17]),
-    updatedAt: reader.readDateTimeOrNull(offsets[18]),
+    title: reader.readString(offsets[16]),
+    totalPages: reader.readLongOrNull(offsets[17]),
+    uid: reader.readStringOrNull(offsets[18]),
+    updatedAt: reader.readDateTimeOrNull(offsets[19]),
   );
   object.id = id;
   return object;
@@ -314,24 +321,26 @@ P _bookDeserializeProp<P>(
     case 9:
       return (reader.readStringOrNull(offset)) as P;
     case 10:
-      return (reader.readStringOrNull(offset)) as P;
+      return (reader.readDateTimeOrNull(offset)) as P;
     case 11:
-      return (reader.readLongOrNull(offset)) as P;
+      return (reader.readStringOrNull(offset)) as P;
     case 12:
       return (reader.readLongOrNull(offset)) as P;
     case 13:
+      return (reader.readLongOrNull(offset)) as P;
+    case 14:
       return (_BookreadingStatusValueEnumMap[reader.readStringOrNull(offset)])
           as P;
-    case 14:
+    case 15:
       return (_BooksourceValueEnumMap[reader.readStringOrNull(offset)] ??
           BookSourceEnums.online) as P;
-    case 15:
-      return (reader.readString(offset)) as P;
     case 16:
-      return (reader.readLongOrNull(offset)) as P;
+      return (reader.readString(offset)) as P;
     case 17:
-      return (reader.readStringOrNull(offset)) as P;
+      return (reader.readLongOrNull(offset)) as P;
     case 18:
+      return (reader.readStringOrNull(offset)) as P;
+    case 19:
       return (reader.readDateTimeOrNull(offset)) as P;
     default:
       throw IsarError('Unknown property with id $propertyId');
@@ -1676,19 +1685,88 @@ extension BookQueryFilter on QueryBuilder<Book, Book, QFilterCondition> {
   }
 
   QueryBuilder<Book, Book, QAfterFilterCondition> publishDateEqualTo(
+      DateTime? value) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.equalTo(
+        property: r'publishDate',
+        value: value,
+      ));
+    });
+  }
+
+  QueryBuilder<Book, Book, QAfterFilterCondition> publishDateGreaterThan(
+    DateTime? value, {
+    bool include = false,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.greaterThan(
+        include: include,
+        property: r'publishDate',
+        value: value,
+      ));
+    });
+  }
+
+  QueryBuilder<Book, Book, QAfterFilterCondition> publishDateLessThan(
+    DateTime? value, {
+    bool include = false,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.lessThan(
+        include: include,
+        property: r'publishDate',
+        value: value,
+      ));
+    });
+  }
+
+  QueryBuilder<Book, Book, QAfterFilterCondition> publishDateBetween(
+    DateTime? lower,
+    DateTime? upper, {
+    bool includeLower = true,
+    bool includeUpper = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.between(
+        property: r'publishDate',
+        lower: lower,
+        includeLower: includeLower,
+        upper: upper,
+        includeUpper: includeUpper,
+      ));
+    });
+  }
+
+  QueryBuilder<Book, Book, QAfterFilterCondition> publishYearIsNull() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(const FilterCondition.isNull(
+        property: r'publishYear',
+      ));
+    });
+  }
+
+  QueryBuilder<Book, Book, QAfterFilterCondition> publishYearIsNotNull() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(const FilterCondition.isNotNull(
+        property: r'publishYear',
+      ));
+    });
+  }
+
+  QueryBuilder<Book, Book, QAfterFilterCondition> publishYearEqualTo(
     String? value, {
     bool caseSensitive = true,
   }) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.equalTo(
-        property: r'publishDate',
+        property: r'publishYear',
         value: value,
         caseSensitive: caseSensitive,
       ));
     });
   }
 
-  QueryBuilder<Book, Book, QAfterFilterCondition> publishDateGreaterThan(
+  QueryBuilder<Book, Book, QAfterFilterCondition> publishYearGreaterThan(
     String? value, {
     bool include = false,
     bool caseSensitive = true,
@@ -1696,14 +1774,14 @@ extension BookQueryFilter on QueryBuilder<Book, Book, QFilterCondition> {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.greaterThan(
         include: include,
-        property: r'publishDate',
+        property: r'publishYear',
         value: value,
         caseSensitive: caseSensitive,
       ));
     });
   }
 
-  QueryBuilder<Book, Book, QAfterFilterCondition> publishDateLessThan(
+  QueryBuilder<Book, Book, QAfterFilterCondition> publishYearLessThan(
     String? value, {
     bool include = false,
     bool caseSensitive = true,
@@ -1711,14 +1789,14 @@ extension BookQueryFilter on QueryBuilder<Book, Book, QFilterCondition> {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.lessThan(
         include: include,
-        property: r'publishDate',
+        property: r'publishYear',
         value: value,
         caseSensitive: caseSensitive,
       ));
     });
   }
 
-  QueryBuilder<Book, Book, QAfterFilterCondition> publishDateBetween(
+  QueryBuilder<Book, Book, QAfterFilterCondition> publishYearBetween(
     String? lower,
     String? upper, {
     bool includeLower = true,
@@ -1727,7 +1805,7 @@ extension BookQueryFilter on QueryBuilder<Book, Book, QFilterCondition> {
   }) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.between(
-        property: r'publishDate',
+        property: r'publishYear',
         lower: lower,
         includeLower: includeLower,
         upper: upper,
@@ -1737,69 +1815,69 @@ extension BookQueryFilter on QueryBuilder<Book, Book, QFilterCondition> {
     });
   }
 
-  QueryBuilder<Book, Book, QAfterFilterCondition> publishDateStartsWith(
+  QueryBuilder<Book, Book, QAfterFilterCondition> publishYearStartsWith(
     String value, {
     bool caseSensitive = true,
   }) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.startsWith(
-        property: r'publishDate',
+        property: r'publishYear',
         value: value,
         caseSensitive: caseSensitive,
       ));
     });
   }
 
-  QueryBuilder<Book, Book, QAfterFilterCondition> publishDateEndsWith(
+  QueryBuilder<Book, Book, QAfterFilterCondition> publishYearEndsWith(
     String value, {
     bool caseSensitive = true,
   }) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.endsWith(
-        property: r'publishDate',
+        property: r'publishYear',
         value: value,
         caseSensitive: caseSensitive,
       ));
     });
   }
 
-  QueryBuilder<Book, Book, QAfterFilterCondition> publishDateContains(
+  QueryBuilder<Book, Book, QAfterFilterCondition> publishYearContains(
       String value,
       {bool caseSensitive = true}) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.contains(
-        property: r'publishDate',
+        property: r'publishYear',
         value: value,
         caseSensitive: caseSensitive,
       ));
     });
   }
 
-  QueryBuilder<Book, Book, QAfterFilterCondition> publishDateMatches(
+  QueryBuilder<Book, Book, QAfterFilterCondition> publishYearMatches(
       String pattern,
       {bool caseSensitive = true}) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.matches(
-        property: r'publishDate',
+        property: r'publishYear',
         wildcard: pattern,
         caseSensitive: caseSensitive,
       ));
     });
   }
 
-  QueryBuilder<Book, Book, QAfterFilterCondition> publishDateIsEmpty() {
+  QueryBuilder<Book, Book, QAfterFilterCondition> publishYearIsEmpty() {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.equalTo(
-        property: r'publishDate',
+        property: r'publishYear',
         value: '',
       ));
     });
   }
 
-  QueryBuilder<Book, Book, QAfterFilterCondition> publishDateIsNotEmpty() {
+  QueryBuilder<Book, Book, QAfterFilterCondition> publishYearIsNotEmpty() {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.greaterThan(
-        property: r'publishDate',
+        property: r'publishYear',
         value: '',
       ));
     });
@@ -3001,6 +3079,18 @@ extension BookQuerySortBy on QueryBuilder<Book, Book, QSortBy> {
     });
   }
 
+  QueryBuilder<Book, Book, QAfterSortBy> sortByPublishYear() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'publishYear', Sort.asc);
+    });
+  }
+
+  QueryBuilder<Book, Book, QAfterSortBy> sortByPublishYearDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'publishYear', Sort.desc);
+    });
+  }
+
   QueryBuilder<Book, Book, QAfterSortBy> sortByRatingCount() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'ratingCount', Sort.asc);
@@ -3243,6 +3333,18 @@ extension BookQuerySortThenBy on QueryBuilder<Book, Book, QSortThenBy> {
     });
   }
 
+  QueryBuilder<Book, Book, QAfterSortBy> thenByPublishYear() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'publishYear', Sort.asc);
+    });
+  }
+
+  QueryBuilder<Book, Book, QAfterSortBy> thenByPublishYearDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'publishYear', Sort.desc);
+    });
+  }
+
   QueryBuilder<Book, Book, QAfterSortBy> thenByRatingCount() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'ratingCount', Sort.asc);
@@ -3407,10 +3509,16 @@ extension BookQueryWhereDistinct on QueryBuilder<Book, Book, QDistinct> {
     });
   }
 
-  QueryBuilder<Book, Book, QDistinct> distinctByPublishDate(
+  QueryBuilder<Book, Book, QDistinct> distinctByPublishDate() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addDistinctBy(r'publishDate');
+    });
+  }
+
+  QueryBuilder<Book, Book, QDistinct> distinctByPublishYear(
       {bool caseSensitive = true}) {
     return QueryBuilder.apply(this, (query) {
-      return query.addDistinctBy(r'publishDate', caseSensitive: caseSensitive);
+      return query.addDistinctBy(r'publishYear', caseSensitive: caseSensitive);
     });
   }
 
@@ -3535,9 +3643,15 @@ extension BookQueryProperty on QueryBuilder<Book, Book, QQueryProperty> {
     });
   }
 
-  QueryBuilder<Book, String?, QQueryOperations> publishDateProperty() {
+  QueryBuilder<Book, DateTime?, QQueryOperations> publishDateProperty() {
     return QueryBuilder.apply(this, (query) {
       return query.addPropertyName(r'publishDate');
+    });
+  }
+
+  QueryBuilder<Book, String?, QQueryOperations> publishYearProperty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addPropertyName(r'publishYear');
     });
   }
 

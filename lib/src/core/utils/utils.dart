@@ -120,7 +120,7 @@ class Utils {
     }
   }
 
-  static  ImageProvider determineImageProviderByUri(String uri) {
+  static ImageProvider determineImageProviderByUri(String uri) {
     Uri parsedUri = Uri.parse(uri);
     if (parsedUri.isScheme('file')) {
       return FileImage(File(parsedUri.path));
@@ -128,4 +128,33 @@ class Utils {
       return NetworkImage(uri);
     }
   }
+
+  static DateTime? parseToDate(dynamic input) {
+    if (input is int) {
+      // Assuming input is a 4-digit year
+      if (input.toString().length == 4) {
+        return DateTime(input);
+      } else {
+        return null;
+      }
+    } else if (input is String) {
+      // Try to parse the string as a DateTime
+      try {
+        DateTime date = DateTime.parse(input);
+        return date;
+      } catch (e) {
+        // If parsing fails, check if it's a 4-digit year string
+        if (input.length == 4 && int.tryParse(input) != null) {
+          return DateTime(int.parse(input));
+        }
+        return null;
+      }
+    } else if (input is DateTime) {
+      return input;
+    } else {
+      return null;
+    }
+  }
+
+
 }
