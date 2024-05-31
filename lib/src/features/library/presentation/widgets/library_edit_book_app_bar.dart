@@ -2,17 +2,21 @@ import 'dart:ui';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:readivo_app/src/core/bloc/app_cubit.dart';
 import 'package:readivo_app/src/core/constants/constants.dart';
 import 'package:readivo_app/src/core/utils/utils.dart';
 import 'package:readivo_app/src/core/widgets/custom_button.dart';
 import 'package:readivo_app/src/core/widgets/custom_container.dart';
+import 'package:readivo_app/src/features/library/domain/entities/book.dart';
+import 'package:readivo_app/src/features/library/presentation/screens/library_add_book_screen.dart';
 import 'package:readivo_app/src/features/library/presentation/widgets/book_box.dart';
 import 'package:readivo_app/src/features/library/presentation/widgets/book_cover.dart';
 
 class LibraryEditBookAppBar extends StatelessWidget {
-  final String imageUri;
-  const LibraryEditBookAppBar({super.key, required this.imageUri});
+  final Book book;
+  const LibraryEditBookAppBar({super.key, required this.book});
 
   @override
   Widget build(BuildContext context) {
@@ -43,10 +47,26 @@ class LibraryEditBookAppBar extends StatelessWidget {
           ),
         ),
       ),
+      actions: [
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 8.0),
+          child: CustomButton(
+            text: 'Save',
+            width: 80,
+            color: Colors.black.withOpacity(0.1),
+            borderRadius: 6,
+            textColor: Colors.white,
+            onPressed: (){
+              // go back with changed
+              context.read<AppCubit>().changeScreen(LibraryAddBookScreen(book: book));
+            },
+          ),
+        ),
+      ],
       flexibleSpace: FlexibleSpaceBar(
         background: Stack(
           children: [
-            _buildBlurredImageWithGradient(imageUri),
+            _buildBlurredImageWithGradient(book.coverURI ?? ''),
             Stack(
               alignment: Alignment.bottomRight,
               children: [
@@ -58,18 +78,18 @@ class LibraryEditBookAppBar extends StatelessWidget {
                     width: 170,
                     height: 250,
                     child: BookBox(
-                      coverUri: imageUri,
+                      coverUri: book.coverURI ?? '',
                     ),
                   ),
                 ),
                 Padding(
                   padding: const EdgeInsets.only(bottom: 48.0, right: 16),
                   child: CustomButton(
-                    text: 'Add',
+                    text: 'Change Thumbnail',
                     width: 50,
                     height: 50,
                     borderRadius: 25,
-                    color: AppColors.lightGrey,
+                    color: Colors.white.withOpacity(0.4),
                     child: SvgPicture.asset(AppIcons.camera),
                   ),
                 )
@@ -85,8 +105,9 @@ class LibraryEditBookAppBar extends StatelessWidget {
       bottom: const PreferredSize(
         preferredSize: Size.fromHeight(0.0),
         child: CustomContainer(
+          padding: EdgeInsets.all(4.0),
           alignment: Alignment.bottomCenter,
-          height: 24,
+          height: 12,
           boxDecoration: BoxDecoration(
             color: Colors.white,
             borderRadius: BorderRadius.only(
@@ -96,8 +117,8 @@ class LibraryEditBookAppBar extends StatelessWidget {
           ),
           child: CustomContainer(
             width: 48,
-            height: 8,
-            borderRadius: 12,
+            height: 4,
+            borderRadius: 2,
             color: AppColors.grey,
           ),
         ),

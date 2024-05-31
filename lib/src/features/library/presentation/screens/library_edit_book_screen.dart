@@ -58,7 +58,7 @@ class _LibraryEditBookScreenState extends State<LibraryEditBookScreen> {
     totalPagesController =
         TextEditingController(text: widget.book.totalPages.toString());
     publishedAtController =
-        TextEditingController(text: widget.book.publishDate.toString());
+        TextEditingController(text: widget.book.publishYear.toString());
     descriptionController =
         TextEditingController(text: widget.book.description);
     isbnController = TextEditingController(text: widget.book.isbn);
@@ -78,7 +78,7 @@ class _LibraryEditBookScreenState extends State<LibraryEditBookScreen> {
         body: CustomScrollView(
           slivers: <Widget>[
             LibraryEditBookAppBar(
-              imageUri: widget.book.coverURI ?? '',
+              book: widget.book,
             ),
             SliverToBoxAdapter(
               child: Padding(
@@ -723,8 +723,8 @@ class _LibraryEditBookScreenState extends State<LibraryEditBookScreen> {
       },
       {
         "label": "Publish Year",
-        "value": widget.book.publishDate,
-        "type": 'date',
+        "value": widget.book.publishYear,
+        "type": 'number',
         "controller": publishedAtController,
       },
       {
