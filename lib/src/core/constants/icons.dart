@@ -14,4 +14,5 @@ class AppIcons {
   static const String quill = "assets/images/icons/quill.svg";
   static const String close = "assets/images/icons/close.svg";
   static const String bookmark = "assets/images/icons/bookmark.svg";
+  static const String addOutline = "assets/images/icons/add-outline.svg";
 }

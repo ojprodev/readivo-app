@@ -1,4 +1,5 @@
 import 'package:card_swiper/card_swiper.dart';
+import 'package:conditional_builder_null_safety/conditional_builder_null_safety.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/flutter_svg.dart';
@@ -73,42 +74,40 @@ class _LibraryHomeScreenState extends State<LibraryHomeScreen> {
       body: Container(
         decoration: const BoxDecoration(color: Colors.white),
         child: SingleChildScrollView(
-          child: Container(
-            child: Column(
-              mainAxisSize: MainAxisSize.max,
-              children: [
-                Column(
-                  children: [
-                    Container(
-                      decoration: const BoxDecoration(
-                        gradient: LinearGradient(
-                          begin: Alignment.topCenter,
-                          end: Alignment.bottomCenter,
-                          colors: [
-                            Color(0xFF282828),
-                            Colors.white,
-                          ],
-                        ),
-                      ),
-                      child: Column(
-                        children: [
-                          const SizedBox(
-                            height: 32,
-                          ),
-                          _buildContinueReadingSection(),
-                          const SizedBox(height: 36.0),
-                          _buildDailyQuoteSection(),
-                          const SizedBox(height: 24.0),
-                          _buildBooksShelvesSection(),
+          child: Column(
+            mainAxisSize: MainAxisSize.max,
+            children: [
+              Column(
+                children: [
+                  Container(
+                    decoration: const BoxDecoration(
+                      gradient: LinearGradient(
+                        begin: Alignment.topCenter,
+                        end: Alignment.bottomCenter,
+                        colors: [
+                          Color(0xFF282828),
+                          Colors.white,
                         ],
                       ),
                     ),
-                    const SizedBox(height: 64.0),
-                    _buildReadingStatuesList(),
-                  ],
-                ),
-              ],
-            ),
+                    child: Column(
+                      children: [
+                        const SizedBox(
+                          height: 32,
+                        ),
+                        _buildContinueReadingSection(),
+                        const SizedBox(height: 36.0),
+                        _buildDailyQuoteSection(),
+                        const SizedBox(height: 24.0),
+                        _buildBooksShelvesSection(),
+                      ],
+                    ),
+                  ),
+                  const SizedBox(height: 64.0),
+                  _buildReadingStatuesList(),
+                ],
+              ),
+            ],
           ),
         ),
       ),
@@ -211,17 +210,21 @@ class _LibraryHomeScreenState extends State<LibraryHomeScreen> {
       padding: const EdgeInsets.all(4.0),
       height: 240,
       width: MediaQuery.sizeOf(context).width,
-      child: Swiper(
-        itemCount: 3,
-        scale: 0.9,
-        itemBuilder: (context, index) {
-          return _buildReadingBookCard();
-        },
+      child: ConditionalBuilder(
+        condition: false,
+        builder: (context) => Swiper(
+          itemCount: 3,
+          scale: 0.9,
+          itemBuilder: (context, index) {
+            return _buildReadingBookCard();
+          },
+        ),
+        fallback: (context) => _buildReadingBookCard(isEmpty: true),
       ),
     );
   }
 
-  Widget _buildReadingBookCard() {
+  Widget _buildReadingBookCard({bool isEmpty = false}) {
     return Padding(
       padding: const EdgeInsets.all(10.0),
       child: Stack(
@@ -236,74 +239,95 @@ class _LibraryHomeScreenState extends State<LibraryHomeScreen> {
             width: double.infinity,
             height: double.infinity,
             color: AppColors.lightWhite,
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              // mainAxisSize: MainAxisSize.max,
-              children: [
-                const BookBox(
-                  width: 121,
-                  height: 190,
-                ),
-                Expanded(
-                  child: Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 14.0),
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.spaceAround,
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        const CustomText(
-                          'The Almanack of naval ravikant',
-                          maxLines: 2,
-                        ),
-                        Column(
-                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                          children: [
-                            const Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: [
-                                CustomText('page 230 of 345'),
-                                CustomText('63%'),
-                              ],
-                            ),
-                            const SizedBox(
-                              height: 8.0,
-                            ),
-                            CustomContainer(
-                              padding: const EdgeInsets.all(6.0),
-                              color: AppColors.lightGrey,
-                              borderRadius: 12.0,
-                              child: LinearPercentIndicator(
-                                lineHeight: 8.0,
-                                percent: 0.63,
-                                barRadius: const Radius.circular(4.0),
-                                backgroundColor: Colors.white,
-                                progressColor: AppColors.grey,
-                                padding: EdgeInsets.zero,
-                              ),
-                            ),
-                          ],
-                        ),
-                        const Row(
-                          mainAxisAlignment: MainAxisAlignment.end,
-                          crossAxisAlignment: CrossAxisAlignment.end,
-                          children: [
-                            CustomButton(
-                              text: 'Continue Reading',
-                              styleType: ButtonStyleType.ghost,
-                              width: 140,
-                              child: CustomText(
-                                'Continue Reading',
-                                textAlign: TextAlign.end,
-                                color: Colors.black,
-                              ),
-                            )
-                          ],
-                        ),
-                      ],
-                    ),
+            child: ConditionalBuilder(
+              condition: isEmpty == false,
+              builder: (context) => Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                // mainAxisSize: MainAxisSize.max,
+                children: [
+                  const BookBox(
+                    width: 121,
+                    height: 190,
                   ),
-                )
-              ],
+                  Expanded(
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 14.0),
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.spaceAround,
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          const CustomText(
+                            'The Almanack of naval ravikant',
+                            maxLines: 2,
+                          ),
+                          Column(
+                            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                            children: [
+                              const Row(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
+                                children: [
+                                  CustomText('page 230 of 345'),
+                                  CustomText('63%'),
+                                ],
+                              ),
+                              const SizedBox(
+                                height: 8.0,
+                              ),
+                              CustomContainer(
+                                padding: const EdgeInsets.all(6.0),
+                                color: AppColors.lightGrey,
+                                borderRadius: 12.0,
+                                child: LinearPercentIndicator(
+                                  lineHeight: 8.0,
+                                  percent: 0.63,
+                                  barRadius: const Radius.circular(4.0),
+                                  backgroundColor: Colors.white,
+                                  progressColor: AppColors.grey,
+                                  padding: EdgeInsets.zero,
+                                ),
+                              ),
+                            ],
+                          ),
+                          const Row(
+                            mainAxisAlignment: MainAxisAlignment.end,
+                            crossAxisAlignment: CrossAxisAlignment.end,
+                            children: [
+                              CustomButton(
+                                text: 'Continue Reading',
+                                styleType: ButtonStyleType.ghost,
+                                width: 140,
+                                child: CustomText(
+                                  'Continue Reading',
+                                  textAlign: TextAlign.end,
+                                  color: Colors.black,
+                                ),
+                              )
+                            ],
+                          ),
+                        ],
+                      ),
+                    ),
+                  )
+                ],
+              ),
+              fallback: (context) {
+                return Column(
+                  mainAxisSize: MainAxisSize.max,
+                  mainAxisAlignment: MainAxisAlignment.spaceAround,
+                  children: [
+                    CustomContainer(
+                      height: 120,
+                      width: 120,
+                      borderRadius: 60,
+                      color: AppColors.lightGrey,
+                      padding: const EdgeInsets.all(32.0),
+                      child: SvgPicture.asset(AppIcons.addOutline,colorFilter: const ColorFilter.mode(AppColors.grey, BlendMode.srcIn,),)
+                    ),
+                    const Text('Add books you are reading'),
+                  ],
+                );
+              },
             ),
           ),
         ],
