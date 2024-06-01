@@ -9,7 +9,6 @@ import 'package:readivo_app/src/core/constants/constants.dart';
 import 'package:readivo_app/src/core/layouts/basic_layout.dart';
 import 'package:readivo_app/src/core/widgets/bottom_sheet.dart';
 import 'package:readivo_app/src/core/widgets/custom_button.dart';
-import 'package:readivo_app/src/core/widgets/custom_chip.dart';
 import 'package:readivo_app/src/core/widgets/custom_container.dart';
 import 'package:readivo_app/src/core/widgets/custom_list_item.dart';
 import 'package:readivo_app/src/core/widgets/custom_text.dart';
@@ -59,37 +58,58 @@ class _LibraryHomeScreenState extends State<LibraryHomeScreen> {
   // Build methods
   Widget _buildHomeScreen(BuildContext context, state) {
     return BasicLayout(
-      title: 'Good morning',
+      title: 'Home Screen',
+      titleWidget: const CustomText(
+        'Good morning',
+        color: Colors.white,
+      ),
       showBackButton: false,
       isPinned: false,
-      appBarBackground: Colors.white,
+      extendBody: false,
+      appBarBackground: const Color(0xFF282828),
       actions: [
         _buildAddButton(),
       ],
-      body: SingleChildScrollView(
-        child: Column(
-          mainAxisSize: MainAxisSize.max,
-          children: [
-            _buildContinueReadingSection(),
-            Container(
-              color: AppColors.lightGrey.withOpacity(0.4),
-              child: Container(
-                decoration: const BoxDecoration(
-                  color: Colors.white,
-                  borderRadius: BorderRadius.only(
-                    topRight: Radius.circular(16.0),
-                    topLeft: Radius.circular(16.0),
-                  ),
-                ),
-                child: Column(
+      body: Container(
+        decoration: const BoxDecoration(color: Colors.white),
+        child: SingleChildScrollView(
+          child: Container(
+            child: Column(
+              mainAxisSize: MainAxisSize.max,
+              children: [
+                Column(
                   children: [
-                    _buildSuggestionSection(),
+                    Container(
+                      decoration: const BoxDecoration(
+                        gradient: LinearGradient(
+                          begin: Alignment.topCenter,
+                          end: Alignment.bottomCenter,
+                          colors: [
+                            Color(0xFF282828),
+                            Colors.white,
+                          ],
+                        ),
+                      ),
+                      child: Column(
+                        children: [
+                          const SizedBox(
+                            height: 32,
+                          ),
+                          _buildContinueReadingSection(),
+                          const SizedBox(height: 36.0),
+                          _buildDailyQuoteSection(),
+                          const SizedBox(height: 24.0),
+                          _buildBooksShelvesSection(),
+                        ],
+                      ),
+                    ),
+                    const SizedBox(height: 64.0),
                     _buildReadingStatuesList(),
                   ],
                 ),
-              ),
-            )
-          ],
+              ],
+            ),
+          ),
         ),
       ),
     );
@@ -102,7 +122,10 @@ class _LibraryHomeScreenState extends State<LibraryHomeScreen> {
       width: 40,
       height: 40,
       borderRadius: 20,
-      child: SvgPicture.asset(AppIcons.add),
+      child: SvgPicture.asset(
+        AppIcons.add,
+        colorFilter: const ColorFilter.mode(Colors.white, BlendMode.srcIn),
+      ),
       onPressed: () {
         CustomBottomSheet.show(
           context: context,
@@ -148,12 +171,12 @@ class _LibraryHomeScreenState extends State<LibraryHomeScreen> {
   }
 
   Widget _buildContinueReadingSection() {
-    return Container(
-      color: Colors.black,
+    return SizedBox(
       height: 300.0,
       child: Column(
         children: [
           _buildContinueReadingHeader(),
+          const SizedBox(height: 16.0),
           _buildContinueReadingList(),
         ],
       ),
@@ -170,12 +193,13 @@ class _LibraryHomeScreenState extends State<LibraryHomeScreen> {
           CustomText(
             'Continue Reading',
             fontSize: 20,
-            fontWeight: FontWeight.w400,
+            color: Colors.white,
+            fontWeight: FontWeight.w500,
           ),
           CustomText(
             'See all',
             fontSize: 16,
-            color: AppColors.lightBlue,
+            color: Colors.white,
           ),
         ],
       ),
@@ -287,91 +311,159 @@ class _LibraryHomeScreenState extends State<LibraryHomeScreen> {
     );
   }
 
-  Widget _buildSuggestionSection() {
+  Widget _buildDailyQuoteSection() {
     return Column(
+      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
       children: [
-        _buildSuggestionsHeader(),
-        _buildSuggestionsList(),
         Padding(
-          padding: const EdgeInsets.only(top: 8.0, bottom: 12.0),
-          child: CustomButton(
-            text: 'Browse More',
-            color: AppColors.lightGrey,
-            textColor: AppColors.grey,
-            borderRadius: 4.0,
-            width: MediaQuery.sizeOf(context).width / 2,
+          padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
+          child: Stack(
+            children: [
+              CustomContainer(
+                color: Colors.white,
+                width: double.infinity,
+                height: 160,
+                padding: const EdgeInsets.symmetric(
+                    horizontal: 36.0, vertical: 24.0),
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    const CustomText(
+                      'They are many names for the future; weak call it impossible, afraid people call it  unknown. but for braves it’s the ...',
+                      color: AppColors.grey,
+                      textAlign: TextAlign.center,
+                      maxLines: 10,
+                    ),
+                    CustomText(
+                      '- Plato',
+                      color: AppColors.grey.withOpacity(0.6),
+                    ),
+                  ],
+                ),
+              ),
+              Positioned(
+                top: -6,
+                left: 8,
+                child: SvgPicture.asset(
+                  AppIcons.bookmark,
+                  height: 32,
+                ),
+              ),
+            ],
           ),
+        ),
+        const CustomButton(
+          text: 'View all',
+          textColor: Colors.white,
+          styleType: ButtonStyleType.ghost,
         ),
       ],
     );
   }
 
-  Widget _buildSuggestionsHeader() {
-    return Padding(
-      padding: const EdgeInsets.all(12.0),
-      child: Column(
-        children: [
-          const Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              CustomText('Suggestions',
-                  fontSize: 20, fontWeight: FontWeight.w500),
-              CustomText('Browse all', color: AppColors.lightBlue),
-            ],
-          ),
-          const SizedBox(height: 6.0),
-          SingleChildScrollView(
-            scrollDirection: Axis.horizontal,
-            child: Row(
-              children: bookShelves.map((item) {
-                return Container(
-                  margin: const EdgeInsets.only(right: 4.0),
-                  child: GestureDetector(
-                    onTap: () {
-                      setState(() {
-                        selectedShelve = item;
-                      });
-                    },
-                    child: CustomChip(
-                      text: item,
-                      borderRadius: 4.0,
-                      padding: const EdgeInsets.symmetric(horizontal: 8.0),
-                      backgroundColor: selectedShelve == item
-                          ? AppColors.lightGrey.withOpacity(0.4)
-                          : Colors.white,
-                    ),
+  Widget _buildBooksShelvesSection() {
+    return Column(
+      children: [
+        Column(
+          children: [
+            const Padding(
+              padding: EdgeInsets.all(12),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  CustomText('Books Shelves',
+                      fontSize: 20, fontWeight: FontWeight.w500),
+                  CustomText(
+                    'Browse all',
+                    color: Colors.black,
                   ),
-                );
-              }).toList(),
+                ],
+              ),
             ),
-          )
-        ],
-      ),
-    );
-  }
-
-  Widget _buildSuggestionsList() {
-    return GridView.builder(
-      shrinkWrap: true,
-      physics: const NeverScrollableScrollPhysics(),
-      gridDelegate: const SliverGridDelegateWithMaxCrossAxisExtent(
-        maxCrossAxisExtent: 170,
-        mainAxisSpacing: 4.0,
-        crossAxisSpacing: 0.0,
-        mainAxisExtent: 230,
-      ),
-      padding: const EdgeInsets.symmetric(horizontal: 8.0),
-      itemCount: 5,
-      itemBuilder: (gridContext, index) => GestureDetector(
-        onTap: () {},
-        child: const SizedBox(),
-        // const BookGridItem(
-        //   coverWidth: 140,
-        //   coverHeight: 170,
-        //   titleFontSize: 16,
-        //   authorFontSize: 14,
-        // ),
-      ),
+            const SizedBox(height: 8.0),
+            SizedBox(
+              height: 140,
+              child: Swiper(
+                itemCount: 3,
+                scale: 0.9,
+                viewportFraction: 0.85,
+                itemBuilder: (context, index) {
+                  return Stack(
+                    alignment: Alignment.centerRight,
+                    children: [
+                      CustomContainer(
+                        color: Colors.white,
+                        width: MediaQuery.sizeOf(context).width,
+                        borderRadius: 6.0,
+                        child: const Column(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          mainAxisSize: MainAxisSize.max,
+                          children: [
+                            CustomText(
+                              'Book Shelf Name',
+                              fontSize: 18,
+                            ),
+                            CustomText(
+                              '12 books',
+                              color: AppColors.grey,
+                            ),
+                          ],
+                        ),
+                      ),
+                      Container(
+                        width: 150,
+                        height: 200,
+                        padding: const EdgeInsets.only(right: 12.0),
+                        child: Stack(
+                          alignment: Alignment.center,
+                          children: [
+                            Positioned(
+                              left: 0,
+                              top: 40,
+                              child: ClipRRect(
+                                borderRadius: BorderRadius.circular(8.0),
+                                child: Image.network(
+                                  'https://images-na.ssl-images-amazon.com/images/S/compressed.photo.goodreads.com/books/1654371463i/18144590.jpg',
+                                  width: 60,
+                                  height: 90,
+                                  fit: BoxFit.cover,
+                                ),
+                              ),
+                            ),
+                            Positioned(
+                              right: 0,
+                              top: 40,
+                              child: ClipRRect(
+                                borderRadius: BorderRadius.circular(8.0),
+                                child: Image.network(
+                                  'https://images-na.ssl-images-amazon.com/images/S/compressed.photo.goodreads.com/books/1654371463i/18144590.jpg',
+                                  width: 60,
+                                  height: 90,
+                                  fit: BoxFit.cover,
+                                ),
+                              ),
+                            ),
+                            ClipRRect(
+                              borderRadius: BorderRadius.circular(8.0),
+                              child: Image.network(
+                                'https://images-na.ssl-images-amazon.com/images/S/compressed.photo.goodreads.com/books/1654371463i/18144590.jpg',
+                                width: 70,
+                                height: 105,
+                                fit: BoxFit.cover,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ],
+                  );
+                },
+              ),
+            ),
+          ],
+        ),
+      ],
     );
   }
 
@@ -404,12 +496,13 @@ class _LibraryHomeScreenState extends State<LibraryHomeScreen> {
       },
     ];
 
-    return Container(
+    return CustomContainer(
       margin: const EdgeInsets.symmetric(horizontal: 12.0, vertical: 16),
-      decoration: BoxDecoration(
-        color: AppColors.lightGrey.withOpacity(0.4),
-        borderRadius: BorderRadius.circular(8.0),
-      ),
+      padding: const EdgeInsets.symmetric(horizontal: 2.0, vertical: 4.0),
+      borderColor: AppColors.lightGrey.withOpacity(0.8),
+      borderWidth: 1,
+      color: Colors.white,
+      borderRadius: 8,
       child: ListView.separated(
         shrinkWrap: true,
         physics: const NeverScrollableScrollPhysics(),
