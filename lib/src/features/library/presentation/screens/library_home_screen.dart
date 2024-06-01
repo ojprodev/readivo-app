@@ -317,13 +317,18 @@ class _LibraryHomeScreenState extends State<LibraryHomeScreen> {
                   mainAxisAlignment: MainAxisAlignment.spaceAround,
                   children: [
                     CustomContainer(
-                      height: 120,
-                      width: 120,
-                      borderRadius: 60,
-                      color: AppColors.lightGrey,
-                      padding: const EdgeInsets.all(32.0),
-                      child: SvgPicture.asset(AppIcons.addOutline,colorFilter: const ColorFilter.mode(AppColors.grey, BlendMode.srcIn,),)
-                    ),
+                        height: 120,
+                        width: 120,
+                        borderRadius: 60,
+                        color: AppColors.lightGrey,
+                        padding: const EdgeInsets.all(32.0),
+                        child: SvgPicture.asset(
+                          AppIcons.addOutline,
+                          colorFilter: const ColorFilter.mode(
+                            AppColors.grey,
+                            BlendMode.srcIn,
+                          ),
+                        )),
                     const Text('Add books you are reading'),
                   ],
                 );
@@ -405,85 +410,111 @@ class _LibraryHomeScreenState extends State<LibraryHomeScreen> {
               ),
             ),
             const SizedBox(height: 8.0),
-            SizedBox(
-              height: 140,
-              child: Swiper(
-                itemCount: 3,
-                scale: 0.9,
-                viewportFraction: 0.85,
-                itemBuilder: (context, index) {
-                  return Stack(
-                    alignment: Alignment.centerRight,
+            ConditionalBuilder(
+              condition: false,
+              builder: (context) => SizedBox(
+                height: 140,
+                child: Swiper(
+                  itemCount: 3,
+                  scale: 0.9,
+                  viewportFraction: 0.85,
+                  itemBuilder: (context, index) {
+                    return Stack(
+                      alignment: Alignment.centerRight,
+                      children: [
+                        CustomContainer(
+                          color: Colors.white,
+                          width: MediaQuery.sizeOf(context).width,
+                          borderRadius: 6.0,
+                          child: const Column(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            mainAxisSize: MainAxisSize.max,
+                            children: [
+                              CustomText(
+                                'Book Shelf Name',
+                                fontSize: 18,
+                              ),
+                              CustomText(
+                                '12 books',
+                                color: AppColors.grey,
+                              ),
+                            ],
+                          ),
+                        ),
+                        Container(
+                          width: 150,
+                          height: 200,
+                          padding: const EdgeInsets.only(right: 12.0),
+                          child: Stack(
+                            alignment: Alignment.center,
+                            children: [
+                              Positioned(
+                                left: 0,
+                                top: 40,
+                                child: ClipRRect(
+                                  borderRadius: BorderRadius.circular(8.0),
+                                  child: Image.network(
+                                    'https://images-na.ssl-images-amazon.com/images/S/compressed.photo.goodreads.com/books/1654371463i/18144590.jpg',
+                                    width: 60,
+                                    height: 90,
+                                    fit: BoxFit.cover,
+                                  ),
+                                ),
+                              ),
+                              Positioned(
+                                right: 0,
+                                top: 40,
+                                child: ClipRRect(
+                                  borderRadius: BorderRadius.circular(8.0),
+                                  child: Image.network(
+                                    'https://images-na.ssl-images-amazon.com/images/S/compressed.photo.goodreads.com/books/1654371463i/18144590.jpg',
+                                    width: 60,
+                                    height: 90,
+                                    fit: BoxFit.cover,
+                                  ),
+                                ),
+                              ),
+                              ClipRRect(
+                                borderRadius: BorderRadius.circular(8.0),
+                                child: Image.network(
+                                  'https://images-na.ssl-images-amazon.com/images/S/compressed.photo.goodreads.com/books/1654371463i/18144590.jpg',
+                                  width: 70,
+                                  height: 105,
+                                  fit: BoxFit.cover,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ],
+                    );
+                  },
+                ),
+              ),
+              fallback: (context) {
+                return CustomContainer(
+                  color: Colors.white,
+                  height: 120,
+                  borderRadius: 8.0,
+                  width: MediaQuery.sizeOf(context).width,
+                  margin: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 16.0),
+                  padding: const EdgeInsets.symmetric(vertical: 16.0),
+                  child: const Column(
+                    mainAxisSize: MainAxisSize.max,
+                    mainAxisAlignment: MainAxisAlignment.spaceAround,
                     children: [
-                      CustomContainer(
-                        color: Colors.white,
-                        width: MediaQuery.sizeOf(context).width,
-                        borderRadius: 6.0,
-                        child: const Column(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          mainAxisSize: MainAxisSize.max,
-                          children: [
-                            CustomText(
-                              'Book Shelf Name',
-                              fontSize: 18,
-                            ),
-                            CustomText(
-                              '12 books',
-                              color: AppColors.grey,
-                            ),
-                          ],
-                        ),
-                      ),
-                      Container(
-                        width: 150,
-                        height: 200,
-                        padding: const EdgeInsets.only(right: 12.0),
-                        child: Stack(
-                          alignment: Alignment.center,
-                          children: [
-                            Positioned(
-                              left: 0,
-                              top: 40,
-                              child: ClipRRect(
-                                borderRadius: BorderRadius.circular(8.0),
-                                child: Image.network(
-                                  'https://images-na.ssl-images-amazon.com/images/S/compressed.photo.goodreads.com/books/1654371463i/18144590.jpg',
-                                  width: 60,
-                                  height: 90,
-                                  fit: BoxFit.cover,
-                                ),
-                              ),
-                            ),
-                            Positioned(
-                              right: 0,
-                              top: 40,
-                              child: ClipRRect(
-                                borderRadius: BorderRadius.circular(8.0),
-                                child: Image.network(
-                                  'https://images-na.ssl-images-amazon.com/images/S/compressed.photo.goodreads.com/books/1654371463i/18144590.jpg',
-                                  width: 60,
-                                  height: 90,
-                                  fit: BoxFit.cover,
-                                ),
-                              ),
-                            ),
-                            ClipRRect(
-                              borderRadius: BorderRadius.circular(8.0),
-                              child: Image.network(
-                                'https://images-na.ssl-images-amazon.com/images/S/compressed.photo.goodreads.com/books/1654371463i/18144590.jpg',
-                                width: 70,
-                                height: 105,
-                                fit: BoxFit.cover,
-                              ),
-                            ),
-                          ],
-                        ),
+                      CustomText('Your library of books is empty.', fontSize: 16,),
+                      SizedBox(height: 8.0),
+                      CustomButton(
+                        width: 160,
+                        text: 'Add new books',
+                        color: Colors.black,
                       ),
                     ],
-                  );
-                },
-              ),
+                  ),
+                );
+              },
             ),
           ],
         ),
