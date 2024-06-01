@@ -139,7 +139,7 @@ class LibraryEditBookAppBar extends StatelessWidget {
           ),
           Positioned.fill(
             child: BackdropFilter(
-              filter: ImageFilter.blur(sigmaX: 8.0, sigmaY: 8.0),
+              filter: ImageFilter.blur(sigmaX: 3.0, sigmaY: 3.0),
               child: Container(
                 color: Colors.black.withOpacity(0), // Adjust opacity if needed
               ),

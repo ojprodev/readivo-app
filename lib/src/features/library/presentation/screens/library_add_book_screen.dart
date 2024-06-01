@@ -154,7 +154,7 @@ class _LibraryAddBookScreenState extends State<LibraryAddBookScreen> {
           ),
           Positioned.fill(
             child: BackdropFilter(
-              filter: ImageFilter.blur(sigmaX: 8.0, sigmaY: 8.0),
+              filter: ImageFilter.blur(sigmaX: 3.0, sigmaY: 3.0),
               child: Container(
                 color: Colors.white.withOpacity(0), // Adjust opacity if needed
               ),
