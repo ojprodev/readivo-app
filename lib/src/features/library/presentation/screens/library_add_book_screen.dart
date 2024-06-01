@@ -20,6 +20,7 @@ import 'package:readivo_app/src/core/widgets/partials/bottom_sheet_item.dart';
 import 'package:readivo_app/src/core/widgets/star_rating.dart';
 import 'package:readivo_app/src/core/widgets/toast.dart';
 import 'package:readivo_app/src/features/library/domain/entities/book.dart';
+import 'package:readivo_app/src/features/library/presentation/bloc/library_cubit.dart';
 import 'package:readivo_app/src/features/library/presentation/screens/library_edit_book_screen.dart';
 import 'package:readivo_app/src/features/library/presentation/screens/library_search_screen.dart';
 import 'package:readivo_app/src/features/library/presentation/widgets/book_box.dart';
@@ -44,6 +45,14 @@ class _LibraryAddBookScreenState extends State<LibraryAddBookScreen> {
   DateTime? startDate;
   DateTime? finishDate;
   bool showFullDescription = false;
+  late LibraryCubit libraryCubit;
+
+  @override
+  void initState() {
+    super.initState();
+
+    libraryCubit = LibraryCubit.get(context);
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -252,6 +261,12 @@ class _LibraryAddBookScreenState extends State<LibraryAddBookScreen> {
           // change the active status state
           setState(() {
             isReadingStatusActive = !isReadingStatusActive;
+            if (isReadingStatusActive) {
+              widget.book.readingStatus = selectedReadingStatus;
+            } else {
+              widget.book.readingStatus = null;
+            }
+            libraryCubit.updateBook(widget.book);
           });
 
           String readingStatus =
@@ -689,7 +704,7 @@ class _LibraryAddBookScreenState extends State<LibraryAddBookScreen> {
             fontWeight: FontWeight.bold,
           ),
           GestureDetector(
-            onTap: (){
+            onTap: () {
               setState(() {
                 showFullDescription = !showFullDescription;
               });
