@@ -126,7 +126,7 @@ class LibraryCubit extends Cubit<LibraryStates> {
     }).then((_) => emit(LibrarySearchLoadedState(localBooks)));
   }
 
-  void updateBook(Book book) async {
+  Future<void> updateBook(Book book) async {
     // if book source is online
     if (book.source == BookSourceEnums.online) {
       // chekc if the book already saved, (using title)

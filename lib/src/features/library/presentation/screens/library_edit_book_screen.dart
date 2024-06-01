@@ -11,6 +11,7 @@ import 'package:readivo_app/src/core/widgets/custom_chip.dart';
 import 'package:readivo_app/src/core/widgets/custom_input_field.dart';
 import 'package:readivo_app/src/core/widgets/custom_list_item.dart';
 import 'package:readivo_app/src/features/library/domain/entities/book.dart';
+import 'package:readivo_app/src/features/library/presentation/bloc/library_cubit.dart';
 import 'package:readivo_app/src/features/library/presentation/screens/library_add_book_screen.dart';
 import 'package:readivo_app/src/features/library/presentation/widgets/library_edit_book_app_bar.dart';
 
@@ -64,7 +65,6 @@ class _LibraryEditBookScreenState extends State<LibraryEditBookScreen> {
     descriptionController =
         TextEditingController(text: widget.book.description);
     isbnController = TextEditingController(text: widget.book.isbn);
-
   }
 
   @override
@@ -75,6 +75,7 @@ class _LibraryEditBookScreenState extends State<LibraryEditBookScreen> {
   @override
   Widget build(BuildContext context) {
     AppCubit appCubit = AppCubit.get(context);
+    LibraryCubit libraryCubit = LibraryCubit.get(context);
     return SafeArea(
       child: Scaffold(
         backgroundColor: Colors.white,
@@ -82,9 +83,7 @@ class _LibraryEditBookScreenState extends State<LibraryEditBookScreen> {
           slivers: <Widget>[
             LibraryEditBookAppBar(
               coverUri: widget.book.coverURI ?? '',
-              onSave: (coverUri){
-
-
+              onSave: (coverUri) {
                 widget.book.title = titleController.text;
                 widget.book.author = authorController.text;
                 widget.book.bookType = selectedBookType;
@@ -94,13 +93,20 @@ class _LibraryEditBookScreenState extends State<LibraryEditBookScreen> {
                 widget.book.description = descriptionController.text;
                 widget.book.coverURI = coverUri;
 
-                // save changed to the book details
-                appCubit.changeScreen(LibraryAddBookScreen(book: widget.book));
+                libraryCubit
+                    .updateBook(widget.book)
+                    .whenComplete(() => null)
+                    .then((_) {
+                  // save changed to the book details
+                  appCubit
+                      .changeScreen(LibraryAddBookScreen(book: widget.book));
+                });
               },
             ),
             SliverToBoxAdapter(
               child: Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 0),
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 8.0, vertical: 0),
                 child: Column(
                   children: [
                     _buildBookTypeTabs(),
