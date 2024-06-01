@@ -42,6 +42,7 @@ class _LibraryAddBookScreenState extends State<LibraryAddBookScreen> {
   bool invalidData = false;
   DateTime? startDate;
   DateTime? finishDate;
+  bool showFullDescription = false;
 
   @override
   Widget build(BuildContext context) {
@@ -686,11 +687,18 @@ class _LibraryAddBookScreenState extends State<LibraryAddBookScreen> {
             fontSize: 18,
             fontWeight: FontWeight.bold,
           ),
-          CustomText(
-            widget.book.description ?? '-',
-            textAlign: TextAlign.start,
-            maxLines: 8,
-            color: AppColors.grey,
+          GestureDetector(
+            onTap: (){
+              setState(() {
+                showFullDescription = !showFullDescription;
+              });
+            },
+            child: CustomText(
+              widget.book.description ?? '-',
+              textAlign: TextAlign.start,
+              maxLines: showFullDescription ? 1000 : 8,
+              color: AppColors.grey,
+            ),
           ),
         ],
       ),
