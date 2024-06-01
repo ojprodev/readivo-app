@@ -21,6 +21,7 @@ import 'package:readivo_app/src/core/widgets/star_rating.dart';
 import 'package:readivo_app/src/core/widgets/toast.dart';
 import 'package:readivo_app/src/features/library/domain/entities/book.dart';
 import 'package:readivo_app/src/features/library/presentation/screens/library_edit_book_screen.dart';
+import 'package:readivo_app/src/features/library/presentation/screens/library_search_screen.dart';
 import 'package:readivo_app/src/features/library/presentation/widgets/book_box.dart';
 import 'package:readivo_app/src/features/library/presentation/widgets/book_cover.dart';
 
@@ -62,7 +63,7 @@ class _LibraryAddBookScreenState extends State<LibraryAddBookScreen> {
           borderRadius: 40,
           color: Colors.black.withOpacity(0.3),
           onPressed: () {
-            Navigator.pop(context);
+            appCubit.changeScreen(const LibrarySearchScreen());
           },
           child: SvgPicture.asset(
             AppIcons.chevronLeft,
@@ -156,7 +157,7 @@ class _LibraryAddBookScreenState extends State<LibraryAddBookScreen> {
             child: BackdropFilter(
               filter: ImageFilter.blur(sigmaX: 3.0, sigmaY: 3.0),
               child: Container(
-                color: Colors.white.withOpacity(0), // Adjust opacity if needed
+                color: Colors.white.withOpacity(0),
               ),
             ),
           ),

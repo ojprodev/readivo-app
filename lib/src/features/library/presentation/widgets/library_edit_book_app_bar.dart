@@ -2,22 +2,33 @@ import 'dart:ui';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:readivo_app/src/core/bloc/app_cubit.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:readivo_app/src/core/constants/constants.dart';
 import 'package:readivo_app/src/core/utils/utils.dart';
+import 'package:readivo_app/src/core/widgets/bottom_sheet.dart';
 import 'package:readivo_app/src/core/widgets/custom_button.dart';
 import 'package:readivo_app/src/core/widgets/custom_container.dart';
-import 'package:readivo_app/src/features/library/domain/entities/book.dart';
-import 'package:readivo_app/src/features/library/presentation/screens/library_add_book_screen.dart';
+import 'package:readivo_app/src/core/widgets/partials/bottom_sheet_item.dart';
 import 'package:readivo_app/src/features/library/presentation/widgets/book_box.dart';
 import 'package:readivo_app/src/features/library/presentation/widgets/book_cover.dart';
 
-class LibraryEditBookAppBar extends StatelessWidget {
-  final Book book;
-  const LibraryEditBookAppBar({super.key, required this.book});
+// ignore: must_be_immutable
+class LibraryEditBookAppBar extends StatefulWidget {
+  String coverUri;
+  final Function(String) onSave;
 
+  LibraryEditBookAppBar({
+    super.key,
+    required this.coverUri,
+    required this.onSave,
+  });
+
+  @override
+  State<LibraryEditBookAppBar> createState() => _LibraryEditBookAppBarState();
+}
+
+class _LibraryEditBookAppBarState extends State<LibraryEditBookAppBar> {
   @override
   Widget build(BuildContext context) {
     return SliverAppBar(
@@ -36,14 +47,14 @@ class LibraryEditBookAppBar extends StatelessWidget {
         child: CustomButton(
           text: 'Back',
           borderRadius: 40,
-          color: Colors.black.withOpacity(0.2),
+          color: Colors.white.withOpacity(0.9),
           onPressed: () {
             Navigator.pop(context);
           },
           child: SvgPicture.asset(
             AppIcons.chevronLeft,
             height: 24,
-            colorFilter: const ColorFilter.mode(Colors.white, BlendMode.srcIn),
+            colorFilter: const ColorFilter.mode(Colors.black, BlendMode.srcIn),
           ),
         ),
       ),
@@ -53,20 +64,17 @@ class LibraryEditBookAppBar extends StatelessWidget {
           child: CustomButton(
             text: 'Save',
             width: 80,
-            color: Colors.black.withOpacity(0.1),
+            color: Colors.white.withOpacity(0.9),
             borderRadius: 6,
-            textColor: Colors.white,
-            onPressed: (){
-              // go back with changed
-              context.read<AppCubit>().changeScreen(LibraryAddBookScreen(book: book));
-            },
+            textColor: Colors.black,
+            onPressed: () => widget.onSave(widget.coverUri),
           ),
         ),
       ],
       flexibleSpace: FlexibleSpaceBar(
         background: Stack(
           children: [
-            _buildBlurredImageWithGradient(book.coverURI ?? ''),
+            _buildBlurredImageWithGradient(widget.coverUri),
             Stack(
               alignment: Alignment.bottomRight,
               children: [
@@ -78,7 +86,7 @@ class LibraryEditBookAppBar extends StatelessWidget {
                     width: 170,
                     height: 250,
                     child: BookBox(
-                      coverUri: book.coverURI ?? '',
+                      coverUri: widget.coverUri,
                     ),
                   ),
                 ),
@@ -89,8 +97,50 @@ class LibraryEditBookAppBar extends StatelessWidget {
                     width: 50,
                     height: 50,
                     borderRadius: 25,
-                    color: Colors.white.withOpacity(0.4),
-                    child: SvgPicture.asset(AppIcons.camera),
+                    color: Colors.black.withOpacity(0.2),
+                    onPressed: () {
+                      CustomBottomSheet.show(
+                        context: context,
+                        bottomSheetItems: [
+                          BottomSheetItem(
+                            icon: SvgPicture.asset(AppIcons.image),
+                            label: 'Select an Image',
+                            borderColor: AppColors.lightGrey.withOpacity(0.4),
+                            onTap: () {
+                              _pickBookThumbnail(source: ImageSource.gallery);
+
+                              // close the bottom sheet
+                              Navigator.pop(context);
+                            },
+                          ),
+                          BottomSheetItem(
+                            icon: SvgPicture.asset(AppIcons.link),
+                            label: 'Use a URL',
+                            borderColor: AppColors.lightGrey.withOpacity(0.4),
+                            onTap: () {
+                              // close the bottom sheet
+                              Navigator.pop(context);
+                            },
+                          ),
+                          BottomSheetItem(
+                            icon: SvgPicture.asset(AppIcons.camera),
+                            label: 'Take a Picture',
+                            borderColor: AppColors.lightGrey.withOpacity(0.4),
+                            onTap: () {
+                              _pickBookThumbnail(source: ImageSource.camera);
+
+                              // close the bottom sheet
+                              Navigator.pop(context);
+                            },
+                          ),
+                        ],
+                      );
+                    },
+                    child: SvgPicture.asset(
+                      AppIcons.camera,
+                      colorFilter:
+                          const ColorFilter.mode(Colors.white, BlendMode.srcIn),
+                    ),
                   ),
                 )
               ],
@@ -148,5 +198,15 @@ class LibraryEditBookAppBar extends StatelessWidget {
         ],
       ),
     );
+  }
+
+  Future<void> _pickBookThumbnail({required ImageSource source}) async {
+    final XFile? selectedImage = await ImagePicker().pickImage(source: source);
+
+    if (selectedImage != null) {
+      setState(() {
+        widget.coverUri = selectedImage.path;
+      });
+    }
   }
 }

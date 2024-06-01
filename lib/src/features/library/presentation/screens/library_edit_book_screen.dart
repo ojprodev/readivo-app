@@ -1,5 +1,6 @@
 import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
+import 'package:readivo_app/src/core/bloc/app_cubit.dart';
 import 'package:readivo_app/src/core/constants/constants.dart';
 import 'package:readivo_app/src/core/enums/enums.dart';
 import 'package:readivo_app/src/core/utils/utils.dart';
@@ -10,6 +11,7 @@ import 'package:readivo_app/src/core/widgets/custom_chip.dart';
 import 'package:readivo_app/src/core/widgets/custom_input_field.dart';
 import 'package:readivo_app/src/core/widgets/custom_list_item.dart';
 import 'package:readivo_app/src/features/library/domain/entities/book.dart';
+import 'package:readivo_app/src/features/library/presentation/screens/library_add_book_screen.dart';
 import 'package:readivo_app/src/features/library/presentation/widgets/library_edit_book_app_bar.dart';
 
 class LibraryEditBookScreen extends StatefulWidget {
@@ -72,13 +74,29 @@ class _LibraryEditBookScreenState extends State<LibraryEditBookScreen> {
 
   @override
   Widget build(BuildContext context) {
+    AppCubit appCubit = AppCubit.get(context);
     return SafeArea(
       child: Scaffold(
         backgroundColor: Colors.white,
         body: CustomScrollView(
           slivers: <Widget>[
             LibraryEditBookAppBar(
-              book: widget.book,
+              coverUri: widget.book.coverURI ?? '',
+              onSave: (coverUri){
+
+
+                widget.book.title = titleController.text;
+                widget.book.author = authorController.text;
+                widget.book.bookType = selectedBookType;
+                widget.book.totalPages = int.parse(totalPagesController.text);
+                widget.book.isbn = isbnController.text;
+                widget.book.publishYear = publishedAtController.text;
+                widget.book.description = descriptionController.text;
+                widget.book.coverURI = coverUri;
+
+                // save changed to the book details
+                appCubit.changeScreen(LibraryAddBookScreen(book: widget.book));
+              },
             ),
             SliverToBoxAdapter(
               child: Padding(

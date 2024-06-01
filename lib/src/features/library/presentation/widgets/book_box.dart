@@ -31,16 +31,17 @@ class BookBox extends StatelessWidget {
   final double borderRadius;
 
   /// Constructor for BookBoxCover.
-  const BookBox(
-      {super.key,
-      this.coverUri = '',
-      this.rating,
-      this.height = 200.0,
-      this.width = 150.0,
-      this.background = Colors.white,
-      this.icon,
-      this.borderRadius = 8.0,
-      this.iconSize = 40.0});
+  const BookBox({
+    super.key,
+    this.coverUri = '',
+    this.rating,
+    this.height = 200.0,
+    this.width = 150.0,
+    this.background = Colors.white,
+    this.icon,
+    this.borderRadius = 8.0,
+    this.iconSize = 40.0,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -61,7 +62,10 @@ class BookBox extends StatelessWidget {
       return _buildNetworkImage();
     } else if (uri.isScheme('file') && File(uri.path).existsSync()) {
       return _buildLocalImage(uri.path);
-    } else {
+      // TODO: temp
+    } else if (coverUri.isNotEmpty) {
+      return _buildLocalImage(uri.path);
+    }else{
       return _buildPlaceholderImage();
     }
   }

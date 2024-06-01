@@ -37,6 +37,10 @@ class BooksUseCase {
     return await remoteBookRepository.downloadImageAsBytes(url);
   }
 
+  Future<ByteData> saveImageAsBytes(String url) async {
+    return await remoteBookRepository.downloadImageAsBytes(url);
+  }
+
   Future<String?> saveBookThumbnail(Book book) async {
     return await remoteBookRepository.saveBookThumbnail(book);
   }

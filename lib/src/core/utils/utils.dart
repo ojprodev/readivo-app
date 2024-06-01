@@ -124,8 +124,11 @@ class Utils {
     Uri parsedUri = Uri.parse(uri);
     if (parsedUri.isScheme('file')) {
       return FileImage(File(parsedUri.path));
-    } else {
+    } else if (parsedUri.isScheme('http') || parsedUri.isScheme('https')) {
       return NetworkImage(uri);
+    } else {
+      // TODO: change to empty picture
+      return FileImage(File(uri));
     }
   }
 
@@ -155,6 +158,4 @@ class Utils {
       return null;
     }
   }
-
-
 }
