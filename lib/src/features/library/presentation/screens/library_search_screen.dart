@@ -16,6 +16,7 @@ import 'package:readivo_app/src/core/widgets/custom_text.dart';
 import 'package:readivo_app/src/features/library/domain/entities/book.dart';
 import 'package:readivo_app/src/features/library/presentation/bloc/library_cubit.dart';
 import 'package:readivo_app/src/features/library/presentation/screens/library_add_book_screen.dart';
+import 'package:readivo_app/src/features/library/presentation/screens/library_home_screen.dart';
 import 'package:readivo_app/src/features/library/presentation/widgets/book_grid_item.dart';
 
 class LibrarySearchScreen extends StatefulWidget {
@@ -69,7 +70,7 @@ class _LibrarySearchScreenState extends State<LibrarySearchScreen>
         child: SvgPicture.asset(AppIcons.chevronLeft),
         onPressed: () {
           // redirect to previous screen
-          Navigator.pop(context);
+          appCubit.changeScreen(const LibraryHomeScreen());
         },
       ),
       showBackButton: false,
