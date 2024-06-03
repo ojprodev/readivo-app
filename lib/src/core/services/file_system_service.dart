@@ -168,4 +168,11 @@ class FileSystemService {
       return null;
     }
   }
+
+  static bool fileExist(path){
+    if(File(path).existsSync()){
+      return true;
+    }
+    return false;
+  }
 }

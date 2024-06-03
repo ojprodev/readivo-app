@@ -6,6 +6,7 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:percent_indicator/linear_percent_indicator.dart';
 import 'package:readivo_app/src/core/bloc/app_cubit.dart';
 import 'package:readivo_app/src/core/constants/constants.dart';
+import 'package:readivo_app/src/core/enums/enums.dart';
 import 'package:readivo_app/src/core/layouts/basic_layout.dart';
 import 'package:readivo_app/src/core/widgets/bottom_sheet.dart';
 import 'package:readivo_app/src/core/widgets/custom_button.dart';
@@ -15,6 +16,7 @@ import 'package:readivo_app/src/core/widgets/custom_text.dart';
 import 'package:readivo_app/src/core/widgets/partials/bottom_sheet_item.dart';
 import 'package:readivo_app/src/features/library/domain/entities/book.dart';
 import 'package:readivo_app/src/features/library/presentation/bloc/library_cubit.dart';
+import 'package:readivo_app/src/features/library/presentation/screens/library_pdf_reader_screen.dart';
 import 'package:readivo_app/src/features/library/presentation/screens/library_search_screen.dart';
 import 'package:readivo_app/src/features/library/presentation/widgets/book_box.dart';
 
@@ -44,7 +46,7 @@ class _LibraryHomeScreenState extends State<LibraryHomeScreen> {
     return BlocConsumer<LibraryCubit, LibraryStates>(
       builder: _buildHomeScreen,
       listener: _buildListener,
-      );
+    );
   }
 
   // Build methods
@@ -237,7 +239,7 @@ class _LibraryHomeScreenState extends State<LibraryHomeScreen> {
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 // mainAxisSize: MainAxisSize.max,
                 children: [
-                   BookBox(
+                  BookBox(
                     width: 121,
                     height: 190,
                     coverUri: book!.coverURI ?? '',
@@ -260,7 +262,8 @@ class _LibraryHomeScreenState extends State<LibraryHomeScreen> {
                                 mainAxisAlignment:
                                     MainAxisAlignment.spaceBetween,
                                 children: [
-                                  CustomText('page 230 of ${book.totalPages ?? '-'}'),
+                                  CustomText(
+                                      'page 230 of ${book.totalPages ?? '-'}'),
                                   const CustomText('63%'),
                                 ],
                               ),
@@ -282,16 +285,26 @@ class _LibraryHomeScreenState extends State<LibraryHomeScreen> {
                               ),
                             ],
                           ),
-                          const Row(
+                          Row(
                             mainAxisAlignment: MainAxisAlignment.end,
                             crossAxisAlignment: CrossAxisAlignment.end,
                             children: [
                               CustomButton(
-                                text: 'Continue Reading',
+                                text: 'Start Reading',
                                 styleType: ButtonStyleType.ghost,
                                 width: 140,
+                                onPressed: (){
+                                  if(book.source == BookSourceEnums.local){
+                                    // open the pdf reader screen
+                                    appCubit.changeScreen(LibraryPdfReaderScreen(book: book));
+                                  }else{
+                                    print('open session screen');
+                                  }
+                                },
                                 child: CustomText(
-                                  'Continue Reading',
+                                  book.source == BookSourceEnums.local
+                                      ? 'Continue Reading'
+                                      : 'Start a Session',
                                   textAlign: TextAlign.end,
                                   color: Colors.black,
                                 ),
@@ -596,7 +609,7 @@ class _LibraryHomeScreenState extends State<LibraryHomeScreen> {
 
   // Listener method
   void _buildListener(BuildContext context, state) {
-    if(state is LibraryFetchedReadingListState){
+    if (state is LibraryFetchedReadingListState) {
       readingList = state.books;
     }
   }
