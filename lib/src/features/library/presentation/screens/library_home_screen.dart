@@ -26,20 +26,6 @@ class LibraryHomeScreen extends StatefulWidget {
 
 class _LibraryHomeScreenState extends State<LibraryHomeScreen> {
   late AppCubit appCubit;
-  List<String> bookShelves = [
-    'For You',
-    'Design',
-    'Art',
-    'Philosophy',
-    'Health',
-    'Programming',
-    'Communication',
-    'Fiction',
-    'Cooking',
-    'Sport',
-    'Science'
-  ];
-  String selectedShelve = 'For You';
 
   @override
   void initState() {
@@ -316,14 +302,21 @@ class _LibraryHomeScreenState extends State<LibraryHomeScreen> {
                   mainAxisSize: MainAxisSize.max,
                   mainAxisAlignment: MainAxisAlignment.spaceAround,
                   children: [
-                    CustomContainer(
+                    CustomButton(
+                        text: 'Add a Book',
                         height: 120,
                         width: 120,
                         borderRadius: 60,
                         color: AppColors.lightGrey,
-                        padding: const EdgeInsets.all(32.0),
+                        onPressed: () {
+                          CustomBottomSheet.show(
+                            context: context,
+                            bottomSheetItems: homeScreenBottomSheetItems(),
+                          );
+                        },
                         child: SvgPicture.asset(
                           AppIcons.addOutline,
+                          width: 54,
                           colorFilter: const ColorFilter.mode(
                             AppColors.grey,
                             BlendMode.srcIn,
@@ -498,13 +491,17 @@ class _LibraryHomeScreenState extends State<LibraryHomeScreen> {
                   height: 120,
                   borderRadius: 8.0,
                   width: MediaQuery.sizeOf(context).width,
-                  margin: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 16.0),
+                  margin: const EdgeInsets.symmetric(
+                      vertical: 8.0, horizontal: 16.0),
                   padding: const EdgeInsets.symmetric(vertical: 16.0),
                   child: const Column(
                     mainAxisSize: MainAxisSize.max,
                     mainAxisAlignment: MainAxisAlignment.spaceAround,
                     children: [
-                      CustomText('Your library of books is empty.', fontSize: 16,),
+                      CustomText(
+                        'Your library of books is empty.',
+                        fontSize: 16,
+                      ),
                       SizedBox(height: 8.0),
                       CustomButton(
                         width: 160,
