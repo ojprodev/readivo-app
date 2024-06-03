@@ -5,7 +5,6 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:percent_indicator/linear_percent_indicator.dart';
 import 'package:readivo_app/src/core/bloc/app_cubit.dart';
-import 'package:readivo_app/src/core/bloc/app_states.dart';
 import 'package:readivo_app/src/core/constants/constants.dart';
 import 'package:readivo_app/src/core/layouts/basic_layout.dart';
 import 'package:readivo_app/src/core/widgets/bottom_sheet.dart';
@@ -14,6 +13,8 @@ import 'package:readivo_app/src/core/widgets/custom_container.dart';
 import 'package:readivo_app/src/core/widgets/custom_list_item.dart';
 import 'package:readivo_app/src/core/widgets/custom_text.dart';
 import 'package:readivo_app/src/core/widgets/partials/bottom_sheet_item.dart';
+import 'package:readivo_app/src/features/library/domain/entities/book.dart';
+import 'package:readivo_app/src/features/library/presentation/bloc/library_cubit.dart';
 import 'package:readivo_app/src/features/library/presentation/screens/library_search_screen.dart';
 import 'package:readivo_app/src/features/library/presentation/widgets/book_box.dart';
 
@@ -26,24 +27,28 @@ class LibraryHomeScreen extends StatefulWidget {
 
 class _LibraryHomeScreenState extends State<LibraryHomeScreen> {
   late AppCubit appCubit;
+  late LibraryCubit libraryCubit;
+  List<Book> readingList = [];
 
   @override
   void initState() {
-    appCubit = AppCubit.get(context);
-
     super.initState();
+    appCubit = AppCubit.get(context);
+    libraryCubit = LibraryCubit.get(context);
+
+    libraryCubit.gerReadingBooks();
   }
 
   @override
   Widget build(BuildContext context) {
-    return BlocConsumer<AppCubit, AppStates>(
+    return BlocConsumer<LibraryCubit, LibraryStates>(
       builder: _buildHomeScreen,
       listener: _buildListener,
-    );
+      );
   }
 
   // Build methods
-  Widget _buildHomeScreen(BuildContext context, state) {
+  Widget _buildHomeScreen(context, state) {
     return BasicLayout(
       title: 'Home Screen',
       titleWidget: const CustomText(
@@ -197,20 +202,21 @@ class _LibraryHomeScreenState extends State<LibraryHomeScreen> {
       height: 240,
       width: MediaQuery.sizeOf(context).width,
       child: ConditionalBuilder(
-        condition: false,
+        condition: readingList.isNotEmpty,
         builder: (context) => Swiper(
-          itemCount: 3,
+          itemCount: readingList.length,
           scale: 0.9,
+          loop: false,
           itemBuilder: (context, index) {
-            return _buildReadingBookCard();
+            return _buildReadingBookCard(readingList[index]);
           },
         ),
-        fallback: (context) => _buildReadingBookCard(isEmpty: true),
+        fallback: (context) => _buildReadingBookCard(null, isEmpty: true),
       ),
     );
   }
 
-  Widget _buildReadingBookCard({bool isEmpty = false}) {
+  Widget _buildReadingBookCard(Book? book, {bool isEmpty = false}) {
     return Padding(
       padding: const EdgeInsets.all(10.0),
       child: Stack(
@@ -231,9 +237,10 @@ class _LibraryHomeScreenState extends State<LibraryHomeScreen> {
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 // mainAxisSize: MainAxisSize.max,
                 children: [
-                  const BookBox(
+                   BookBox(
                     width: 121,
                     height: 190,
+                    coverUri: book!.coverURI ?? '',
                   ),
                   Expanded(
                     child: Padding(
@@ -242,19 +249,19 @@ class _LibraryHomeScreenState extends State<LibraryHomeScreen> {
                         mainAxisAlignment: MainAxisAlignment.spaceAround,
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          const CustomText(
-                            'The Almanack of naval ravikant',
+                          CustomText(
+                            book.title,
                             maxLines: 2,
                           ),
                           Column(
                             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                             children: [
-                              const Row(
+                              Row(
                                 mainAxisAlignment:
                                     MainAxisAlignment.spaceBetween,
                                 children: [
-                                  CustomText('page 230 of 345'),
-                                  CustomText('63%'),
+                                  CustomText('page 230 of ${book.totalPages ?? '-'}'),
+                                  const CustomText('63%'),
                                 ],
                               ),
                               const SizedBox(
@@ -588,5 +595,9 @@ class _LibraryHomeScreenState extends State<LibraryHomeScreen> {
   }
 
   // Listener method
-  void _buildListener(BuildContext context, state) {}
+  void _buildListener(BuildContext context, state) {
+    if(state is LibraryFetchedReadingListState){
+      readingList = state.books;
+    }
+  }
 }

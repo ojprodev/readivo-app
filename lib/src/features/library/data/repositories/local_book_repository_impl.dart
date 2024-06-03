@@ -38,14 +38,19 @@ class LocalBookRepositoryImpl extends LocalBookRepository {
   }
 
   @override
-  Future<List<Book>> getAllBooks({bool localOnly = false}) async {
+  Future<List<Book>> getAllBooks(
+      {bool localOnly = false, ReadingStatus? status}) async {
     if (localOnly) {
       return await isar.books
           .filter()
           .sourceEqualTo(BookSourceEnums.local)
           .findAll();
     } else {
-      return await isar.books.where().findAll();
+      if (status != null) {
+        return await isar.books.filter().readingStatusEqualTo(status).limit(3).findAll();
+      } else {
+        return await isar.books.where().findAll();
+      }
     }
   }
 

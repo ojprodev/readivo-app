@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:readivo_app/src/core/enums/enums.dart';
 import 'package:readivo_app/src/features/library/data/local/models/local_book.dart';
 import 'package:readivo_app/src/features/library/domain/entities/book.dart';
 
@@ -14,7 +15,7 @@ abstract class LocalBookRepository {
 
   Future<void> deleteBook(int id);
 
-  Future<List<Book>> getAllBooks({bool localOnly = false});
+  Future<List<Book>> getAllBooks({bool localOnly = false, ReadingStatus? status});
 
   Future<Book?> findByTitle(String title);
 }

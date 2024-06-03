@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:equatable/equatable.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:readivo_app/src/core/enums/enums.dart';
 import 'package:readivo_app/src/core/services/file_system_service.dart';
@@ -27,7 +28,7 @@ class LibraryCubit extends Cubit<LibraryStates> {
     required this.fileSystemService,
   }) : super(LibraryInitState());
 
-  static LibraryCubit get(context) => BlocProvider.of(context);
+  static LibraryCubit get(BuildContext context) => BlocProvider.of<LibraryCubit>(context);
 
   // search for books
   void search(String query) async {
@@ -119,7 +120,7 @@ class LibraryCubit extends Cubit<LibraryStates> {
         .getBooks(localOnly: true)
         .whenComplete(() => null)
         .then((books) {
-      if (books != null && books.isNotEmpty) {
+      if (books.isNotEmpty) {
         // fill the local books
         localBooks = books;
       }
@@ -156,5 +157,9 @@ class LibraryCubit extends Cubit<LibraryStates> {
     }
   }
 
+  Future<void> gerReadingBooks()async{
+    List<Book> readingList = await booksUseCase.getBooks(status: ReadingStatus.reading);
+    emit(LibraryFetchedReadingListState(readingList));
+  }
 
 }

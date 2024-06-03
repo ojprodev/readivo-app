@@ -1,7 +1,6 @@
 part of 'library_cubit.dart';
 
 abstract class LibraryStates extends Equatable {
-
   @override
   List<Object> get props => [];
 }
@@ -13,6 +12,15 @@ class LibrarySearchLoadingState extends LibraryStates {}
 class LibraryStoragePermissionGrantedState extends LibraryStates {}
 
 class LibraryStoragePermissionDeniedState extends LibraryStates {}
+
+class LibraryFetchedReadingListState extends LibraryStates {
+  final List<Book> books;
+
+  LibraryFetchedReadingListState(this.books);
+
+  @override
+  List<Object> get props => [books];
+}
 
 class LibrarySearchLoadedState extends LibraryStates {
   final List<Book> books;
@@ -32,7 +40,7 @@ class LibrarySearchErrorState extends LibraryStates {
   List<Object> get props => [message];
 }
 
-class LibraryBookSourceChangeState extends LibraryStates{
+class LibraryBookSourceChangeState extends LibraryStates {
   final BookSourceEnums source;
 
   LibraryBookSourceChangeState(this.source);
@@ -41,7 +49,7 @@ class LibraryBookSourceChangeState extends LibraryStates{
   List<Object> get props => [source];
 }
 
-class LibraryNewBookDetectedState extends LibraryStates{
+class LibraryNewBookDetectedState extends LibraryStates {
   final Book book;
 
   LibraryNewBookDetectedState(this.book);

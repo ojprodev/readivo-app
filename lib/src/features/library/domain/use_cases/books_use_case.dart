@@ -1,6 +1,7 @@
 import 'dart:io';
 import 'dart:typed_data';
 
+import 'package:readivo_app/src/core/enums/enums.dart';
 import 'package:readivo_app/src/features/library/data/local/models/local_book.dart';
 import 'package:readivo_app/src/features/library/domain/entities/book.dart';
 import 'package:readivo_app/src/features/library/domain/repositories/local_book_repository.dart';
@@ -25,8 +26,8 @@ class BooksUseCase {
     return await localBookRepository.addBook(book);
   }
 
-  Future<List<Book>?> getBooks({bool localOnly = false}) async {
-    return await localBookRepository.getAllBooks(localOnly: localOnly);
+  Future<List<Book>> getBooks({bool localOnly = false, ReadingStatus? status}) async {
+    return await localBookRepository.getAllBooks(localOnly: localOnly, status: status);
   }
 
   Future<void> updateBook(Book book) async {

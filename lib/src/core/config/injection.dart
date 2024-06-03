@@ -6,8 +6,8 @@ import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
 import 'package:isar/isar.dart';
 import 'package:readivo_app/src/core/services/database_service.dart';
-import 'package:readivo_app/src/core/services/permission_service.dart';
 import 'package:readivo_app/src/core/services/file_system_service.dart';
+import 'package:readivo_app/src/core/services/permission_service.dart';
 import 'package:readivo_app/src/features/library/data/remote/data_sources/remote_book_data_source.dart';
 import 'package:readivo_app/src/features/library/data/repositories/local_book_repository_impl.dart';
 import 'package:readivo_app/src/features/library/data/repositories/remote_book_repository_impl.dart';
@@ -24,10 +24,10 @@ class DependencyInjection {
     WidgetsFlutterBinding.ensureInitialized();
 
     // register dependencies
-    _setDependencies();
+    await _setDependencies();
   }
 
-  static void _setDependencies() async {
+  static Future<void> _setDependencies() async {
     Isar isar = await DatabaseService.initIsar();
     // Dio
     getIt.registerLazySingleton(() => Dio());
@@ -58,8 +58,8 @@ class DependencyInjection {
           remoteBookRepository: getIt(),
         ));
 
-    // Cubit
-    getIt.registerFactory(() => LibraryCubit(
+    // Cubits
+    getIt.registerFactory<LibraryCubit>(() => LibraryCubit(
           booksUseCase: getIt(),
           permissionService: getIt(),
           fileSystemService: getIt(),
