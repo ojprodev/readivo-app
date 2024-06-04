@@ -76,7 +76,7 @@ class _LibraryAddBookScreenState extends State<LibraryAddBookScreen> {
           borderRadius: 40,
           color: Colors.black.withOpacity(0.3),
           onPressed: () {
-            Navigator.pop(context);
+            appCubit.previousScreen();
           },
           child: SvgPicture.asset(
             AppIcons.chevronLeft,
@@ -94,7 +94,7 @@ class _LibraryAddBookScreenState extends State<LibraryAddBookScreen> {
             borderRadius: 30,
             color: Colors.black.withOpacity(0.3),
             onPressed: () {
-              appCubit.changeScreen(LibraryEditBookScreen(book: widget.book));
+              appCubit.changeScreen(LibraryEditBookScreen(book: widget.book), enableBack: false);
             },
             child: SvgPicture.asset(
               AppIcons.edit,

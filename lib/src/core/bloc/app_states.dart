@@ -9,9 +9,10 @@ class AppScreenChangedState extends AppStates {
   static Widget nextScreen = const MyApp();
   static Widget previousScreen = const MyApp();
 
-  AppScreenChangedState(Widget screen) {
-    previousScreen = nextScreen;
+  AppScreenChangedState(Widget screen, {bool enableBack = true}) {
+    if (enableBack) {
+      previousScreen = nextScreen;
+    }
     nextScreen = screen;
   }
 }
-

@@ -99,7 +99,7 @@ class _LibraryEditBookScreenState extends State<LibraryEditBookScreen> {
                     .then((_) {
                   // save changed to the book details
                   appCubit
-                      .changeScreen(LibraryAddBookScreen(book: widget.book));
+                      .changeScreen(LibraryAddBookScreen(book: widget.book), enableBack: false);
                 });
               },
             ),

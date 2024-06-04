@@ -9,8 +9,12 @@ class AppCubit extends Cubit<AppStates> {
   static AppCubit get(context) => BlocProvider.of(context);
 
   // change screen
-  void changeScreen(Widget screen) {
+  void changeScreen(Widget screen, {bool enableBack = true}) {
     // emit the a change event, so that can be handled later in the main bloc consumer
-    emit(AppScreenChangedState(screen));
+    emit(AppScreenChangedState(screen, enableBack: enableBack));
+  }
+
+  void previousScreen(){
+    emit(AppScreenChangedState(AppScreenChangedState.previousScreen));
   }
 }
