@@ -22,7 +22,6 @@ import 'package:readivo_app/src/core/widgets/toast.dart';
 import 'package:readivo_app/src/features/library/domain/entities/book.dart';
 import 'package:readivo_app/src/features/library/presentation/bloc/library_cubit.dart';
 import 'package:readivo_app/src/features/library/presentation/screens/library_edit_book_screen.dart';
-import 'package:readivo_app/src/features/library/presentation/screens/library_search_screen.dart';
 import 'package:readivo_app/src/features/library/presentation/widgets/book_box.dart';
 import 'package:readivo_app/src/features/library/presentation/widgets/book_cover.dart';
 
@@ -307,6 +306,9 @@ class _LibraryAddBookScreenState extends State<LibraryAddBookScreen> {
             if(isReadingStatusActive == false){
               isReadingStatusActive = true;
             }
+
+            // sync status on the db
+            libraryCubit.updateBook(widget.book..readingStatus = status);
           });
 
           Toast.show(

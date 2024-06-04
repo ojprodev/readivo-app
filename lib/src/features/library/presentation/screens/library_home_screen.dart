@@ -39,7 +39,7 @@ class _LibraryHomeScreenState extends State<LibraryHomeScreen> {
     appCubit = AppCubit.get(context);
     libraryCubit = LibraryCubit.get(context);
 
-    libraryCubit.gerReadingBooks();
+    libraryCubit.getReadingBooks();
   }
 
   @override

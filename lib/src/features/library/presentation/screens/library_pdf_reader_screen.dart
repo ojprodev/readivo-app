@@ -19,7 +19,7 @@ class LibraryPdfReaderScreen extends StatelessWidget {
        colorFilter: _getColorFilter(),
         child: PdfViewer.file(
           '${book.path}',
-          params: PdfViewerParams(
+          params: const PdfViewerParams(
             enableTextSelection: true,
             margin: 8,
           ),
