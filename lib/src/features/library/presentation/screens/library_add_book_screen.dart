@@ -304,7 +304,17 @@ class _LibraryAddBookScreenState extends State<LibraryAddBookScreen> {
         onTap: () {
           setState(() {
             selectedReadingStatus = status;
+            if(isReadingStatusActive == false){
+              isReadingStatusActive = true;
+            }
           });
+
+          Toast.show(
+              context: context,
+              message: 'Book added to ${getReadingStatusAsString(selectedReadingStatus)} list',
+              backgroundColor: AppColors.grey);
+
+
           Navigator.of(context).pop();
         },
       );
