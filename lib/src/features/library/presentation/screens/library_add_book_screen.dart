@@ -76,7 +76,7 @@ class _LibraryAddBookScreenState extends State<LibraryAddBookScreen> {
           borderRadius: 40,
           color: Colors.black.withOpacity(0.3),
           onPressed: () {
-            appCubit.changeScreen(const LibrarySearchScreen());
+            Navigator.pop(context);
           },
           child: SvgPicture.asset(
             AppIcons.chevronLeft,
