@@ -51,6 +51,11 @@ class _LibrarySearchScreenState extends State<LibrarySearchScreen>
       duration: const Duration(seconds: 1),
       vsync: this,
     )..repeat();
+
+    // auto-fill books
+    if (libraryCubit.bookSource == BookSourceEnums.local) {
+      books = libraryCubit.localBooks;
+    }
   }
 
   @override
@@ -141,7 +146,18 @@ class _LibrarySearchScreenState extends State<LibrarySearchScreen>
                     onRefresh: () async {
                       if (libraryCubit.bookSource == BookSourceEnums.local) {
                         // perform scanning
-                        await libraryCubit.performLocalBooksScanning();
+                        bool isGranted =
+                            await libraryCubit.handleStoragePermission(
+                                action: PermissionAction.check);
+
+                        if (isGranted) {
+                          setState(() {
+                            isLoading = true;
+                          });
+                          await libraryCubit.performLocalBooksScanning();
+                        } else {
+                          _showStoragePermissionDialog();
+                        }
                       }
                     },
                     child: content,
@@ -294,10 +310,9 @@ class _LibrarySearchScreenState extends State<LibrarySearchScreen>
             children: [
               Expanded(
                 child: CustomButton(
-                  styleType:
-                      libraryCubit.bookSource == BookSourceEnums.online
-                          ? ButtonStyleType.filled
-                          : ButtonStyleType.outline,
+                  styleType: libraryCubit.bookSource == BookSourceEnums.online
+                      ? ButtonStyleType.filled
+                      : ButtonStyleType.outline,
                   color: AppColors.grey,
                   text: 'Online',
                   onPressed: () {
@@ -312,10 +327,9 @@ class _LibrarySearchScreenState extends State<LibrarySearchScreen>
               const SizedBox(width: 8.0),
               Expanded(
                 child: CustomButton(
-                  styleType:
-                      libraryCubit.bookSource == BookSourceEnums.local
-                          ? ButtonStyleType.filled
-                          : ButtonStyleType.outline,
+                  styleType: libraryCubit.bookSource == BookSourceEnums.local
+                      ? ButtonStyleType.filled
+                      : ButtonStyleType.outline,
                   color: AppColors.grey,
                   text: 'Local',
                   onPressed: () {
