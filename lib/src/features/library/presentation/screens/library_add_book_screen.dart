@@ -36,7 +36,7 @@ class LibraryAddBookScreen extends StatefulWidget {
 }
 
 class _LibraryAddBookScreenState extends State<LibraryAddBookScreen> {
-  ReadingStatus selectedReadingStatus = ReadingStatus.wantToRead;
+  late ReadingStatus selectedReadingStatus;
   bool isReadingStatusActive = false;
   bool invalidStartDate = false;
   bool invalidFinishDate = false;
@@ -52,6 +52,10 @@ class _LibraryAddBookScreenState extends State<LibraryAddBookScreen> {
     super.initState();
 
     libraryCubit = LibraryCubit.get(context);
+
+    // init vars
+    selectedReadingStatus = widget.book.readingStatus ?? ReadingStatus.wantToRead;
+    isReadingStatusActive = widget.book.readingStatus != null;
   }
 
   @override

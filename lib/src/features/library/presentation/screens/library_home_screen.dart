@@ -16,6 +16,7 @@ import 'package:readivo_app/src/core/widgets/custom_text.dart';
 import 'package:readivo_app/src/core/widgets/partials/bottom_sheet_item.dart';
 import 'package:readivo_app/src/features/library/domain/entities/book.dart';
 import 'package:readivo_app/src/features/library/presentation/bloc/library_cubit.dart';
+import 'package:readivo_app/src/features/library/presentation/screens/library_add_book_screen.dart';
 import 'package:readivo_app/src/features/library/presentation/screens/library_pdf_reader_screen.dart';
 import 'package:readivo_app/src/features/library/presentation/screens/library_search_screen.dart';
 import 'package:readivo_app/src/features/library/presentation/widgets/book_box.dart';
@@ -210,7 +211,10 @@ class _LibraryHomeScreenState extends State<LibraryHomeScreen> {
           scale: 0.9,
           loop: false,
           itemBuilder: (context, index) {
-            return _buildReadingBookCard(readingList[index]);
+            return GestureDetector(
+              onTap: () => appCubit.changeScreen(LibraryAddBookScreen(book: readingList[index])),
+              child: _buildReadingBookCard(readingList[index]),
+            );
           },
         ),
         fallback: (context) => _buildReadingBookCard(null, isEmpty: true),
@@ -293,11 +297,12 @@ class _LibraryHomeScreenState extends State<LibraryHomeScreen> {
                                 text: 'Start Reading',
                                 styleType: ButtonStyleType.ghost,
                                 width: 140,
-                                onPressed: (){
-                                  if(book.source == BookSourceEnums.local){
+                                onPressed: () {
+                                  if (book.source == BookSourceEnums.local) {
                                     // open the pdf reader screen
-                                    appCubit.changeScreen(LibraryPdfReaderScreen(book: book));
-                                  }else{
+                                    appCubit.changeScreen(
+                                        LibraryPdfReaderScreen(book: book));
+                                  } else {
                                     print('open session screen');
                                   }
                                 },
