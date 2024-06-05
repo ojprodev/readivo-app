@@ -59,9 +59,9 @@ class FileSystemService {
     final appDocumentsDirectory = await getApplicationDocumentsDirectory();
     final appDocumentsPath = appDocumentsDirectory.path;
     final filePath = '$appDocumentsPath/$fileName';
-
+    final fileSize = byteData.buffer.asUint8List().length;
     // Check if the file already exists locally
-    if (await File(filePath).exists()) {
+    if (await File(filePath).exists() && File(filePath).statSync().size == fileSize) {
       // return path
       return filePath;
     } else {
