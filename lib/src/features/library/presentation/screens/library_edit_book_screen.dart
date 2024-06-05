@@ -11,6 +11,7 @@ import 'package:readivo_app/src/core/widgets/custom_chip.dart';
 import 'package:readivo_app/src/core/widgets/custom_input_field.dart';
 import 'package:readivo_app/src/core/widgets/custom_list_item.dart';
 import 'package:readivo_app/src/features/library/domain/entities/book.dart';
+import 'package:readivo_app/src/features/library/domain/entities/tag.dart';
 import 'package:readivo_app/src/features/library/presentation/bloc/library_cubit.dart';
 import 'package:readivo_app/src/features/library/presentation/screens/library_add_book_screen.dart';
 import 'package:readivo_app/src/features/library/presentation/widgets/library_edit_book_app_bar.dart';
@@ -25,15 +26,18 @@ class LibraryEditBookScreen extends StatefulWidget {
 }
 
 class _LibraryEditBookScreenState extends State<LibraryEditBookScreen> {
+  late AppCubit appCubit;
+  late LibraryCubit libraryCubit;
+
   BookType selectedBookType = BookType.paperBook;
   List<Map<String, dynamic>> selectedBooksShelves = [];
-  List<String> selectedTags = [];
-  List<String> tempSelectedTags = [];
+  List<Tag> selectedTags = [];
+  List<Tag> tempSelectedTags = [];
   List<Map<String, dynamic>> tempSelectedBooksShelves = [];
   List<Map<String, dynamic>> booksShelvesSearchResult = [];
-  List<String> tagsSearchResult = [];
+  List<Tag> tagsSearchResult = [];
   final List<Map<String, dynamic>> booksShelves = [];
-  final List<String> tagsList = [];
+  List<Tag> tagsList = [];
   bool invalidStartDate = false;
   bool invalidFinishDate = false;
   bool invalidPagesCount = false;
@@ -47,6 +51,7 @@ class _LibraryEditBookScreenState extends State<LibraryEditBookScreen> {
   late TextEditingController publishedAtController;
   late TextEditingController descriptionController;
   final TextEditingController reviewController = TextEditingController();
+  final TextEditingController tagController = TextEditingController();
   final TextEditingController searchBooksShelvesController =
       TextEditingController();
   final TextEditingController searchTagsController = TextEditingController();
@@ -54,6 +59,13 @@ class _LibraryEditBookScreenState extends State<LibraryEditBookScreen> {
   @override
   void initState() {
     super.initState();
+    // init cubits
+    appCubit = AppCubit.get(context);
+    libraryCubit = LibraryCubit.get(context);
+
+    libraryCubit.fetchTags().then((_){
+      tagsList = libraryCubit.tagsList;
+    });
 
     // set default form controllers value
     titleController = TextEditingController(text: widget.book.title);
@@ -74,8 +86,6 @@ class _LibraryEditBookScreenState extends State<LibraryEditBookScreen> {
 
   @override
   Widget build(BuildContext context) {
-    AppCubit appCubit = AppCubit.get(context);
-    LibraryCubit libraryCubit = LibraryCubit.get(context);
     return SafeArea(
       child: Scaffold(
         backgroundColor: Colors.white,
@@ -98,8 +108,8 @@ class _LibraryEditBookScreenState extends State<LibraryEditBookScreen> {
                     .whenComplete(() => null)
                     .then((_) {
                   // save changed to the book details
-                  appCubit
-                      .changeScreen(LibraryAddBookScreen(book: widget.book), enableBack: false);
+                  appCubit.changeScreen(LibraryAddBookScreen(book: widget.book),
+                      enableBack: false);
                 });
               },
             ),
@@ -221,9 +231,9 @@ class _LibraryEditBookScreenState extends State<LibraryEditBookScreen> {
               ? Wrap(
                   spacing: 6.0,
                   children: [
-                    for (String tag in selectedTags)
+                    for (Tag tag in selectedTags)
                       CustomChip(
-                        text: tag,
+                        text: tag.name,
                         icon: Icons.tag,
                         iconColor: AppColors.grey,
                         backgroundColor: AppColors.lightGrey,
@@ -255,7 +265,7 @@ class _LibraryEditBookScreenState extends State<LibraryEditBookScreen> {
   }
 
   Widget _buildAddTagsBottomSheetList(StateSetter updateState) {
-    List<String> tags =
+    List<Tag> tags =
         searchTagsController.text != '' ? tagsSearchResult : tagsList;
     return Container(
       padding: const EdgeInsets.symmetric(vertical: 8.0),
@@ -275,7 +285,7 @@ class _LibraryEditBookScreenState extends State<LibraryEditBookScreen> {
                 });
               },
               child: CustomChip(
-                text: tag,
+                text: tag.name,
                 textColor: tempSelectedTags.contains(tag) ? Colors.white : null,
                 backgroundColor: tempSelectedTags.contains(tag)
                     ? AppColors.grey
@@ -337,10 +347,11 @@ class _LibraryEditBookScreenState extends State<LibraryEditBookScreen> {
           context: context,
           builder: (context) => CustomAlertDialog(
             title: 'Add New Tag',
-            content: const CustomInputField(
+            content: CustomInputField(
+              controller: tagController,
               placeholder: 'Tag name',
               contentPadding:
-                  EdgeInsets.symmetric(horizontal: 6.0, vertical: 14.0),
+                  const EdgeInsets.symmetric(horizontal: 6.0, vertical: 14.0),
             ),
             actions: [
               Expanded(
@@ -348,14 +359,25 @@ class _LibraryEditBookScreenState extends State<LibraryEditBookScreen> {
                   styleType: ButtonStyleType.ghost,
                   text: 'Close',
                   onPressed: () {
-                    Navigator.of(context).pop();
+                    Navigator.pop(context);
                   },
                 ),
               ),
               const SizedBox(width: 8.0),
-              const Expanded(
+              Expanded(
                 child: CustomButton(
                   text: 'Save',
+                  onPressed: () {
+                    libraryCubit.newTag(tagController.text);
+
+                    libraryCubit.fetchTags().then((_){
+                      setState(() {
+                        tagsList = libraryCubit.tagsList;
+                      });
+                    });
+
+                    Navigator.pop(context);
+                  },
                 ),
               ),
             ],
@@ -380,7 +402,7 @@ class _LibraryEditBookScreenState extends State<LibraryEditBookScreen> {
               title: 'Add Tags',
               tempSelectedList: tempSelectedTags,
               updateFinalSelectedList: (List<dynamic> updatedList) {
-                selectedTags = updatedList as List<String>;
+                selectedTags = updatedList as List<Tag>;
               },
             ),
             _buildAddTagsBottomSheetContent(updateState),

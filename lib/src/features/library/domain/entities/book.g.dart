@@ -58,65 +58,70 @@ const BookSchema = CollectionSchema(
       name: r'isbn',
       type: IsarType.string,
     ),
-    r'lastTimeOpened': PropertySchema(
+    r'language': PropertySchema(
       id: 8,
+      name: r'language',
+      type: IsarType.string,
+    ),
+    r'lastTimeOpened': PropertySchema(
+      id: 9,
       name: r'lastTimeOpened',
       type: IsarType.dateTime,
     ),
     r'path': PropertySchema(
-      id: 9,
+      id: 10,
       name: r'path',
       type: IsarType.string,
     ),
     r'publishDate': PropertySchema(
-      id: 10,
+      id: 11,
       name: r'publishDate',
       type: IsarType.dateTime,
     ),
     r'publishYear': PropertySchema(
-      id: 11,
+      id: 12,
       name: r'publishYear',
       type: IsarType.string,
     ),
     r'ratingCount': PropertySchema(
-      id: 12,
+      id: 13,
       name: r'ratingCount',
       type: IsarType.long,
     ),
     r'readCount': PropertySchema(
-      id: 13,
+      id: 14,
       name: r'readCount',
       type: IsarType.long,
     ),
     r'readingStatus': PropertySchema(
-      id: 14,
+      id: 15,
       name: r'readingStatus',
       type: IsarType.string,
       enumMap: _BookreadingStatusEnumValueMap,
     ),
     r'source': PropertySchema(
-      id: 15,
+      id: 16,
       name: r'source',
       type: IsarType.string,
       enumMap: _BooksourceEnumValueMap,
     ),
     r'title': PropertySchema(
-      id: 16,
+      id: 17,
       name: r'title',
       type: IsarType.string,
     ),
     r'totalPages': PropertySchema(
-      id: 17,
+      id: 18,
       name: r'totalPages',
       type: IsarType.long,
     ),
     r'uid': PropertySchema(
-      id: 18,
+      id: 19,
       name: r'uid',
       type: IsarType.string,
     ),
     r'updatedAt': PropertySchema(
-      id: 19,
+      id: 20,
       name: r'updatedAt',
       type: IsarType.dateTime,
     )
@@ -203,6 +208,12 @@ int _bookEstimateSize(
     }
   }
   {
+    final value = object.language;
+    if (value != null) {
+      bytesCount += 3 + value.length * 3;
+    }
+  }
+  {
     final value = object.path;
     if (value != null) {
       bytesCount += 3 + value.length * 3;
@@ -245,18 +256,19 @@ void _bookSerialize(
   writer.writeLong(offsets[5], object.fileSize);
   writer.writeDouble(offsets[6], object.globalRating);
   writer.writeString(offsets[7], object.isbn);
-  writer.writeDateTime(offsets[8], object.lastTimeOpened);
-  writer.writeString(offsets[9], object.path);
-  writer.writeDateTime(offsets[10], object.publishDate);
-  writer.writeString(offsets[11], object.publishYear);
-  writer.writeLong(offsets[12], object.ratingCount);
-  writer.writeLong(offsets[13], object.readCount);
-  writer.writeString(offsets[14], object.readingStatus?.name);
-  writer.writeString(offsets[15], object.source.name);
-  writer.writeString(offsets[16], object.title);
-  writer.writeLong(offsets[17], object.totalPages);
-  writer.writeString(offsets[18], object.uid);
-  writer.writeDateTime(offsets[19], object.updatedAt);
+  writer.writeString(offsets[8], object.language);
+  writer.writeDateTime(offsets[9], object.lastTimeOpened);
+  writer.writeString(offsets[10], object.path);
+  writer.writeDateTime(offsets[11], object.publishDate);
+  writer.writeString(offsets[12], object.publishYear);
+  writer.writeLong(offsets[13], object.ratingCount);
+  writer.writeLong(offsets[14], object.readCount);
+  writer.writeString(offsets[15], object.readingStatus?.name);
+  writer.writeString(offsets[16], object.source.name);
+  writer.writeString(offsets[17], object.title);
+  writer.writeLong(offsets[18], object.totalPages);
+  writer.writeString(offsets[19], object.uid);
+  writer.writeDateTime(offsets[20], object.updatedAt);
 }
 
 Book _bookDeserialize(
@@ -274,20 +286,21 @@ Book _bookDeserialize(
     fileSize: reader.readLongOrNull(offsets[5]),
     globalRating: reader.readDoubleOrNull(offsets[6]),
     isbn: reader.readStringOrNull(offsets[7]),
-    lastTimeOpened: reader.readDateTimeOrNull(offsets[8]),
-    path: reader.readStringOrNull(offsets[9]),
-    publishDate: reader.readDateTimeOrNull(offsets[10]),
-    publishYear: reader.readStringOrNull(offsets[11]),
-    ratingCount: reader.readLongOrNull(offsets[12]),
-    readCount: reader.readLongOrNull(offsets[13]),
+    language: reader.readStringOrNull(offsets[8]),
+    lastTimeOpened: reader.readDateTimeOrNull(offsets[9]),
+    path: reader.readStringOrNull(offsets[10]),
+    publishDate: reader.readDateTimeOrNull(offsets[11]),
+    publishYear: reader.readStringOrNull(offsets[12]),
+    ratingCount: reader.readLongOrNull(offsets[13]),
+    readCount: reader.readLongOrNull(offsets[14]),
     readingStatus:
-        _BookreadingStatusValueEnumMap[reader.readStringOrNull(offsets[14])],
-    source: _BooksourceValueEnumMap[reader.readStringOrNull(offsets[15])] ??
+        _BookreadingStatusValueEnumMap[reader.readStringOrNull(offsets[15])],
+    source: _BooksourceValueEnumMap[reader.readStringOrNull(offsets[16])] ??
         BookSourceEnums.online,
-    title: reader.readString(offsets[16]),
-    totalPages: reader.readLongOrNull(offsets[17]),
-    uid: reader.readStringOrNull(offsets[18]),
-    updatedAt: reader.readDateTimeOrNull(offsets[19]),
+    title: reader.readString(offsets[17]),
+    totalPages: reader.readLongOrNull(offsets[18]),
+    uid: reader.readStringOrNull(offsets[19]),
+    updatedAt: reader.readDateTimeOrNull(offsets[20]),
   );
   object.id = id;
   return object;
@@ -317,30 +330,32 @@ P _bookDeserializeProp<P>(
     case 7:
       return (reader.readStringOrNull(offset)) as P;
     case 8:
-      return (reader.readDateTimeOrNull(offset)) as P;
+      return (reader.readStringOrNull(offset)) as P;
     case 9:
-      return (reader.readStringOrNull(offset)) as P;
-    case 10:
       return (reader.readDateTimeOrNull(offset)) as P;
-    case 11:
+    case 10:
       return (reader.readStringOrNull(offset)) as P;
+    case 11:
+      return (reader.readDateTimeOrNull(offset)) as P;
     case 12:
-      return (reader.readLongOrNull(offset)) as P;
+      return (reader.readStringOrNull(offset)) as P;
     case 13:
       return (reader.readLongOrNull(offset)) as P;
     case 14:
+      return (reader.readLongOrNull(offset)) as P;
+    case 15:
       return (_BookreadingStatusValueEnumMap[reader.readStringOrNull(offset)])
           as P;
-    case 15:
+    case 16:
       return (_BooksourceValueEnumMap[reader.readStringOrNull(offset)] ??
           BookSourceEnums.online) as P;
-    case 16:
-      return (reader.readString(offset)) as P;
     case 17:
-      return (reader.readLongOrNull(offset)) as P;
+      return (reader.readString(offset)) as P;
     case 18:
-      return (reader.readStringOrNull(offset)) as P;
+      return (reader.readLongOrNull(offset)) as P;
     case 19:
+      return (reader.readStringOrNull(offset)) as P;
+    case 20:
       return (reader.readDateTimeOrNull(offset)) as P;
     default:
       throw IsarError('Unknown property with id $propertyId');
@@ -1450,6 +1465,151 @@ extension BookQueryFilter on QueryBuilder<Book, Book, QFilterCondition> {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.greaterThan(
         property: r'isbn',
+        value: '',
+      ));
+    });
+  }
+
+  QueryBuilder<Book, Book, QAfterFilterCondition> languageIsNull() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(const FilterCondition.isNull(
+        property: r'language',
+      ));
+    });
+  }
+
+  QueryBuilder<Book, Book, QAfterFilterCondition> languageIsNotNull() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(const FilterCondition.isNotNull(
+        property: r'language',
+      ));
+    });
+  }
+
+  QueryBuilder<Book, Book, QAfterFilterCondition> languageEqualTo(
+    String? value, {
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.equalTo(
+        property: r'language',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<Book, Book, QAfterFilterCondition> languageGreaterThan(
+    String? value, {
+    bool include = false,
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.greaterThan(
+        include: include,
+        property: r'language',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<Book, Book, QAfterFilterCondition> languageLessThan(
+    String? value, {
+    bool include = false,
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.lessThan(
+        include: include,
+        property: r'language',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<Book, Book, QAfterFilterCondition> languageBetween(
+    String? lower,
+    String? upper, {
+    bool includeLower = true,
+    bool includeUpper = true,
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.between(
+        property: r'language',
+        lower: lower,
+        includeLower: includeLower,
+        upper: upper,
+        includeUpper: includeUpper,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<Book, Book, QAfterFilterCondition> languageStartsWith(
+    String value, {
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.startsWith(
+        property: r'language',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<Book, Book, QAfterFilterCondition> languageEndsWith(
+    String value, {
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.endsWith(
+        property: r'language',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<Book, Book, QAfterFilterCondition> languageContains(String value,
+      {bool caseSensitive = true}) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.contains(
+        property: r'language',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<Book, Book, QAfterFilterCondition> languageMatches(
+      String pattern,
+      {bool caseSensitive = true}) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.matches(
+        property: r'language',
+        wildcard: pattern,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<Book, Book, QAfterFilterCondition> languageIsEmpty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.equalTo(
+        property: r'language',
+        value: '',
+      ));
+    });
+  }
+
+  QueryBuilder<Book, Book, QAfterFilterCondition> languageIsNotEmpty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.greaterThan(
+        property: r'language',
         value: '',
       ));
     });
@@ -3043,6 +3203,18 @@ extension BookQuerySortBy on QueryBuilder<Book, Book, QSortBy> {
     });
   }
 
+  QueryBuilder<Book, Book, QAfterSortBy> sortByLanguage() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'language', Sort.asc);
+    });
+  }
+
+  QueryBuilder<Book, Book, QAfterSortBy> sortByLanguageDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'language', Sort.desc);
+    });
+  }
+
   QueryBuilder<Book, Book, QAfterSortBy> sortByLastTimeOpened() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'lastTimeOpened', Sort.asc);
@@ -3297,6 +3469,18 @@ extension BookQuerySortThenBy on QueryBuilder<Book, Book, QSortThenBy> {
     });
   }
 
+  QueryBuilder<Book, Book, QAfterSortBy> thenByLanguage() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'language', Sort.asc);
+    });
+  }
+
+  QueryBuilder<Book, Book, QAfterSortBy> thenByLanguageDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'language', Sort.desc);
+    });
+  }
+
   QueryBuilder<Book, Book, QAfterSortBy> thenByLastTimeOpened() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'lastTimeOpened', Sort.asc);
@@ -3496,6 +3680,13 @@ extension BookQueryWhereDistinct on QueryBuilder<Book, Book, QDistinct> {
     });
   }
 
+  QueryBuilder<Book, Book, QDistinct> distinctByLanguage(
+      {bool caseSensitive = true}) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addDistinctBy(r'language', caseSensitive: caseSensitive);
+    });
+  }
+
   QueryBuilder<Book, Book, QDistinct> distinctByLastTimeOpened() {
     return QueryBuilder.apply(this, (query) {
       return query.addDistinctBy(r'lastTimeOpened');
@@ -3628,6 +3819,12 @@ extension BookQueryProperty on QueryBuilder<Book, Book, QQueryProperty> {
   QueryBuilder<Book, String?, QQueryOperations> isbnProperty() {
     return QueryBuilder.apply(this, (query) {
       return query.addPropertyName(r'isbn');
+    });
+  }
+
+  QueryBuilder<Book, String?, QQueryOperations> languageProperty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addPropertyName(r'language');
     });
   }
 

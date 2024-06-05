@@ -74,11 +74,12 @@ Tag _tagDeserialize(
   List<int> offsets,
   Map<Type, List<int>> allOffsets,
 ) {
-  final object = Tag();
-  object.createdAt = reader.readDateTime(offsets[0]);
+  final object = Tag(
+    createdAt: reader.readDateTime(offsets[0]),
+    name: reader.readString(offsets[1]),
+    updatedAt: reader.readDateTimeOrNull(offsets[2]),
+  );
   object.id = id;
-  object.name = reader.readString(offsets[1]);
-  object.updatedAt = reader.readDateTimeOrNull(offsets[2]);
   return object;
 }
 

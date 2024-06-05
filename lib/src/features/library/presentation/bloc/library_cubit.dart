@@ -7,7 +7,9 @@ import 'package:readivo_app/src/core/services/file_system_service.dart';
 import 'package:readivo_app/src/core/services/permission_service.dart';
 import 'package:readivo_app/src/features/library/data/local/models/local_book.dart';
 import 'package:readivo_app/src/features/library/domain/entities/book.dart';
+import 'package:readivo_app/src/features/library/domain/entities/tag.dart';
 import 'package:readivo_app/src/features/library/domain/use_cases/books_use_case.dart';
+import 'package:readivo_app/src/features/library/domain/use_cases/tag_use_case.dart';
 
 part 'library_states.dart';
 
@@ -15,17 +17,20 @@ class LibraryCubit extends Cubit<LibraryStates> {
   final PermissionService permissionService;
   final FileSystemService fileSystemService;
   final BooksUseCase booksUseCase;
+  final TagUseCase tagUseCase;
 
   BookSourceEnums bookSource = BookSourceEnums.online;
   List<Book> books = [];
   List<Book> localBooks = [];
   List<Book> remoteBooks = [];
+  List<Tag> tagsList = [];
   bool isLoading = false;
 
   LibraryCubit({
     required this.booksUseCase,
     required this.permissionService,
     required this.fileSystemService,
+    required this.tagUseCase,
   }) : super(LibraryInitState());
 
   static LibraryCubit get(BuildContext context) =>
@@ -104,7 +109,7 @@ class LibraryCubit extends Cubit<LibraryStates> {
       emit(LibrarySearchLoadedState(localBooks));
 
       isLoading = false;
-    }else{
+    } else {
       emit(LibraryScanningAlreadyInProgress());
     }
   }
@@ -145,5 +150,13 @@ class LibraryCubit extends Cubit<LibraryStates> {
     List<Book> readingList =
         await booksUseCase.getBooks(status: ReadingStatus.reading);
     emit(LibraryFetchedReadingListState(readingList));
+  }
+
+  Future<void> newTag(String tagName) async {
+    tagUseCase.newTag(tagName);
+  }
+
+  Future<void> fetchTags() async {
+    tagsList = await tagUseCase.fetchTags();
   }
 }
