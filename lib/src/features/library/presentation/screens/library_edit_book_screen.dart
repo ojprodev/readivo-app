@@ -11,6 +11,7 @@ import 'package:readivo_app/src/core/widgets/custom_chip.dart';
 import 'package:readivo_app/src/core/widgets/custom_input_field.dart';
 import 'package:readivo_app/src/core/widgets/custom_list_item.dart';
 import 'package:readivo_app/src/features/library/domain/entities/book.dart';
+import 'package:readivo_app/src/features/library/domain/entities/shelf.dart';
 import 'package:readivo_app/src/features/library/domain/entities/tag.dart';
 import 'package:readivo_app/src/features/library/presentation/bloc/library_cubit.dart';
 import 'package:readivo_app/src/features/library/presentation/screens/library_add_book_screen.dart';
@@ -30,13 +31,13 @@ class _LibraryEditBookScreenState extends State<LibraryEditBookScreen> {
   late LibraryCubit libraryCubit;
 
   BookType selectedBookType = BookType.paperBook;
-  List<Map<String, dynamic>> selectedBooksShelves = [];
+  List<Shelf> selectedBooksShelves = [];
   late List<Tag> selectedTags;
   List<Tag> tempSelectedTags = [];
-  List<Map<String, dynamic>> tempSelectedBooksShelves = [];
-  List<Map<String, dynamic>> booksShelvesSearchResult = [];
+  List<Shelf> tempSelectedBooksShelves = [];
+  List<Shelf> booksShelvesSearchResult = [];
   List<Tag> tagsSearchResult = [];
-  final List<Map<String, dynamic>> booksShelves = [];
+  List<Shelf> booksShelves = [];
   List<Tag> tagsList = [];
   bool invalidStartDate = false;
   bool invalidFinishDate = false;
@@ -52,6 +53,7 @@ class _LibraryEditBookScreenState extends State<LibraryEditBookScreen> {
   late TextEditingController descriptionController;
   final TextEditingController reviewController = TextEditingController();
   final TextEditingController tagController = TextEditingController();
+  final TextEditingController bookShelfController = TextEditingController();
   final TextEditingController searchBooksShelvesController =
       TextEditingController();
   final TextEditingController searchTagsController = TextEditingController();
@@ -67,8 +69,15 @@ class _LibraryEditBookScreenState extends State<LibraryEditBookScreen> {
       tagsList = libraryCubit.tagsList;
     });
 
+    libraryCubit.fetchShelves().then((_) {
+      booksShelves = libraryCubit.shelvesList;
+    });
+
     selectedTags = widget.book.tags.toList();
     tempSelectedTags = selectedTags;
+
+    selectedBooksShelves = widget.book.shelves.toList();
+    tempSelectedBooksShelves = selectedBooksShelves;
 
     // set default form controllers value
     titleController = TextEditingController(text: widget.book.title);
@@ -486,8 +495,9 @@ class _LibraryEditBookScreenState extends State<LibraryEditBookScreen> {
                 title: 'Add to BooksShelves',
                 tempSelectedList: tempSelectedBooksShelves,
                 updateFinalSelectedList: (List<dynamic> updatedList) {
-                  selectedBooksShelves =
-                      updatedList as List<Map<String, dynamic>>;
+                  selectedBooksShelves = updatedList as List<Shelf>;
+
+                  libraryCubit.assignShelves(widget.book, selectedBooksShelves);
                 },
               ),
               _buildAddBooksShelvesBottomSheetContent(context, updateState),
@@ -543,10 +553,9 @@ class _LibraryEditBookScreenState extends State<LibraryEditBookScreen> {
 
   Widget _buildAddBooksShelvesBottomSheetContent(
       BuildContext context, StateSetter updateState) {
-    final List<Map<String, dynamic>> bookshelves =
-        searchBooksShelvesController.text != ''
-            ? booksShelvesSearchResult
-            : booksShelves;
+    final List<Shelf> bookshelves = searchBooksShelvesController.text != ''
+        ? booksShelvesSearchResult
+        : booksShelves;
 
     return Expanded(
       child: Column(
@@ -569,8 +578,7 @@ class _LibraryEditBookScreenState extends State<LibraryEditBookScreen> {
                         } else {
                           booksShelvesSearchResult =
                               booksShelves.where((bookShelf) {
-                            String bookShelfText =
-                                bookShelf['text'].toString().toLowerCase();
+                            String bookShelfText = bookShelf.name.toLowerCase();
                             return bookShelfText.contains(value.toLowerCase());
                           }).toList();
                         }
@@ -624,8 +632,8 @@ class _LibraryEditBookScreenState extends State<LibraryEditBookScreen> {
     );
   }
 
-  Widget _buildBooksShelvesList(BuildContext context, StateSetter updateState,
-      List<Map<String, dynamic>> booksShelves) {
+  Widget _buildBooksShelvesList(
+      BuildContext context, StateSetter updateState, List<Shelf> booksShelves) {
     return Expanded(
       child: Container(
         padding: const EdgeInsets.symmetric(vertical: 8.0),
@@ -640,7 +648,7 @@ class _LibraryEditBookScreenState extends State<LibraryEditBookScreen> {
               child: CustomListItem(
                 padding: const EdgeInsets.symmetric(
                     horizontal: 12.0, vertical: 18.0),
-                label: booksShelves[index]['text'].toString(),
+                label: booksShelves[index].name,
                 iconBackground: isSelected
                     ? AppColors.lighterGreen
                     : AppColors.lightGrey.withOpacity(0.4),
@@ -683,7 +691,7 @@ class _LibraryEditBookScreenState extends State<LibraryEditBookScreen> {
     );
   }
 
-  Widget _buildBooksShelvesContainer(List<Map<String, dynamic>> booksShelves) {
+  Widget _buildBooksShelvesContainer(List<Shelf> booksShelves) {
     return Container(
       width: double.infinity,
       padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 2.0),
@@ -700,8 +708,7 @@ class _LibraryEditBookScreenState extends State<LibraryEditBookScreen> {
         runSpacing: 4.0,
         children: booksShelves.map((chip) {
           return CustomChip(
-            text: chip['text'],
-            iconColor: chip['color'],
+            text: chip.name,
             backgroundColor: AppColors.lightGrey.withOpacity(0.6),
             borderRadius: 4.0,
           );
@@ -722,10 +729,11 @@ class _LibraryEditBookScreenState extends State<LibraryEditBookScreen> {
           context: context,
           builder: (context) => CustomAlertDialog(
             title: 'New Books Shelf',
-            content: const CustomInputField(
+            content: CustomInputField(
+              controller: bookShelfController,
               placeholder: 'BookShelf name',
               contentPadding:
-                  EdgeInsets.symmetric(horizontal: 6.0, vertical: 14.0),
+                  const EdgeInsets.symmetric(horizontal: 6.0, vertical: 14.0),
             ),
             actions: [
               Expanded(
@@ -738,9 +746,15 @@ class _LibraryEditBookScreenState extends State<LibraryEditBookScreen> {
                 ),
               ),
               const SizedBox(width: 8.0),
-              const Expanded(
+              Expanded(
                 child: CustomButton(
                   text: 'Save',
+                  onPressed: () {
+                    if (bookShelfController.text.isNotEmpty) {
+                      libraryCubit.newShelf(bookShelfController.text);
+                    }
+                    Navigator.pop(context);
+                  },
                 ),
               ),
             ],

@@ -94,12 +94,13 @@ Shelf _shelfDeserialize(
   List<int> offsets,
   Map<Type, List<int>> allOffsets,
 ) {
-  final object = Shelf();
-  object.createdAt = reader.readDateTime(offsets[0]);
-  object.description = reader.readStringOrNull(offsets[1]);
+  final object = Shelf(
+    createdAt: reader.readDateTime(offsets[0]),
+    description: reader.readStringOrNull(offsets[1]),
+    name: reader.readString(offsets[2]),
+    updatedAt: reader.readDateTimeOrNull(offsets[3]),
+  );
   object.id = id;
-  object.name = reader.readString(offsets[2]);
-  object.updatedAt = reader.readDateTimeOrNull(offsets[3]);
   return object;
 }
 

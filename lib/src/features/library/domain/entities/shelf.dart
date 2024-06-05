@@ -16,4 +16,6 @@ class Shelf{
   // links
   @Backlink(to: 'shelves')
   final books = IsarLinks<Book>();
+
+  Shelf({required this.name, this.description, this.updatedAt, required this.createdAt});
 }

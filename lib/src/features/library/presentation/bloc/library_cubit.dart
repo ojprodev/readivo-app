@@ -7,8 +7,10 @@ import 'package:readivo_app/src/core/services/file_system_service.dart';
 import 'package:readivo_app/src/core/services/permission_service.dart';
 import 'package:readivo_app/src/features/library/data/local/models/local_book.dart';
 import 'package:readivo_app/src/features/library/domain/entities/book.dart';
+import 'package:readivo_app/src/features/library/domain/entities/shelf.dart';
 import 'package:readivo_app/src/features/library/domain/entities/tag.dart';
 import 'package:readivo_app/src/features/library/domain/use_cases/books_use_case.dart';
+import 'package:readivo_app/src/features/library/domain/use_cases/shelf_use_case.dart';
 import 'package:readivo_app/src/features/library/domain/use_cases/tag_use_case.dart';
 
 part 'library_states.dart';
@@ -18,12 +20,14 @@ class LibraryCubit extends Cubit<LibraryStates> {
   final FileSystemService fileSystemService;
   final BooksUseCase booksUseCase;
   final TagUseCase tagUseCase;
+  final ShelfUseCase shelfUseCase;
 
   BookSourceEnums bookSource = BookSourceEnums.online;
   List<Book> books = [];
   List<Book> localBooks = [];
   List<Book> remoteBooks = [];
   List<Tag> tagsList = [];
+  List<Shelf> shelvesList = [];
   bool isLoading = false;
 
   LibraryCubit({
@@ -31,6 +35,7 @@ class LibraryCubit extends Cubit<LibraryStates> {
     required this.permissionService,
     required this.fileSystemService,
     required this.tagUseCase,
+    required this.shelfUseCase,
   }) : super(LibraryInitState());
 
   static LibraryCubit get(BuildContext context) =>
@@ -166,5 +171,22 @@ class LibraryCubit extends Cubit<LibraryStates> {
 
   Future<void> unassignTags(Book book, List<Tag> tags) async {
     await tagUseCase.unassignTags(book, tags);
+  }
+
+  // shelves
+  Future<void> newShelf(String tagName) async {
+    shelfUseCase.newShelf(tagName);
+  }
+
+  Future<void> fetchShelves() async {
+    shelvesList = await shelfUseCase.fetchShelves();
+  }
+
+  Future<void> assignShelves(Book book, List<Shelf> shelves) async {
+    await shelfUseCase.assignShelves(book, shelves);
+  }
+
+  Future<void> unassignShelves(Book book, List<Shelf> shelves) async {
+    await shelfUseCase.unassignShelves(book, shelves);
   }
 }
