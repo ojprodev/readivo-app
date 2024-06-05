@@ -31,7 +31,7 @@ class _LibraryEditBookScreenState extends State<LibraryEditBookScreen> {
 
   BookType selectedBookType = BookType.paperBook;
   List<Map<String, dynamic>> selectedBooksShelves = [];
-  List<Tag> selectedTags = [];
+  late List<Tag> selectedTags;
   List<Tag> tempSelectedTags = [];
   List<Map<String, dynamic>> tempSelectedBooksShelves = [];
   List<Map<String, dynamic>> booksShelvesSearchResult = [];
@@ -63,9 +63,12 @@ class _LibraryEditBookScreenState extends State<LibraryEditBookScreen> {
     appCubit = AppCubit.get(context);
     libraryCubit = LibraryCubit.get(context);
 
-    libraryCubit.fetchTags().then((_){
+    libraryCubit.fetchTags().then((_) {
       tagsList = libraryCubit.tagsList;
     });
+
+    selectedTags = widget.book.tags.toList();
+    tempSelectedTags = selectedTags;
 
     // set default form controllers value
     titleController = TextEditingController(text: widget.book.title);
@@ -252,6 +255,8 @@ class _LibraryEditBookScreenState extends State<LibraryEditBookScreen> {
                           setState(() {
                             if (selectedTags.contains(tag)) {
                               selectedTags.remove(tag);
+
+                              libraryCubit.unassignTags(widget.book, [tag]);
                             }
                           });
                         },
@@ -370,7 +375,7 @@ class _LibraryEditBookScreenState extends State<LibraryEditBookScreen> {
                   onPressed: () {
                     libraryCubit.newTag(tagController.text);
 
-                    libraryCubit.fetchTags().then((_){
+                    libraryCubit.fetchTags().then((_) {
                       setState(() {
                         tagsList = libraryCubit.tagsList;
                       });
@@ -403,6 +408,8 @@ class _LibraryEditBookScreenState extends State<LibraryEditBookScreen> {
               tempSelectedList: tempSelectedTags,
               updateFinalSelectedList: (List<dynamic> updatedList) {
                 selectedTags = updatedList as List<Tag>;
+
+                libraryCubit.assignTags(widget.book, selectedTags);
               },
             ),
             _buildAddTagsBottomSheetContent(updateState),

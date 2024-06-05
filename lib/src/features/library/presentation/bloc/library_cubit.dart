@@ -159,4 +159,12 @@ class LibraryCubit extends Cubit<LibraryStates> {
   Future<void> fetchTags() async {
     tagsList = await tagUseCase.fetchTags();
   }
+
+  Future<void> assignTags(Book book, List<Tag> tags) async {
+    await tagUseCase.assignTags(book, tags);
+  }
+
+  Future<void> unassignTags(Book book, List<Tag> tags) async {
+    await tagUseCase.unassignTags(book, tags);
+  }
 }
