@@ -20,6 +20,7 @@ class LibraryCubit extends Cubit<LibraryStates> {
   List<Book> books = [];
   List<Book> localBooks = [];
   List<Book> remoteBooks = [];
+  bool isLoading = false;
 
   LibraryCubit({
     required this.booksUseCase,
@@ -27,7 +28,10 @@ class LibraryCubit extends Cubit<LibraryStates> {
     required this.fileSystemService,
   }) : super(LibraryInitState());
 
-  static LibraryCubit get(BuildContext context) => BlocProvider.of<LibraryCubit>(context);
+  static LibraryCubit get(BuildContext context) =>
+      BlocProvider.of<LibraryCubit>(context);
+
+  void setIsLoading(bool state) => isLoading = state;
 
   // Search for books
   void search(String query) async {
@@ -39,8 +43,9 @@ class LibraryCubit extends Cubit<LibraryStates> {
     } else {
       List<Book> localResult = localBooks
           .where((book) =>
-      book.title.toLowerCase().contains(query.toLowerCase()) ||
-          (book.author != null && book.author!.contains(query.toLowerCase())))
+              book.title.toLowerCase().contains(query.toLowerCase()) ||
+              (book.author != null &&
+                  book.author!.contains(query.toLowerCase())))
           .toList();
       emit(LibrarySearchLoadedState(localResult));
     }
@@ -52,7 +57,8 @@ class LibraryCubit extends Cubit<LibraryStates> {
     emit(LibraryBookSourceChangeState(source));
   }
 
-  Future<bool> handleStoragePermission({required PermissionAction action}) async {
+  Future<bool> handleStoragePermission(
+      {required PermissionAction action}) async {
     bool permissionGranted;
 
     if (action == PermissionAction.request) {
@@ -71,23 +77,36 @@ class LibraryCubit extends Cubit<LibraryStates> {
   }
 
   Future<void> performLocalBooksScanning() async {
-    emit(LibrarySearchLoadingState());
+    if (!isLoading) {
+      isLoading = true;
 
-    List<FileSystemEntity> collectedFiles = await fileSystemService.collectFiles();
+      emit(LibrarySearchLoadingState());
 
-    for (FileSystemEntity file in collectedFiles) {
-      if (!localBooks.any((book) => book.path == file.path)) {
-        LocalBook? detectedBook = await booksUseCase.scanBook(file);
+      // Ensure localBooks is initialized and up-to-date
+      List<Book> localBooks = await booksUseCase.getBooks(localOnly: true);
+      Set<String?> localBookPaths = localBooks.map((book) => book.path).toSet();
 
-        if (detectedBook != null) {
-          await booksUseCase.addBook(detectedBook);
-          localBooks.add(detectedBook);
-          emit(LibraryNewBookDetectedState(detectedBook));
+      List<FileSystemEntity> collectedFiles =
+          await fileSystemService.collectFiles();
+
+      for (FileSystemEntity file in collectedFiles) {
+        if (!localBookPaths.contains(file.path)) {
+          LocalBook? detectedBook = await booksUseCase.scanBook(file);
+
+          if (detectedBook != null) {
+            await booksUseCase.addBook(detectedBook);
+            localBooks.add(detectedBook);
+            localBookPaths.add(detectedBook.path);
+            emit(LibraryNewBookDetectedState(detectedBook));
+          }
         }
       }
-    }
+      emit(LibrarySearchLoadedState(localBooks));
 
-    emit(LibrarySearchLoadedState(localBooks));
+      isLoading = false;
+    }else{
+      emit(LibraryScanningAlreadyInProgress());
+    }
   }
 
   Future<void> getLocalBooks() async {
@@ -123,7 +142,8 @@ class LibraryCubit extends Cubit<LibraryStates> {
   }
 
   Future<void> getReadingBooks() async {
-    List<Book> readingList = await booksUseCase.getBooks(status: ReadingStatus.reading);
+    List<Book> readingList =
+        await booksUseCase.getBooks(status: ReadingStatus.reading);
     emit(LibraryFetchedReadingListState(readingList));
   }
 }

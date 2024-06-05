@@ -11,6 +11,8 @@ class LibrarySearchLoadingState extends LibraryStates {}
 
 class LibraryStoragePermissionGrantedState extends LibraryStates {}
 
+class LibraryScanningAlreadyInProgress extends LibraryStates {}
+
 class LibraryStoragePermissionDeniedState extends LibraryStates {}
 
 class LibraryFetchedReadingListState extends LibraryStates {
