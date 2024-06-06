@@ -7,8 +7,10 @@ import 'package:image_picker/image_picker.dart';
 import 'package:readivo_app/src/core/constants/constants.dart';
 import 'package:readivo_app/src/core/utils/utils.dart';
 import 'package:readivo_app/src/core/widgets/bottom_sheet.dart';
+import 'package:readivo_app/src/core/widgets/custom_alert.dart';
 import 'package:readivo_app/src/core/widgets/custom_button.dart';
 import 'package:readivo_app/src/core/widgets/custom_container.dart';
+import 'package:readivo_app/src/core/widgets/custom_input_field.dart';
 import 'package:readivo_app/src/core/widgets/partials/bottom_sheet_item.dart';
 import 'package:readivo_app/src/features/library/presentation/widgets/book_box.dart';
 import 'package:readivo_app/src/features/library/presentation/widgets/book_cover.dart';
@@ -29,6 +31,8 @@ class LibraryEditBookAppBar extends StatefulWidget {
 }
 
 class _LibraryEditBookAppBarState extends State<LibraryEditBookAppBar> {
+  TextEditingController thumbnailUrlController = TextEditingController();
+
   @override
   Widget build(BuildContext context) {
     return SliverAppBar(
@@ -120,6 +124,8 @@ class _LibraryEditBookAppBarState extends State<LibraryEditBookAppBar> {
                             onTap: () {
                               // close the bottom sheet
                               Navigator.pop(context);
+
+                              _fetchThumbnailFromUrl();
                             },
                           ),
                           BottomSheetItem(
@@ -208,5 +214,44 @@ class _LibraryEditBookAppBarState extends State<LibraryEditBookAppBar> {
         widget.coverUri = selectedImage.path;
       });
     }
+  }
+
+  void _fetchThumbnailFromUrl() {
+    showDialog(
+      context: context,
+      builder: (context) {
+        return CustomAlertDialog(
+          title: 'Enter a URL',
+          content: Column(
+            children: [
+              CustomInputField(
+                controller: thumbnailUrlController,
+                label: 'Thumbnail URL',
+                placeholder: 'https://',
+                onChanged: (value) {
+                  thumbnailUrlController.text = value;
+                },
+              ),
+              const SizedBox(
+                height: 24,
+              ),
+              CustomButton(
+                text: 'Use URL',
+                width: double.infinity,
+                onPressed: () {
+                  setState(() {
+                    if (thumbnailUrlController.text.isNotEmpty) {
+                      widget.coverUri = thumbnailUrlController.text;
+                    }
+
+                    Navigator.pop(context);
+                  });
+                },
+              ),
+            ],
+          ),
+        );
+      },
+    );
   }
 }
