@@ -1,11 +1,13 @@
 import 'package:conditional_builder_null_safety/conditional_builder_null_safety.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:readivo_app/src/core/bloc/app_cubit.dart';
 import 'package:readivo_app/src/core/constants/constants.dart';
 import 'package:readivo_app/src/core/constants/images.dart';
 import 'package:readivo_app/src/core/layouts/basic_layout.dart';
 import 'package:readivo_app/src/core/widgets/custom_button.dart';
 import 'package:readivo_app/src/core/widgets/custom_text.dart';
+import 'package:readivo_app/src/features/library/presentation/screens/add_note_screen.dart';
 
 class ReadingSessionScreen extends StatefulWidget {
   const ReadingSessionScreen({super.key});
@@ -16,6 +18,14 @@ class ReadingSessionScreen extends StatefulWidget {
 
 class _ReadingSessionScreenState extends State<ReadingSessionScreen> {
   bool timerOn = false;
+  late AppCubit appCubit;
+
+  @override
+  void initState() {
+    super.initState();
+
+    appCubit = AppCubit.get(context);
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -70,21 +80,18 @@ class _ReadingSessionScreenState extends State<ReadingSessionScreen> {
           timerOn = !timerOn;
         });
       },
-      child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 4.0),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceAround,
-          crossAxisAlignment: CrossAxisAlignment.center,
-          mainAxisSize: MainAxisSize.max,
-          children: [
-            _timerIcon(timerOn),
-            const CustomText(
-              '00:00',
-              fontSize: 18,
-              color: Colors.white,
-            ),
-          ],
-        ),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+        crossAxisAlignment: CrossAxisAlignment.center,
+        mainAxisSize: MainAxisSize.max,
+        children: [
+          _timerIcon(timerOn),
+          const CustomText(
+            '00:00',
+            fontSize: 18,
+            color: Colors.white,
+          ),
+        ],
       ),
     );
   }
@@ -109,13 +116,16 @@ class _ReadingSessionScreenState extends State<ReadingSessionScreen> {
     );
   }
 
-  Widget _buildAddNoteButton(){
+  Widget _buildAddNoteButton() {
     return CustomButton(
       text: 'Add Note',
       width: 52,
       height: 52,
       borderRadius: 26,
       color: AppColors.lightBlue,
+      onPressed: () {
+        appCubit.changeScreen(const AddNoteScreen());
+      },
       child: SvgPicture.asset(
         AppIcons.quill,
         colorFilter: const ColorFilter.mode(

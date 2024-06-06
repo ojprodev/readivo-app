@@ -32,6 +32,7 @@ class CustomInputField extends StatefulWidget {
   final int? minLines;
   final Widget? prefix;
   final Widget? suffix;
+  final TextAlign textAlign;
   final TextStyle? labelTextStyle;
   final String? Function(String?)? validator;
 
@@ -55,6 +56,7 @@ class CustomInputField extends StatefulWidget {
     this.endIconColor = Colors.grey,
     this.textColor = Colors.black87,
     this.textStyle,
+    this.textAlign = TextAlign.start,
     this.contentPadding =
         const EdgeInsets.symmetric(vertical: 12.0, horizontal: 10.0),
     this.labelTextStyle = const TextStyle(
@@ -143,6 +145,7 @@ class _CustomInputFieldState extends State<CustomInputField> {
                     controller: _controller,
                     autofocus: widget.autoFocus,
                     onChanged: _handleChanged,
+                    textAlign: widget.textAlign,
                     onSubmitted: widget.onSubmit,
                     textInputAction: widget.textInputAction,
                     keyboardType: _getKeyboardType(widget.keyboardType),

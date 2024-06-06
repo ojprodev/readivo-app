@@ -106,17 +106,18 @@ Note _noteDeserialize(
   List<int> offsets,
   Map<Type, List<int>> allOffsets,
 ) {
-  final object = Note();
-  object.author = reader.readStringOrNull(offsets[0]);
-  object.content = reader.readString(offsets[1]);
-  object.createdAt = reader.readDateTime(offsets[2]);
+  final object = Note(
+    author: reader.readStringOrNull(offsets[0]),
+    content: reader.readString(offsets[1]),
+    createdAt: reader.readDateTime(offsets[2]),
+    isFavorite: reader.readBoolOrNull(offsets[3]) ?? false,
+    noteCategory:
+        _NotenoteCategoryValueEnumMap[reader.readStringOrNull(offsets[4])] ??
+            NoteCategoryEnum.quote,
+    reads: reader.readLongOrNull(offsets[5]) ?? 0,
+    updatedAt: reader.readDateTimeOrNull(offsets[6]),
+  );
   object.id = id;
-  object.isFavorite = reader.readBool(offsets[3]);
-  object.noteCategory =
-      _NotenoteCategoryValueEnumMap[reader.readStringOrNull(offsets[4])] ??
-          NoteCategory.quote;
-  object.reads = reader.readLong(offsets[5]);
-  object.updatedAt = reader.readDateTimeOrNull(offsets[6]);
   return object;
 }
 
@@ -134,12 +135,12 @@ P _noteDeserializeProp<P>(
     case 2:
       return (reader.readDateTime(offset)) as P;
     case 3:
-      return (reader.readBool(offset)) as P;
+      return (reader.readBoolOrNull(offset) ?? false) as P;
     case 4:
       return (_NotenoteCategoryValueEnumMap[reader.readStringOrNull(offset)] ??
-          NoteCategory.quote) as P;
+          NoteCategoryEnum.quote) as P;
     case 5:
-      return (reader.readLong(offset)) as P;
+      return (reader.readLongOrNull(offset) ?? 0) as P;
     case 6:
       return (reader.readDateTimeOrNull(offset)) as P;
     default:
@@ -151,13 +152,13 @@ const _NotenoteCategoryEnumValueMap = {
   r'quote': r'quote',
   r'thought': r'thought',
   r'question': r'question',
-  r'smmary': r'smmary',
+  r'summary': r'summary',
 };
 const _NotenoteCategoryValueEnumMap = {
-  r'quote': NoteCategory.quote,
-  r'thought': NoteCategory.thought,
-  r'question': NoteCategory.question,
-  r'smmary': NoteCategory.smmary,
+  r'quote': NoteCategoryEnum.quote,
+  r'thought': NoteCategoryEnum.thought,
+  r'question': NoteCategoryEnum.question,
+  r'summary': NoteCategoryEnum.summary,
 };
 
 Id _noteGetId(Note object) {
@@ -636,7 +637,7 @@ extension NoteQueryFilter on QueryBuilder<Note, Note, QFilterCondition> {
   }
 
   QueryBuilder<Note, Note, QAfterFilterCondition> noteCategoryEqualTo(
-    NoteCategory value, {
+    NoteCategoryEnum value, {
     bool caseSensitive = true,
   }) {
     return QueryBuilder.apply(this, (query) {
@@ -649,7 +650,7 @@ extension NoteQueryFilter on QueryBuilder<Note, Note, QFilterCondition> {
   }
 
   QueryBuilder<Note, Note, QAfterFilterCondition> noteCategoryGreaterThan(
-    NoteCategory value, {
+    NoteCategoryEnum value, {
     bool include = false,
     bool caseSensitive = true,
   }) {
@@ -664,7 +665,7 @@ extension NoteQueryFilter on QueryBuilder<Note, Note, QFilterCondition> {
   }
 
   QueryBuilder<Note, Note, QAfterFilterCondition> noteCategoryLessThan(
-    NoteCategory value, {
+    NoteCategoryEnum value, {
     bool include = false,
     bool caseSensitive = true,
   }) {
@@ -679,8 +680,8 @@ extension NoteQueryFilter on QueryBuilder<Note, Note, QFilterCondition> {
   }
 
   QueryBuilder<Note, Note, QAfterFilterCondition> noteCategoryBetween(
-    NoteCategory lower,
-    NoteCategory upper, {
+    NoteCategoryEnum lower,
+    NoteCategoryEnum upper, {
     bool includeLower = true,
     bool includeUpper = true,
     bool caseSensitive = true,
@@ -1153,7 +1154,8 @@ extension NoteQueryProperty on QueryBuilder<Note, Note, QQueryProperty> {
     });
   }
 
-  QueryBuilder<Note, NoteCategory, QQueryOperations> noteCategoryProperty() {
+  QueryBuilder<Note, NoteCategoryEnum, QQueryOperations>
+      noteCategoryProperty() {
     return QueryBuilder.apply(this, (query) {
       return query.addPropertyName(r'noteCategory');
     });
