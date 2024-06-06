@@ -17,4 +17,6 @@ class AppIcons {
   static const String addOutline = "assets/images/icons/add-outline.svg";
   static const String image = "assets/images/icons/image.svg";
   static const String link = "assets/images/icons/link.svg";
+  static const String stop = "assets/images/icons/stop.svg";
+  static const String play = "assets/images/icons/play.svg";
 }

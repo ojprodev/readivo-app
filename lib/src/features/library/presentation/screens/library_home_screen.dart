@@ -19,6 +19,7 @@ import 'package:readivo_app/src/features/library/presentation/bloc/library_cubit
 import 'package:readivo_app/src/features/library/presentation/screens/library_add_book_screen.dart';
 import 'package:readivo_app/src/features/library/presentation/screens/library_pdf_reader_screen.dart';
 import 'package:readivo_app/src/features/library/presentation/screens/library_search_screen.dart';
+import 'package:readivo_app/src/features/library/presentation/screens/reading_session_screen.dart';
 import 'package:readivo_app/src/features/library/presentation/widgets/book_box.dart';
 
 class LibraryHomeScreen extends StatefulWidget {
@@ -303,7 +304,7 @@ class _LibraryHomeScreenState extends State<LibraryHomeScreen> {
                                     appCubit.changeScreen(
                                         LibraryPdfReaderScreen(book: book));
                                   } else {
-                                    print('open session screen');
+                                    appCubit.changeScreen(const ReadingSessionScreen());
                                   }
                                 },
                                 child: CustomText(
