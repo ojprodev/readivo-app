@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:conditional_builder_null_safety/conditional_builder_null_safety.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:readivo_app/src/core/bloc/app_cubit.dart';
@@ -8,7 +9,9 @@ import 'package:readivo_app/src/core/constants/constants.dart';
 import 'package:readivo_app/src/core/constants/images.dart';
 import 'package:readivo_app/src/core/layouts/basic_layout.dart';
 import 'package:readivo_app/src/core/utils/utils.dart';
+import 'package:readivo_app/src/core/widgets/bottom_sheet.dart';
 import 'package:readivo_app/src/core/widgets/custom_button.dart';
+import 'package:readivo_app/src/core/widgets/custom_input_field.dart';
 import 'package:readivo_app/src/core/widgets/custom_text.dart';
 import 'package:readivo_app/src/features/library/presentation/screens/add_note_screen.dart';
 
@@ -67,7 +70,7 @@ class _ReadingSessionScreenState extends State<ReadingSessionScreen> {
             text: 'Finish Session',
             styleType: ButtonStyleType.ghost,
             onPressed: () {
-              Navigator.pop(context);
+              _showReadingProgressConfirmDialog();
             },
             child: const CustomText(
               'Done',
@@ -148,6 +151,43 @@ class _ReadingSessionScreenState extends State<ReadingSessionScreen> {
         colorFilter: const ColorFilter.mode(
           Colors.white,
           BlendMode.srcIn,
+        ),
+      ),
+    );
+  }
+
+  void _showReadingProgressConfirmDialog() {
+    CustomBottomSheet.show(
+      context: context,
+      showDragHandle: false,
+      height: 240,
+      child:  const Padding(
+        padding: EdgeInsets.symmetric(horizontal: 12.0),
+        child: Column(
+          mainAxisSize: MainAxisSize.max,
+          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+          children: [
+            CustomText('How much did you read?'),
+            Column(
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                CustomText('Current Page (between 12-341)'),
+                SizedBox(height: 4.0),
+                CustomInputField(
+                  placeholder: 'Enter page number',
+                  keyboardType: 'number',
+                ),
+              ],
+            ),
+            SizedBox(
+              width: double.infinity,
+              height: 48,
+              child: CustomButton(
+                text: 'Save',
+              ),
+            ),
+          ],
         ),
       ),
     );
