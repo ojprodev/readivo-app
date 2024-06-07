@@ -27,4 +27,17 @@ class Note {
     this.updatedAt,
     required this.createdAt,
   });
+
+  static String getNoteCategoryAsString(NoteCategoryEnum noteCategory) {
+    switch (noteCategory) {
+      case NoteCategoryEnum.quote:
+        return 'Quote';
+      case NoteCategoryEnum.thought:
+        return 'Thought';
+      case NoteCategoryEnum.question:
+        return 'Question';
+      case NoteCategoryEnum.summary:
+        return 'Summary';
+    }
+  }
 }

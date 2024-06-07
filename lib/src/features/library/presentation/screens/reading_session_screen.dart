@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:conditional_builder_null_safety/conditional_builder_null_safety.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
@@ -5,6 +7,7 @@ import 'package:readivo_app/src/core/bloc/app_cubit.dart';
 import 'package:readivo_app/src/core/constants/constants.dart';
 import 'package:readivo_app/src/core/constants/images.dart';
 import 'package:readivo_app/src/core/layouts/basic_layout.dart';
+import 'package:readivo_app/src/core/utils/utils.dart';
 import 'package:readivo_app/src/core/widgets/custom_button.dart';
 import 'package:readivo_app/src/core/widgets/custom_text.dart';
 import 'package:readivo_app/src/features/library/presentation/screens/add_note_screen.dart';
@@ -19,12 +22,31 @@ class ReadingSessionScreen extends StatefulWidget {
 class _ReadingSessionScreenState extends State<ReadingSessionScreen> {
   bool timerOn = false;
   late AppCubit appCubit;
+  Duration duration = const Duration();
+  Timer? timer;
 
   @override
   void initState() {
     super.initState();
 
     appCubit = AppCubit.get(context);
+  }
+
+  @override
+  void dispose() {
+    timer?.cancel();
+
+    super.dispose();
+  }
+
+  void startTimer() {
+    timer = Timer.periodic(const Duration(seconds: 1), (_) => addTime());
+  }
+
+  void addTime() {
+    setState(() {
+      duration = Duration(seconds: duration.inSeconds + 1);
+    });
   }
 
   @override
@@ -35,15 +57,19 @@ class _ReadingSessionScreenState extends State<ReadingSessionScreen> {
         leading: CustomButton(
           text: 'Back',
           styleType: ButtonStyleType.ghost,
+          onPressed: () => Navigator.pop(context),
           child: SvgPicture.asset(AppIcons.chevronLeft),
         ),
         floatingActionButton: _buildAddNoteButton(),
         titleWidget: _buildTimer(),
-        actions: const [
+        actions: [
           CustomButton(
             text: 'Finish Session',
             styleType: ButtonStyleType.ghost,
-            child: CustomText(
+            onPressed: () {
+              Navigator.pop(context);
+            },
+            child: const CustomText(
               'Done',
               color: Colors.black,
               fontWeight: FontWeight.w500,
@@ -70,6 +96,9 @@ class _ReadingSessionScreenState extends State<ReadingSessionScreen> {
   }
 
   Widget _buildTimer() {
+    final minutes = Utils.twoDigits(duration.inMinutes.remainder(60));
+    final seconds = Utils.twoDigits(duration.inSeconds.remainder(60));
+
     return CustomButton(
       text: 'Timer',
       color: Colors.black,
@@ -77,7 +106,15 @@ class _ReadingSessionScreenState extends State<ReadingSessionScreen> {
       borderRadius: 24,
       onPressed: () {
         setState(() {
-          timerOn = !timerOn;
+          if (timerOn) {
+            timer?.cancel();
+
+            timerOn = false;
+          } else {
+            startTimer();
+
+            timerOn = !timerOn;
+          }
         });
       },
       child: Row(
@@ -86,8 +123,8 @@ class _ReadingSessionScreenState extends State<ReadingSessionScreen> {
         mainAxisSize: MainAxisSize.max,
         children: [
           _timerIcon(timerOn),
-          const CustomText(
-            '00:00',
+          CustomText(
+            '$minutes:$seconds',
             fontSize: 18,
             color: Colors.white,
           ),
