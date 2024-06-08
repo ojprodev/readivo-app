@@ -213,7 +213,8 @@ class _LibraryHomeScreenState extends State<LibraryHomeScreen> {
           loop: false,
           itemBuilder: (context, index) {
             return GestureDetector(
-              onTap: () => appCubit.changeScreen(LibraryAddBookScreen(book: readingList[index])),
+              onTap: () => appCubit
+                  .changeScreen(LibraryAddBookScreen(book: readingList[index])),
               child: _buildReadingBookCard(readingList[index]),
             );
           },
@@ -304,7 +305,8 @@ class _LibraryHomeScreenState extends State<LibraryHomeScreen> {
                                     appCubit.changeScreen(
                                         LibraryPdfReaderScreen(book: book));
                                   } else {
-                                    appCubit.changeScreen(const ReadingSessionScreen());
+                                    appCubit.changeScreen(
+                                        ReadingSessionScreen(book: book));
                                   }
                                 },
                                 child: CustomText(

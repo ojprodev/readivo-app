@@ -104,15 +104,16 @@ ReadingSession _readingSessionDeserialize(
   List<int> offsets,
   Map<Type, List<int>> allOffsets,
 ) {
-  final object = ReadingSession();
-  object.createdAt = reader.readDateTime(offsets[0]);
-  object.endPage = reader.readLongOrNull(offsets[1]);
-  object.endTime = reader.readDateTimeOrNull(offsets[2]);
+  final object = ReadingSession(
+    createdAt: reader.readDateTime(offsets[0]),
+    endPage: reader.readLongOrNull(offsets[1]),
+    endTime: reader.readDateTimeOrNull(offsets[2]),
+    percentage: reader.readDoubleOrNull(offsets[3]),
+    startPage: reader.readLongOrNull(offsets[4]),
+    startTime: reader.readDateTimeOrNull(offsets[5]),
+    updatedAt: reader.readDateTimeOrNull(offsets[6]),
+  );
   object.id = id;
-  object.percentage = reader.readDoubleOrNull(offsets[3]);
-  object.startPage = reader.readLongOrNull(offsets[4]);
-  object.startTime = reader.readDateTimeOrNull(offsets[5]);
-  object.updatedAt = reader.readDateTimeOrNull(offsets[6]);
   return object;
 }
 

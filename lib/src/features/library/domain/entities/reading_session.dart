@@ -5,7 +5,7 @@ part 'reading_session.g.dart';
 
 @collection
 @Name('reading_sessions')
-class ReadingSession{
+class ReadingSession {
   Id id = Isar.autoIncrement;
   late int? startPage;
   late int? endPage;
@@ -17,4 +17,14 @@ class ReadingSession{
 
   // links
   final notes = IsarLinks<Note>();
+
+  ReadingSession({
+    this.startPage,
+    this.endPage,
+    this.startTime,
+    this.endTime,
+    this.percentage,
+    this.updatedAt,
+    required this.createdAt,
+  });
 }

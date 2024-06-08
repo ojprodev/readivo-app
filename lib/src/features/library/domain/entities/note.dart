@@ -14,7 +14,7 @@ class Note {
   late String? author;
   late int reads;
   late bool isFavorite;
-
+  late int? page;
   late DateTime? updatedAt;
   late DateTime createdAt;
 
@@ -23,6 +23,7 @@ class Note {
     required this.noteCategory,
     this.author,
     this.reads = 0,
+    this.page,
     this.isFavorite = false,
     this.updatedAt,
     required this.createdAt,

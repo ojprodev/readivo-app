@@ -43,13 +43,18 @@ const NoteSchema = CollectionSchema(
       type: IsarType.string,
       enumMap: _NotenoteCategoryEnumValueMap,
     ),
-    r'reads': PropertySchema(
+    r'page': PropertySchema(
       id: 5,
+      name: r'page',
+      type: IsarType.long,
+    ),
+    r'reads': PropertySchema(
+      id: 6,
       name: r'reads',
       type: IsarType.long,
     ),
     r'updatedAt': PropertySchema(
-      id: 6,
+      id: 7,
       name: r'updatedAt',
       type: IsarType.dateTime,
     )
@@ -96,8 +101,9 @@ void _noteSerialize(
   writer.writeDateTime(offsets[2], object.createdAt);
   writer.writeBool(offsets[3], object.isFavorite);
   writer.writeString(offsets[4], object.noteCategory.name);
-  writer.writeLong(offsets[5], object.reads);
-  writer.writeDateTime(offsets[6], object.updatedAt);
+  writer.writeLong(offsets[5], object.page);
+  writer.writeLong(offsets[6], object.reads);
+  writer.writeDateTime(offsets[7], object.updatedAt);
 }
 
 Note _noteDeserialize(
@@ -114,8 +120,9 @@ Note _noteDeserialize(
     noteCategory:
         _NotenoteCategoryValueEnumMap[reader.readStringOrNull(offsets[4])] ??
             NoteCategoryEnum.quote,
-    reads: reader.readLongOrNull(offsets[5]) ?? 0,
-    updatedAt: reader.readDateTimeOrNull(offsets[6]),
+    page: reader.readLongOrNull(offsets[5]),
+    reads: reader.readLongOrNull(offsets[6]) ?? 0,
+    updatedAt: reader.readDateTimeOrNull(offsets[7]),
   );
   object.id = id;
   return object;
@@ -140,8 +147,10 @@ P _noteDeserializeProp<P>(
       return (_NotenoteCategoryValueEnumMap[reader.readStringOrNull(offset)] ??
           NoteCategoryEnum.quote) as P;
     case 5:
-      return (reader.readLongOrNull(offset) ?? 0) as P;
+      return (reader.readLongOrNull(offset)) as P;
     case 6:
+      return (reader.readLongOrNull(offset) ?? 0) as P;
+    case 7:
       return (reader.readDateTimeOrNull(offset)) as P;
     default:
       throw IsarError('Unknown property with id $propertyId');
@@ -766,6 +775,74 @@ extension NoteQueryFilter on QueryBuilder<Note, Note, QFilterCondition> {
     });
   }
 
+  QueryBuilder<Note, Note, QAfterFilterCondition> pageIsNull() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(const FilterCondition.isNull(
+        property: r'page',
+      ));
+    });
+  }
+
+  QueryBuilder<Note, Note, QAfterFilterCondition> pageIsNotNull() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(const FilterCondition.isNotNull(
+        property: r'page',
+      ));
+    });
+  }
+
+  QueryBuilder<Note, Note, QAfterFilterCondition> pageEqualTo(int? value) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.equalTo(
+        property: r'page',
+        value: value,
+      ));
+    });
+  }
+
+  QueryBuilder<Note, Note, QAfterFilterCondition> pageGreaterThan(
+    int? value, {
+    bool include = false,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.greaterThan(
+        include: include,
+        property: r'page',
+        value: value,
+      ));
+    });
+  }
+
+  QueryBuilder<Note, Note, QAfterFilterCondition> pageLessThan(
+    int? value, {
+    bool include = false,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.lessThan(
+        include: include,
+        property: r'page',
+        value: value,
+      ));
+    });
+  }
+
+  QueryBuilder<Note, Note, QAfterFilterCondition> pageBetween(
+    int? lower,
+    int? upper, {
+    bool includeLower = true,
+    bool includeUpper = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.between(
+        property: r'page',
+        lower: lower,
+        includeLower: includeLower,
+        upper: upper,
+        includeUpper: includeUpper,
+      ));
+    });
+  }
+
   QueryBuilder<Note, Note, QAfterFilterCondition> readsEqualTo(int value) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.equalTo(
@@ -953,6 +1030,18 @@ extension NoteQuerySortBy on QueryBuilder<Note, Note, QSortBy> {
     });
   }
 
+  QueryBuilder<Note, Note, QAfterSortBy> sortByPage() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'page', Sort.asc);
+    });
+  }
+
+  QueryBuilder<Note, Note, QAfterSortBy> sortByPageDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'page', Sort.desc);
+    });
+  }
+
   QueryBuilder<Note, Note, QAfterSortBy> sortByReads() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'reads', Sort.asc);
@@ -1051,6 +1140,18 @@ extension NoteQuerySortThenBy on QueryBuilder<Note, Note, QSortThenBy> {
     });
   }
 
+  QueryBuilder<Note, Note, QAfterSortBy> thenByPage() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'page', Sort.asc);
+    });
+  }
+
+  QueryBuilder<Note, Note, QAfterSortBy> thenByPageDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'page', Sort.desc);
+    });
+  }
+
   QueryBuilder<Note, Note, QAfterSortBy> thenByReads() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'reads', Sort.asc);
@@ -1110,6 +1211,12 @@ extension NoteQueryWhereDistinct on QueryBuilder<Note, Note, QDistinct> {
     });
   }
 
+  QueryBuilder<Note, Note, QDistinct> distinctByPage() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addDistinctBy(r'page');
+    });
+  }
+
   QueryBuilder<Note, Note, QDistinct> distinctByReads() {
     return QueryBuilder.apply(this, (query) {
       return query.addDistinctBy(r'reads');
@@ -1158,6 +1265,12 @@ extension NoteQueryProperty on QueryBuilder<Note, Note, QQueryProperty> {
       noteCategoryProperty() {
     return QueryBuilder.apply(this, (query) {
       return query.addPropertyName(r'noteCategory');
+    });
+  }
+
+  QueryBuilder<Note, int?, QQueryOperations> pageProperty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addPropertyName(r'page');
     });
   }
 

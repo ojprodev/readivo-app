@@ -59,3 +59,12 @@ class LibraryNewBookDetectedState extends LibraryStates {
   @override
   List<Object> get props => [book];
 }
+
+class LibraryNewNoteAddedState extends LibraryStates {
+  final Note note;
+
+  LibraryNewNoteAddedState({required this.note});
+
+  @override
+  List<Object> get props => [note];
+}

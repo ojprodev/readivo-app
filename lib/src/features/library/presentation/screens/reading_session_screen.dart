@@ -1,8 +1,8 @@
 import 'dart:async';
 
 import 'package:conditional_builder_null_safety/conditional_builder_null_safety.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:readivo_app/src/core/bloc/app_cubit.dart';
 import 'package:readivo_app/src/core/constants/constants.dart';
@@ -13,10 +13,15 @@ import 'package:readivo_app/src/core/widgets/bottom_sheet.dart';
 import 'package:readivo_app/src/core/widgets/custom_button.dart';
 import 'package:readivo_app/src/core/widgets/custom_input_field.dart';
 import 'package:readivo_app/src/core/widgets/custom_text.dart';
+import 'package:readivo_app/src/features/library/domain/entities/book.dart';
+import 'package:readivo_app/src/features/library/domain/entities/note.dart';
+import 'package:readivo_app/src/features/library/presentation/bloc/library_cubit.dart';
 import 'package:readivo_app/src/features/library/presentation/screens/add_note_screen.dart';
 
 class ReadingSessionScreen extends StatefulWidget {
-  const ReadingSessionScreen({super.key});
+  final Book book;
+
+  const ReadingSessionScreen({super.key, required this.book});
 
   @override
   State<ReadingSessionScreen> createState() => _ReadingSessionScreenState();
@@ -27,12 +32,15 @@ class _ReadingSessionScreenState extends State<ReadingSessionScreen> {
   late AppCubit appCubit;
   Duration duration = const Duration();
   Timer? timer;
+  List<Note> notes = [];
 
   @override
   void initState() {
     super.initState();
 
     appCubit = AppCubit.get(context);
+
+    notes = widget.book.notes.toList();
   }
 
   @override
@@ -80,22 +88,40 @@ class _ReadingSessionScreenState extends State<ReadingSessionScreen> {
             ),
           ),
         ],
-        body: Container(
-          margin: const EdgeInsets.only(top: 48.0),
-          padding: const EdgeInsets.all(24.0),
-          child: Column(
-            mainAxisSize: MainAxisSize.max,
-            mainAxisAlignment: MainAxisAlignment.start,
-            children: [
-              SvgPicture.asset(
-                AppImages.readingSession,
-                height: 300,
-              ),
-              const SizedBox(height: 16.0),
-              const CustomText('Start a reading session'),
-            ],
-          ),
+        body: BlocConsumer<LibraryCubit, LibraryStates>(
+          builder: _buildContent,
+          listener: _changeListener,
         ));
+  }
+
+  Widget _buildContent(BuildContext context, state) {
+    return ConditionalBuilder(
+      condition: notes.isEmpty,
+      builder: (context) => Container(
+        margin: const EdgeInsets.only(top: 48.0),
+        padding: const EdgeInsets.all(24.0),
+        child: Column(
+          mainAxisSize: MainAxisSize.max,
+          mainAxisAlignment: MainAxisAlignment.start,
+          children: [
+            SvgPicture.asset(
+              AppImages.readingSession,
+              height: 300,
+            ),
+            const SizedBox(height: 16.0),
+            const CustomText('Start a reading session'),
+          ],
+        ),
+      ),
+      fallback: (context) {
+        return ListView.builder(
+          itemCount: notes.length,
+          itemBuilder: (context, index) {
+            return Text(notes[index].content);
+          },
+        );
+      },
+    );
   }
 
   Widget _buildTimer() {
@@ -161,7 +187,7 @@ class _ReadingSessionScreenState extends State<ReadingSessionScreen> {
       context: context,
       showDragHandle: false,
       height: 240,
-      child:  const Padding(
+      child: const Padding(
         padding: EdgeInsets.symmetric(horizontal: 12.0),
         child: Column(
           mainAxisSize: MainAxisSize.max,
@@ -201,7 +227,11 @@ class _ReadingSessionScreenState extends State<ReadingSessionScreen> {
       borderRadius: 26,
       color: AppColors.lightBlue,
       onPressed: () {
-        appCubit.changeScreen(const AddNoteScreen());
+        CustomBottomSheet.show(
+          context: context,
+          height: MediaQuery.sizeOf(context).height * 0.96,
+          child: AddNoteScreen(book: widget.book),
+        );
       },
       child: SvgPicture.asset(
         AppIcons.quill,
@@ -211,5 +241,13 @@ class _ReadingSessionScreenState extends State<ReadingSessionScreen> {
         ),
       ),
     );
+  }
+
+  void _changeListener(BuildContext context, state) {
+    if (state is LibraryNewNoteAddedState) {
+      setState(() {
+        notes.add(state.note);
+      });
+    }
   }
 }

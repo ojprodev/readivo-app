@@ -10,14 +10,17 @@ import 'package:readivo_app/src/core/services/file_system_service.dart';
 import 'package:readivo_app/src/core/services/permission_service.dart';
 import 'package:readivo_app/src/features/library/data/remote/data_sources/remote_book_data_source.dart';
 import 'package:readivo_app/src/features/library/data/repositories/local_book_repository_impl.dart';
+import 'package:readivo_app/src/features/library/data/repositories/note_repository_impl.dart';
 import 'package:readivo_app/src/features/library/data/repositories/remote_book_repository_impl.dart';
 import 'package:readivo_app/src/features/library/data/repositories/shelf_repository_impl.dart';
 import 'package:readivo_app/src/features/library/data/repositories/tag_repository_impl.dart';
 import 'package:readivo_app/src/features/library/domain/repositories/local_book_repository.dart';
+import 'package:readivo_app/src/features/library/domain/repositories/note_repository.dart';
 import 'package:readivo_app/src/features/library/domain/repositories/remote_book_repository.dart';
 import 'package:readivo_app/src/features/library/domain/repositories/shelf_repository.dart';
 import 'package:readivo_app/src/features/library/domain/repositories/tag_repository.dart';
 import 'package:readivo_app/src/features/library/domain/use_cases/books_use_case.dart';
+import 'package:readivo_app/src/features/library/domain/use_cases/note_use_case.dart';
 import 'package:readivo_app/src/features/library/domain/use_cases/shelf_use_case.dart';
 import 'package:readivo_app/src/features/library/domain/use_cases/tag_use_case.dart';
 import 'package:readivo_app/src/features/library/presentation/bloc/library_cubit.dart';
@@ -64,6 +67,9 @@ class DependencyInjection {
     getIt.registerLazySingleton<ShelfRepository>(
         () => ShelfRepositoryImpl(isar: getIt()));
 
+    getIt.registerLazySingleton<NoteRepository>(
+        () => NoteRepositoryImpl(isar: getIt()));
+
     // Use Cases
     getIt.registerLazySingleton(() => BooksUseCase(
           localBookRepository: getIt(),
@@ -72,6 +78,7 @@ class DependencyInjection {
 
     getIt.registerLazySingleton(() => TagUseCase(tagRepository: getIt()));
     getIt.registerLazySingleton(() => ShelfUseCase(shelfRepository: getIt()));
+    getIt.registerLazySingleton(() => NoteUseCase(noteRepository: getIt()));
 
     // Cubits
     getIt.registerFactory<LibraryCubit>(() => LibraryCubit(
@@ -80,6 +87,7 @@ class DependencyInjection {
           fileSystemService: getIt(),
           tagUseCase: getIt(),
           shelfUseCase: getIt(),
+          noteUseCase: getIt(),
         ));
   }
 }

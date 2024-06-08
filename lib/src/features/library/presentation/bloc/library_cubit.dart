@@ -7,9 +7,11 @@ import 'package:readivo_app/src/core/services/file_system_service.dart';
 import 'package:readivo_app/src/core/services/permission_service.dart';
 import 'package:readivo_app/src/features/library/data/local/models/local_book.dart';
 import 'package:readivo_app/src/features/library/domain/entities/book.dart';
+import 'package:readivo_app/src/features/library/domain/entities/note.dart';
 import 'package:readivo_app/src/features/library/domain/entities/shelf.dart';
 import 'package:readivo_app/src/features/library/domain/entities/tag.dart';
 import 'package:readivo_app/src/features/library/domain/use_cases/books_use_case.dart';
+import 'package:readivo_app/src/features/library/domain/use_cases/note_use_case.dart';
 import 'package:readivo_app/src/features/library/domain/use_cases/shelf_use_case.dart';
 import 'package:readivo_app/src/features/library/domain/use_cases/tag_use_case.dart';
 
@@ -21,6 +23,7 @@ class LibraryCubit extends Cubit<LibraryStates> {
   final BooksUseCase booksUseCase;
   final TagUseCase tagUseCase;
   final ShelfUseCase shelfUseCase;
+  final NoteUseCase noteUseCase;
 
   BookSourceEnums bookSource = BookSourceEnums.online;
   List<Book> books = [];
@@ -36,6 +39,7 @@ class LibraryCubit extends Cubit<LibraryStates> {
     required this.fileSystemService,
     required this.tagUseCase,
     required this.shelfUseCase,
+    required this.noteUseCase,
   }) : super(LibraryInitState());
 
   static LibraryCubit get(BuildContext context) =>
@@ -188,5 +192,11 @@ class LibraryCubit extends Cubit<LibraryStates> {
 
   Future<void> unassignShelves(Book book, List<Shelf> shelves) async {
     await shelfUseCase.unassignShelves(book, shelves);
+  }
+
+  Future<void> addNote(Note note, {required Book book}) async {
+    Note newNote = await noteUseCase.add(note, book: book);
+
+    emit(LibraryNewNoteAddedState(note: newNote));
   }
 }

@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:readivo_app/src/core/constants/constants.dart';
-import 'package:readivo_app/src/core/layouts/basic_layout.dart';
 import 'package:readivo_app/src/core/widgets/bottom_sheet.dart';
 import 'package:readivo_app/src/core/widgets/custom_button.dart';
 import 'package:readivo_app/src/core/widgets/custom_chip.dart';
@@ -9,10 +8,14 @@ import 'package:readivo_app/src/core/widgets/custom_container.dart';
 import 'package:readivo_app/src/core/widgets/custom_input_field.dart';
 import 'package:readivo_app/src/core/widgets/custom_text.dart';
 import 'package:readivo_app/src/core/widgets/partials/bottom_sheet_item.dart';
+import 'package:readivo_app/src/features/library/domain/entities/book.dart';
 import 'package:readivo_app/src/features/library/domain/entities/note.dart';
+import 'package:readivo_app/src/features/library/presentation/bloc/library_cubit.dart';
 
 class AddNoteScreen extends StatefulWidget {
-  const AddNoteScreen({super.key});
+  final Book book;
+
+  const AddNoteScreen({super.key, required this.book});
 
   @override
   State<AddNoteScreen> createState() => _AddNoteScreenState();
@@ -23,74 +26,125 @@ class _AddNoteScreenState extends State<AddNoteScreen> {
   TextEditingController pageController = TextEditingController();
   TextEditingController noteController = TextEditingController();
   TextEditingController authorController = TextEditingController();
+  late LibraryCubit libraryCubit;
+  bool isValid = true;
+
+  @override
+  void initState() {
+    super.initState();
+
+    libraryCubit = LibraryCubit.get(context);
+
+    authorController.text = widget.book.author ?? 'unknown';
+  }
 
   @override
   Widget build(BuildContext context) {
-    return BasicLayout(
-      leadingWidth: 50,
-      leading: CustomButton(
-        text: 'back',
-        width: 50,
-        styleType: ButtonStyleType.ghost,
-        onPressed: () {
-          Navigator.pop(context);
-        },
-        child: SvgPicture.asset(AppIcons.close),
-      ),
-      title: 'Add a Note',
-      centerTitle: true,
-      actions: [
-        CustomButton(
-          text: 'Save Note',
-          styleType: ButtonStyleType.ghost,
-          width: 50,
-          child: SvgPicture.asset(
-            AppIcons.valid,
+    return Container(
+      color: Colors.white,
+      padding: const EdgeInsets.symmetric(horizontal: 12.0, vertical: 8.0),
+      child: Column(
+        children: [
+          _buildAddNoteNavBar(),
+          const SizedBox(height: 16.0),
+          _buildNoteCategoryAndPageButtons(),
+          CustomInputField(
+            controller: noteController,
+            placeholder: 'Write your question here...',
+            borderColor: Colors.transparent,
+            minLines: 12,
+            maxLines: 25,
+            validator: (content) {
+              if (content == null || content.isEmpty) {
+                setState(() {
+                  isValid = true;
+                });
+
+                return 'Please provide content.';
+              }
+
+              setState(() {
+                isValid = false;
+              });
+
+              return null;
+            },
+            contentPadding:
+                const EdgeInsets.symmetric(horizontal: 0, vertical: 8.0),
+            onChanged: (value) {
+              noteController.text = value;
+            },
           ),
-        )
-      ],
-      body: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 12.0, vertical: 8.0),
-        child: Column(
-          children: [
-            _buildNoteCategoryAndPageButtons(),
-            CustomInputField(
-              controller: noteController,
-              placeholder: 'Write your question here...',
-              borderColor: Colors.transparent,
-              minLines: 12,
-              maxLines: 25,
-              contentPadding:
-                  const EdgeInsets.symmetric(horizontal: 0, vertical: 24.0),
-              onChanged: (value) {
-                noteController.text = value;
-              },
-            ),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              mainAxisSize: MainAxisSize.max,
-              children: [
-                const CustomText(
-                  '-',
-                  fontSize: 26,
-                  fontWeight: FontWeight.w500,
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            mainAxisSize: MainAxisSize.max,
+            children: [
+              const CustomText(
+                '-',
+                fontSize: 26,
+                fontWeight: FontWeight.w500,
+              ),
+              Expanded(
+                child: CustomInputField(
+                  controller: authorController,
+                  placeholder: widget.book.author,
+                  contentPadding: EdgeInsets.zero,
+                  borderColor: Colors.transparent,
+                  onChanged: (value) {
+                    authorController.text = value;
+                  },
                 ),
-                Expanded(
-                  child: CustomInputField(
-                    controller: authorController,
-                    placeholder: 'Paulo Coelho',
-                    contentPadding: EdgeInsets.zero,
-                    borderColor: Colors.transparent,
-                    onChanged: (value) {
-                      authorController.text = value;
-                    },
-                  ),
-                ),
-              ],
-            ),
-          ],
-        ),
+              ),
+            ],
+          ),
+        ],
       ),
+    );
+  }
+
+  Widget _buildAddNoteNavBar() {
+    return Row(
+      mainAxisSize: MainAxisSize.max,
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      crossAxisAlignment: CrossAxisAlignment.center,
+      children: [
+        CustomButton(
+          text: 'close',
+          width: 40,
+          styleType: ButtonStyleType.ghost,
+          onPressed: () {
+            Navigator.pop(context);
+          },
+          child: SvgPicture.asset(AppIcons.close),
+        ),
+        const CustomText(
+          'Add Note',
+          fontSize: 18,
+        ),
+        CustomButton(
+          text: 'add note',
+          width: 40,
+          styleType: ButtonStyleType.ghost,
+          onPressed: () {
+            if (isValid != true) {
+              Note note = Note(
+                content: noteController.text,
+                noteCategory: selectedCategory,
+                author: authorController.text,
+                page: pageController.text.isNotEmpty
+                    ? int.parse(pageController.text)
+                    : null,
+                createdAt: DateTime.now(),
+              );
+
+              libraryCubit.addNote(note, book: widget.book).then((_) {
+                Navigator.pop(context);
+              });
+            }
+          },
+          child: SvgPicture.asset(AppIcons.valid),
+        ),
+      ],
     );
   }
 
@@ -130,7 +184,10 @@ class _AddNoteScreenState extends State<AddNoteScreen> {
 
   void _showNoteCategorySelector() {
     CustomBottomSheet.show(
-        context: context, bottomSheetItems: _noteCategoriesItems());
+      context: context,
+      height: 230,
+      bottomSheetItems: _noteCategoriesItems(),
+    );
   }
 
   List<BottomSheetItem> _noteCategoriesItems() {
