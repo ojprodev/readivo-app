@@ -15,6 +15,7 @@ class CustomContainer extends StatelessWidget {
   final Widget? child;
   final Color? borderColor; // New property for border color
   final double? borderWidth; // New property for border width
+  final Clip clipBehavior; // New property for border width
 
   const CustomContainer({
     super.key,
@@ -32,6 +33,7 @@ class CustomContainer extends StatelessWidget {
     this.child,
     this.borderColor,
     this.borderWidth,
+    this.clipBehavior = Clip.antiAlias,
   });
 
   @override
@@ -41,6 +43,7 @@ class CustomContainer extends StatelessWidget {
       height: height,
       padding: padding ?? const EdgeInsets.all(10.0),
       margin: margin,
+      clipBehavior: clipBehavior,
       decoration: boxDecoration ??
           BoxDecoration(
             color: color,

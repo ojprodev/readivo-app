@@ -716,10 +716,10 @@ packages:
     dependency: "direct main"
     description:
       name: pdfrx
-      sha256: b68691d23e810ee8e3450f394324d52b64fef2a73883dc446a46dcd0c342a62e
+      sha256: ae938ac823db4cf9e405b58909f02c2ed8d754c198186c98c2e23c4fabfcf4ad
       url: "https://pub.dev"
     source: hosted
-    version: "1.0.65"
+    version: "1.0.67"
   percent_indicator:
     dependency: "direct main"
     description:

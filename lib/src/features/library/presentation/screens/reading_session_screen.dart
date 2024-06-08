@@ -11,6 +11,7 @@ import 'package:readivo_app/src/core/layouts/basic_layout.dart';
 import 'package:readivo_app/src/core/utils/utils.dart';
 import 'package:readivo_app/src/core/widgets/bottom_sheet.dart';
 import 'package:readivo_app/src/core/widgets/custom_button.dart';
+import 'package:readivo_app/src/core/widgets/custom_container.dart';
 import 'package:readivo_app/src/core/widgets/custom_input_field.dart';
 import 'package:readivo_app/src/core/widgets/custom_text.dart';
 import 'package:readivo_app/src/features/library/domain/entities/book.dart';
@@ -117,7 +118,7 @@ class _ReadingSessionScreenState extends State<ReadingSessionScreen> {
         return ListView.builder(
           itemCount: notes.length,
           itemBuilder: (context, index) {
-            return Text(notes[index].content);
+            return _buildQuoteCard(notes[index]);
           },
         );
       },
@@ -178,6 +179,65 @@ class _ReadingSessionScreenState extends State<ReadingSessionScreen> {
           Colors.white,
           BlendMode.srcIn,
         ),
+      ),
+    );
+  }
+
+  Widget _buildQuoteCard(Note note){
+    return CustomContainer(
+      clipBehavior: Clip.hardEdge,
+      margin:
+      const EdgeInsets.symmetric(horizontal: 12, vertical: 12.0),
+      color: AppColors.extraLightGreen,
+      child: Stack(
+        clipBehavior: Clip.none,
+        children: [
+          Positioned(
+            top: -20,
+            right: 0,
+            child: SvgPicture.asset(
+              AppIcons.quote,
+              width: 54,
+              colorFilter:
+              const ColorFilter.mode(Colors.white, BlendMode.srcIn),
+            ),
+          ),
+          Padding(
+            padding: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 12.0),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              mainAxisSize: MainAxisSize.max,
+              children: [
+                Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 16.0),
+                  child: CustomText(
+                    note.content,
+                    fontStyle: FontStyle.italic,
+                    fontSize: 18,
+                    color: AppColors.grey.withOpacity(0.9),
+                    textAlign: TextAlign.center,
+                  ),
+                ),
+                const SizedBox(height: 16),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    CustomText(
+                      '- ${note.author}',
+                      color: AppColors.grey,
+                      fontWeight: FontWeight.bold,
+                    ),
+                    if (note.page != null)
+                      CustomText(
+                        'page ${note.page}',
+                      ),
+                  ],
+                ),
+              ],
+            ),
+          ),
+        ],
       ),
     );
   }
