@@ -47,8 +47,13 @@ const ReadingSessionSchema = CollectionSchema(
       name: r'startTime',
       type: IsarType.dateTime,
     ),
-    r'updatedAt': PropertySchema(
+    r'timeSpent': PropertySchema(
       id: 6,
+      name: r'timeSpent',
+      type: IsarType.long,
+    ),
+    r'updatedAt': PropertySchema(
+      id: 7,
       name: r'updatedAt',
       type: IsarType.dateTime,
     )
@@ -95,7 +100,8 @@ void _readingSessionSerialize(
   writer.writeDouble(offsets[3], object.percentage);
   writer.writeLong(offsets[4], object.startPage);
   writer.writeDateTime(offsets[5], object.startTime);
-  writer.writeDateTime(offsets[6], object.updatedAt);
+  writer.writeLong(offsets[6], object.timeSpent);
+  writer.writeDateTime(offsets[7], object.updatedAt);
 }
 
 ReadingSession _readingSessionDeserialize(
@@ -111,7 +117,8 @@ ReadingSession _readingSessionDeserialize(
     percentage: reader.readDoubleOrNull(offsets[3]),
     startPage: reader.readLongOrNull(offsets[4]),
     startTime: reader.readDateTimeOrNull(offsets[5]),
-    updatedAt: reader.readDateTimeOrNull(offsets[6]),
+    timeSpent: reader.readLongOrNull(offsets[6]),
+    updatedAt: reader.readDateTimeOrNull(offsets[7]),
   );
   object.id = id;
   return object;
@@ -137,6 +144,8 @@ P _readingSessionDeserializeProp<P>(
     case 5:
       return (reader.readDateTimeOrNull(offset)) as P;
     case 6:
+      return (reader.readLongOrNull(offset)) as P;
+    case 7:
       return (reader.readDateTimeOrNull(offset)) as P;
     default:
       throw IsarError('Unknown property with id $propertyId');
@@ -732,6 +741,80 @@ extension ReadingSessionQueryFilter
   }
 
   QueryBuilder<ReadingSession, ReadingSession, QAfterFilterCondition>
+      timeSpentIsNull() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(const FilterCondition.isNull(
+        property: r'timeSpent',
+      ));
+    });
+  }
+
+  QueryBuilder<ReadingSession, ReadingSession, QAfterFilterCondition>
+      timeSpentIsNotNull() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(const FilterCondition.isNotNull(
+        property: r'timeSpent',
+      ));
+    });
+  }
+
+  QueryBuilder<ReadingSession, ReadingSession, QAfterFilterCondition>
+      timeSpentEqualTo(int? value) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.equalTo(
+        property: r'timeSpent',
+        value: value,
+      ));
+    });
+  }
+
+  QueryBuilder<ReadingSession, ReadingSession, QAfterFilterCondition>
+      timeSpentGreaterThan(
+    int? value, {
+    bool include = false,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.greaterThan(
+        include: include,
+        property: r'timeSpent',
+        value: value,
+      ));
+    });
+  }
+
+  QueryBuilder<ReadingSession, ReadingSession, QAfterFilterCondition>
+      timeSpentLessThan(
+    int? value, {
+    bool include = false,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.lessThan(
+        include: include,
+        property: r'timeSpent',
+        value: value,
+      ));
+    });
+  }
+
+  QueryBuilder<ReadingSession, ReadingSession, QAfterFilterCondition>
+      timeSpentBetween(
+    int? lower,
+    int? upper, {
+    bool includeLower = true,
+    bool includeUpper = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.between(
+        property: r'timeSpent',
+        lower: lower,
+        includeLower: includeLower,
+        upper: upper,
+        includeUpper: includeUpper,
+      ));
+    });
+  }
+
+  QueryBuilder<ReadingSession, ReadingSession, QAfterFilterCondition>
       updatedAtIsNull() {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(const FilterCondition.isNull(
@@ -954,6 +1037,19 @@ extension ReadingSessionQuerySortBy
     });
   }
 
+  QueryBuilder<ReadingSession, ReadingSession, QAfterSortBy> sortByTimeSpent() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'timeSpent', Sort.asc);
+    });
+  }
+
+  QueryBuilder<ReadingSession, ReadingSession, QAfterSortBy>
+      sortByTimeSpentDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'timeSpent', Sort.desc);
+    });
+  }
+
   QueryBuilder<ReadingSession, ReadingSession, QAfterSortBy> sortByUpdatedAt() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'updatedAt', Sort.asc);
@@ -1061,6 +1157,19 @@ extension ReadingSessionQuerySortThenBy
     });
   }
 
+  QueryBuilder<ReadingSession, ReadingSession, QAfterSortBy> thenByTimeSpent() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'timeSpent', Sort.asc);
+    });
+  }
+
+  QueryBuilder<ReadingSession, ReadingSession, QAfterSortBy>
+      thenByTimeSpentDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'timeSpent', Sort.desc);
+    });
+  }
+
   QueryBuilder<ReadingSession, ReadingSession, QAfterSortBy> thenByUpdatedAt() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'updatedAt', Sort.asc);
@@ -1118,6 +1227,13 @@ extension ReadingSessionQueryWhereDistinct
   }
 
   QueryBuilder<ReadingSession, ReadingSession, QDistinct>
+      distinctByTimeSpent() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addDistinctBy(r'timeSpent');
+    });
+  }
+
+  QueryBuilder<ReadingSession, ReadingSession, QDistinct>
       distinctByUpdatedAt() {
     return QueryBuilder.apply(this, (query) {
       return query.addDistinctBy(r'updatedAt');
@@ -1167,6 +1283,12 @@ extension ReadingSessionQueryProperty
       startTimeProperty() {
     return QueryBuilder.apply(this, (query) {
       return query.addPropertyName(r'startTime');
+    });
+  }
+
+  QueryBuilder<ReadingSession, int?, QQueryOperations> timeSpentProperty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addPropertyName(r'timeSpent');
     });
   }
 

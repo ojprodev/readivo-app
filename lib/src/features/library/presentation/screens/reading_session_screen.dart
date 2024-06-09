@@ -16,6 +16,7 @@ import 'package:readivo_app/src/core/widgets/custom_input_field.dart';
 import 'package:readivo_app/src/core/widgets/custom_text.dart';
 import 'package:readivo_app/src/features/library/domain/entities/book.dart';
 import 'package:readivo_app/src/features/library/domain/entities/note.dart';
+import 'package:readivo_app/src/features/library/domain/entities/reading_session.dart';
 import 'package:readivo_app/src/features/library/presentation/bloc/library_cubit.dart';
 import 'package:readivo_app/src/features/library/presentation/screens/add_note_screen.dart';
 
@@ -31,17 +32,21 @@ class ReadingSessionScreen extends StatefulWidget {
 class _ReadingSessionScreenState extends State<ReadingSessionScreen> {
   bool timerOn = false;
   late AppCubit appCubit;
+  late LibraryCubit libraryCubit;
   Duration duration = const Duration();
+  TextEditingController pageController = TextEditingController();
   Timer? timer;
   List<Note> notes = [];
+  late ReadingSession readingSession;
 
   @override
   void initState() {
     super.initState();
 
     appCubit = AppCubit.get(context);
+    libraryCubit = LibraryCubit.get(context);
 
-    notes = widget.book.notes.toList();
+    readingSession = ReadingSession(createdAt: DateTime.now());
   }
 
   @override
@@ -79,6 +84,9 @@ class _ReadingSessionScreenState extends State<ReadingSessionScreen> {
             text: 'Finish Session',
             styleType: ButtonStyleType.ghost,
             onPressed: () {
+              // stop the timer
+              timer?.cancel();
+
               _showReadingProgressConfirmDialog();
             },
             child: const CustomText(
@@ -136,12 +144,17 @@ class _ReadingSessionScreenState extends State<ReadingSessionScreen> {
       borderRadius: 24,
       onPressed: () {
         setState(() {
+          // set start time if null
+          readingSession.startTime ??= DateTime.now();
+
           if (timerOn) {
             timer?.cancel();
 
             timerOn = false;
           } else {
             startTimer();
+
+            readingSession.endTime = DateTime.now();
 
             timerOn = !timerOn;
           }
@@ -183,11 +196,10 @@ class _ReadingSessionScreenState extends State<ReadingSessionScreen> {
     );
   }
 
-  Widget _buildQuoteCard(Note note){
+  Widget _buildQuoteCard(Note note) {
     return CustomContainer(
       clipBehavior: Clip.hardEdge,
-      margin:
-      const EdgeInsets.symmetric(horizontal: 12, vertical: 12.0),
+      margin: const EdgeInsets.symmetric(horizontal: 12, vertical: 12.0),
       color: AppColors.extraLightGreen,
       child: Stack(
         clipBehavior: Clip.none,
@@ -199,11 +211,12 @@ class _ReadingSessionScreenState extends State<ReadingSessionScreen> {
               AppIcons.quote,
               width: 54,
               colorFilter:
-              const ColorFilter.mode(Colors.white, BlendMode.srcIn),
+                  const ColorFilter.mode(Colors.white, BlendMode.srcIn),
             ),
           ),
           Padding(
-            padding: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 12.0),
+            padding:
+                const EdgeInsets.symmetric(vertical: 8.0, horizontal: 12.0),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.center,
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
@@ -247,22 +260,28 @@ class _ReadingSessionScreenState extends State<ReadingSessionScreen> {
       context: context,
       showDragHandle: false,
       height: 240,
-      child: const Padding(
-        padding: EdgeInsets.symmetric(horizontal: 12.0),
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 12.0),
         child: Column(
           mainAxisSize: MainAxisSize.max,
           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
           children: [
-            CustomText('How much did you read?'),
+            const CustomText('How much did you read?'),
             Column(
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                CustomText('Current Page (between 12-341)'),
-                SizedBox(height: 4.0),
+                const CustomText('Current Page (between 12-341)'),
+                const SizedBox(height: 4.0),
                 CustomInputField(
+                  controller: pageController,
                   placeholder: 'Enter page number',
                   keyboardType: 'number',
+                  onChanged: (value) {
+                    setState(() {
+                      pageController.text = value;
+                    });
+                  },
                 ),
               ],
             ),
@@ -271,6 +290,21 @@ class _ReadingSessionScreenState extends State<ReadingSessionScreen> {
               height: 48,
               child: CustomButton(
                 text: 'Save',
+                onPressed: () async {
+                  readingSession.notes.addAll(notes);
+                  readingSession.endTime ??= DateTime.now();
+                  readingSession.timeSpent = duration.inSeconds;
+                  if (pageController.text.isNotEmpty) {
+                    readingSession.endPage = int.parse(pageController.text);
+                  }
+
+                  await libraryCubit.addReadingSession(
+                    readingSession: readingSession,
+                    book: widget.book,
+                  );
+
+                  appCubit.previousScreen();
+                },
               ),
             ),
           ],

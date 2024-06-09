@@ -12,6 +12,7 @@ class ReadingSession {
   late DateTime? startTime;
   late DateTime? endTime;
   late double? percentage;
+  late int? timeSpent;
   late DateTime? updatedAt;
   late DateTime createdAt;
 
@@ -25,6 +26,7 @@ class ReadingSession {
     this.endTime,
     this.percentage,
     this.updatedAt,
+    this.timeSpent,
     required this.createdAt,
   });
 }

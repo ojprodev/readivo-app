@@ -11,16 +11,19 @@ import 'package:readivo_app/src/core/services/permission_service.dart';
 import 'package:readivo_app/src/features/library/data/remote/data_sources/remote_book_data_source.dart';
 import 'package:readivo_app/src/features/library/data/repositories/local_book_repository_impl.dart';
 import 'package:readivo_app/src/features/library/data/repositories/note_repository_impl.dart';
+import 'package:readivo_app/src/features/library/data/repositories/reading_session_repository_impl.dart';
 import 'package:readivo_app/src/features/library/data/repositories/remote_book_repository_impl.dart';
 import 'package:readivo_app/src/features/library/data/repositories/shelf_repository_impl.dart';
 import 'package:readivo_app/src/features/library/data/repositories/tag_repository_impl.dart';
 import 'package:readivo_app/src/features/library/domain/repositories/local_book_repository.dart';
 import 'package:readivo_app/src/features/library/domain/repositories/note_repository.dart';
+import 'package:readivo_app/src/features/library/domain/repositories/reading_session_repository.dart';
 import 'package:readivo_app/src/features/library/domain/repositories/remote_book_repository.dart';
 import 'package:readivo_app/src/features/library/domain/repositories/shelf_repository.dart';
 import 'package:readivo_app/src/features/library/domain/repositories/tag_repository.dart';
 import 'package:readivo_app/src/features/library/domain/use_cases/books_use_case.dart';
 import 'package:readivo_app/src/features/library/domain/use_cases/note_use_case.dart';
+import 'package:readivo_app/src/features/library/domain/use_cases/reading_session_use_case.dart';
 import 'package:readivo_app/src/features/library/domain/use_cases/shelf_use_case.dart';
 import 'package:readivo_app/src/features/library/domain/use_cases/tag_use_case.dart';
 import 'package:readivo_app/src/features/library/presentation/bloc/library_cubit.dart';
@@ -70,6 +73,9 @@ class DependencyInjection {
     getIt.registerLazySingleton<NoteRepository>(
         () => NoteRepositoryImpl(isar: getIt()));
 
+    getIt.registerLazySingleton<ReadingSessionRepository>(
+        () => ReadingSessionRepositoryImpl(isar: getIt()));
+
     // Use Cases
     getIt.registerLazySingleton(() => BooksUseCase(
           localBookRepository: getIt(),
@@ -79,6 +85,8 @@ class DependencyInjection {
     getIt.registerLazySingleton(() => TagUseCase(tagRepository: getIt()));
     getIt.registerLazySingleton(() => ShelfUseCase(shelfRepository: getIt()));
     getIt.registerLazySingleton(() => NoteUseCase(noteRepository: getIt()));
+    getIt.registerLazySingleton(
+        () => ReadingSessionUseCase(readingSessionRepository: getIt()));
 
     // Cubits
     getIt.registerFactory<LibraryCubit>(() => LibraryCubit(
@@ -88,6 +96,7 @@ class DependencyInjection {
           tagUseCase: getIt(),
           shelfUseCase: getIt(),
           noteUseCase: getIt(),
+          readingSessionUseCase: getIt(),
         ));
   }
 }
