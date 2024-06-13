@@ -22,4 +22,8 @@ class ShelfUseCase{
   Future<void> unassignShelves(Book book, List<Shelf> shelves) async {
     return await shelfRepository.unassignShelves(book, shelves);
   }
+
+  Future<int> totalBooks(Shelf shelf) async {
+    return await shelfRepository.totalBooks(shelf);
+  }
 }

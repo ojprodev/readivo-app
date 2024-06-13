@@ -38,4 +38,9 @@ class ShelfRepositoryImpl extends ShelfRepository {
       await book.shelves.save();
     });
   }
+
+  @override
+  Future<int> totalBooks(Shelf shelf) async {
+    return shelf.books.length;
+  }
 }

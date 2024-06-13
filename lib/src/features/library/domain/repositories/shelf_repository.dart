@@ -6,4 +6,5 @@ abstract class ShelfRepository{
   Future<List<Shelf>> fetchShelves();
   Future<void> assignShelves(Book book, List<Shelf> shelves);
   Future<void> unassignShelves(Book book, List<Shelf> shelves);
+  Future<int> totalBooks(Shelf shelf);
 }

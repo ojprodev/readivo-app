@@ -33,6 +33,7 @@ class _LibraryHomeScreenState extends State<LibraryHomeScreen> {
   late AppCubit appCubit;
   late LibraryCubit libraryCubit;
   List<Book> readingList = [];
+  List<Map<String, dynamic>> shelvesItems = [];
 
   @override
   void initState() {
@@ -41,6 +42,11 @@ class _LibraryHomeScreenState extends State<LibraryHomeScreen> {
     libraryCubit = LibraryCubit.get(context);
 
     libraryCubit.getReadingBooks();
+
+    libraryCubit
+        .fetchShelvesWithBooks()
+        .whenComplete(() => null)
+        .then((list) => shelvesItems = list);
   }
 
   @override
@@ -432,118 +438,52 @@ class _LibraryHomeScreenState extends State<LibraryHomeScreen> {
             ),
             const SizedBox(height: 8.0),
             ConditionalBuilder(
-              condition: false,
-              builder: (context) => SizedBox(
-                height: 140,
-                child: Swiper(
-                  itemCount: 3,
-                  scale: 0.9,
-                  viewportFraction: 0.85,
-                  itemBuilder: (context, index) {
-                    return Stack(
-                      alignment: Alignment.centerRight,
-                      children: [
-                        CustomContainer(
-                          color: Colors.white,
-                          width: MediaQuery.sizeOf(context).width,
-                          borderRadius: 6.0,
-                          child: const Column(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            mainAxisSize: MainAxisSize.max,
-                            children: [
-                              CustomText(
-                                'Book Shelf Name',
-                                fontSize: 18,
-                              ),
-                              CustomText(
-                                '12 books',
-                                color: AppColors.grey,
-                              ),
-                            ],
-                          ),
-                        ),
-                        Container(
-                          width: 150,
-                          height: 200,
-                          padding: const EdgeInsets.only(right: 12.0),
-                          child: Stack(
-                            alignment: Alignment.center,
-                            children: [
-                              Positioned(
-                                left: 0,
-                                top: 40,
-                                child: ClipRRect(
-                                  borderRadius: BorderRadius.circular(8.0),
-                                  child: Image.network(
-                                    'https://images-na.ssl-images-amazon.com/images/S/compressed.photo.goodreads.com/books/1654371463i/18144590.jpg',
-                                    width: 60,
-                                    height: 90,
-                                    fit: BoxFit.cover,
-                                  ),
-                                ),
-                              ),
-                              Positioned(
-                                right: 0,
-                                top: 40,
-                                child: ClipRRect(
-                                  borderRadius: BorderRadius.circular(8.0),
-                                  child: Image.network(
-                                    'https://images-na.ssl-images-amazon.com/images/S/compressed.photo.goodreads.com/books/1654371463i/18144590.jpg',
-                                    width: 60,
-                                    height: 90,
-                                    fit: BoxFit.cover,
-                                  ),
-                                ),
-                              ),
-                              ClipRRect(
-                                borderRadius: BorderRadius.circular(8.0),
-                                child: Image.network(
-                                  'https://images-na.ssl-images-amazon.com/images/S/compressed.photo.goodreads.com/books/1654371463i/18144590.jpg',
-                                  width: 70,
-                                  height: 105,
-                                  fit: BoxFit.cover,
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                      ],
-                    );
-                  },
-                ),
-              ),
-              fallback: (context) {
-                return CustomContainer(
-                  color: Colors.white,
-                  height: 120,
-                  borderRadius: 8.0,
-                  width: MediaQuery.sizeOf(context).width,
-                  margin: const EdgeInsets.symmetric(
-                      vertical: 8.0, horizontal: 16.0),
-                  padding: const EdgeInsets.symmetric(vertical: 16.0),
-                  child: const Column(
-                    mainAxisSize: MainAxisSize.max,
-                    mainAxisAlignment: MainAxisAlignment.spaceAround,
-                    children: [
-                      CustomText(
-                        'Your library of books is empty.',
-                        fontSize: 16,
-                      ),
-                      SizedBox(height: 8.0),
-                      CustomButton(
-                        width: 160,
-                        text: 'Add new books',
-                        color: Colors.black,
-                      ),
-                    ],
-                  ),
-                );
-              },
+              condition: shelvesItems.isNotEmpty,
+              builder: (context) => _buildShelvesItems(),
+              fallback: (context) => _buildEmptyShelvesList(),
             ),
           ],
         ),
       ],
+    );
+  }
+
+  Widget _buildShelvesItems() {
+    return SizedBox(
+      height: 140,
+      child: Swiper(
+        itemCount: shelvesItems.length,
+        scale: 0.9,
+        viewportFraction: 0.85,
+        itemBuilder: (context, index) => _buildShelfItem(shelvesItems[index]),
+      ),
+    );
+  }
+
+  Widget _buildEmptyShelvesList() {
+    return CustomContainer(
+      color: Colors.white,
+      height: 120,
+      borderRadius: 8.0,
+      width: MediaQuery.sizeOf(context).width,
+      margin: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 16.0),
+      padding: const EdgeInsets.symmetric(vertical: 16.0),
+      child: const Column(
+        mainAxisSize: MainAxisSize.max,
+        mainAxisAlignment: MainAxisAlignment.spaceAround,
+        children: [
+          CustomText(
+            'Your library of books is empty.',
+            fontSize: 16,
+          ),
+          SizedBox(height: 8.0),
+          CustomButton(
+            width: 160,
+            text: 'Add new books',
+            color: Colors.black,
+          ),
+        ],
+      ),
     );
   }
 
@@ -615,10 +555,87 @@ class _LibraryHomeScreenState extends State<LibraryHomeScreen> {
     );
   }
 
+  Widget _buildShelfItem(Map<String, dynamic> shelf) {
+    return Stack(
+      alignment: Alignment.centerRight,
+      children: [
+        CustomContainer(
+          color: Colors.white,
+          width: MediaQuery.sizeOf(context).width,
+          borderRadius: 6.0,
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisSize: MainAxisSize.max,
+            children: [
+              CustomText(
+                shelf['name'],
+                fontSize: 18,
+              ),
+              CustomText(
+                shelf['totalBooks'].toString(),
+                color: AppColors.grey,
+              ),
+            ],
+          ),
+        ),
+        Container(
+          width: 150,
+          height: 200,
+          padding: const EdgeInsets.only(right: 12.0),
+          child: Stack(
+            alignment: Alignment.center,
+            children: [
+              Positioned(
+                left: 0,
+                top: 40,
+                child: ClipRRect(
+                  borderRadius: BorderRadius.circular(8.0),
+                  child: Image.network(
+                    'https://images-na.ssl-images-amazon.com/images/S/compressed.photo.goodreads.com/books/1654371463i/18144590.jpg',
+                    width: 60,
+                    height: 90,
+                    fit: BoxFit.cover,
+                  ),
+                ),
+              ),
+              Positioned(
+                right: 0,
+                top: 40,
+                child: ClipRRect(
+                  borderRadius: BorderRadius.circular(8.0),
+                  child: Image.network(
+                    'https://images-na.ssl-images-amazon.com/images/S/compressed.photo.goodreads.com/books/1654371463i/18144590.jpg',
+                    width: 60,
+                    height: 90,
+                    fit: BoxFit.cover,
+                  ),
+                ),
+              ),
+              ClipRRect(
+                borderRadius: BorderRadius.circular(8.0),
+                child: Image.network(
+                  'https://images-na.ssl-images-amazon.com/images/S/compressed.photo.goodreads.com/books/1654371463i/18144590.jpg',
+                  width: 70,
+                  height: 105,
+                  fit: BoxFit.cover,
+                ),
+              ),
+            ],
+          ),
+        ),
+      ],
+    );
+  }
+
   // Listener method
   void _buildListener(BuildContext context, state) {
     if (state is LibraryFetchedReadingListState) {
       readingList = state.books;
+    }
+
+    if (state is LibraryShelvesListLoaded) {
+      shelvesItems = state.shelves as List<Map<String, dynamic>>;
     }
   }
 }

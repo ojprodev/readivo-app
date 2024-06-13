@@ -186,8 +186,30 @@ class LibraryCubit extends Cubit<LibraryStates> {
     shelfUseCase.newShelf(tagName);
   }
 
-  Future<void> fetchShelves() async {
+  Future<List<Shelf>> fetchShelves() async {
     shelvesList = await shelfUseCase.fetchShelves();
+    emit(LibraryShelvesListLoaded(shelves: shelvesList));
+    return shelvesList;
+  }
+
+  Future<int> getShelfTotalBooks(Shelf shelf) async {
+    return await shelfUseCase.totalBooks(shelf);
+  }
+
+  // 1. first first all books then
+  Future<List<Map<String, dynamic>>> fetchShelvesWithBooks() async {
+    List<Shelf> shelves = await fetchShelves();
+    List<Map<String, dynamic>> statistics = [];
+    // 2. fetch total books linked to each one
+    for (var shelf in shelves) {
+      statistics.add({
+        'name': shelf.name,
+        'totalBooks': await getShelfTotalBooks(shelf),
+      });
+    }
+
+    return statistics;
+    // 3. then fetch three books
   }
 
   Future<void> assignShelves(Book book, List<Shelf> shelves) async {

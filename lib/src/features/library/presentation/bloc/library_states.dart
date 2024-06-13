@@ -68,3 +68,12 @@ class LibraryNewNoteAddedState extends LibraryStates {
   @override
   List<Object> get props => [note];
 }
+
+class LibraryShelvesListLoaded extends LibraryStates{
+  final List<dynamic> shelves;
+
+  LibraryShelvesListLoaded({required this.shelves});
+
+  @override
+  List<Object> get props => [shelves];
+}
