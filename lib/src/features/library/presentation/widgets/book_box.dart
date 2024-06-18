@@ -2,7 +2,7 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:readivo_app/src/core/constants/constants.dart';
+import 'package:readivo_app/src/core/constants/icons.dart';
 
 /// Widget representing a book box cover.
 class BookBox extends StatelessWidget {
@@ -30,6 +30,9 @@ class BookBox extends StatelessWidget {
   // Border Radius, default 8.0
   final double borderRadius;
 
+  // Border color, default transparent
+  final Color borderColor;
+
   /// Constructor for BookBoxCover.
   const BookBox({
     super.key,
@@ -41,12 +44,17 @@ class BookBox extends StatelessWidget {
     this.icon,
     this.borderRadius = 8.0,
     this.iconSize = 40.0,
+    this.borderColor = Colors.grey,
   });
 
   @override
   Widget build(BuildContext context) {
     return Container(
       decoration: BoxDecoration(
+        border: Border.all(
+          color: borderColor,
+          width: 1
+        ),
         borderRadius: BorderRadius.all(Radius.circular(borderRadius)),
       ),
       child: ClipRRect(
@@ -113,7 +121,7 @@ class BookBox extends StatelessWidget {
               AppIcons.photo,
               width: iconSize,
               colorFilter:
-                  const ColorFilter.mode(AppColors.grey, BlendMode.srcIn),
+                  const ColorFilter.mode(Colors.grey, BlendMode.srcIn),
             ),
       ),
     );

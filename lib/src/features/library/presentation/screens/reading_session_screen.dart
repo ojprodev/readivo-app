@@ -5,7 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:readivo_app/src/core/bloc/app_cubit.dart';
-import 'package:readivo_app/src/core/constants/constants.dart';
+import 'package:readivo_app/src/core/constants/icons.dart';
 import 'package:readivo_app/src/core/constants/images.dart';
 import 'package:readivo_app/src/core/layouts/basic_layout.dart';
 import 'package:readivo_app/src/core/utils/utils.dart';
@@ -200,7 +200,7 @@ class _ReadingSessionScreenState extends State<ReadingSessionScreen> {
     return CustomContainer(
       clipBehavior: Clip.hardEdge,
       margin: const EdgeInsets.symmetric(horizontal: 12, vertical: 12.0),
-      color: AppColors.extraLightGreen,
+      color: Colors.grey,
       child: Stack(
         clipBehavior: Clip.none,
         children: [
@@ -228,7 +228,7 @@ class _ReadingSessionScreenState extends State<ReadingSessionScreen> {
                     note.content,
                     fontStyle: FontStyle.italic,
                     fontSize: 18,
-                    color: AppColors.grey.withOpacity(0.9),
+                    color: Colors.grey.withOpacity(0.9),
                     textAlign: TextAlign.center,
                   ),
                 ),
@@ -238,7 +238,7 @@ class _ReadingSessionScreenState extends State<ReadingSessionScreen> {
                   children: [
                     CustomText(
                       '- ${note.author}',
-                      color: AppColors.grey,
+                      color: Colors.grey,
                       fontWeight: FontWeight.bold,
                     ),
                     if (note.page != null)
@@ -319,7 +319,7 @@ class _ReadingSessionScreenState extends State<ReadingSessionScreen> {
       width: 52,
       height: 52,
       borderRadius: 26,
-      color: AppColors.lightBlue,
+      color: Colors.lightBlue,
       onPressed: () {
         CustomBottomSheet.show(
           context: context,

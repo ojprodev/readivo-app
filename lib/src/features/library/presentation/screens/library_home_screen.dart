@@ -5,7 +5,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:percent_indicator/linear_percent_indicator.dart';
 import 'package:readivo_app/src/core/bloc/app_cubit.dart';
-import 'package:readivo_app/src/core/constants/constants.dart';
+import 'package:readivo_app/src/core/constants/icons.dart';
 import 'package:readivo_app/src/core/enums/enums.dart';
 import 'package:readivo_app/src/core/layouts/basic_layout.dart';
 import 'package:readivo_app/src/core/widgets/bottom_sheet.dart';
@@ -42,7 +42,6 @@ class _LibraryHomeScreenState extends State<LibraryHomeScreen> {
     libraryCubit = LibraryCubit.get(context);
 
     libraryCubit.getReadingBooks();
-
     libraryCubit
         .fetchShelvesWithBooks()
         .whenComplete(() => null)
@@ -68,48 +67,40 @@ class _LibraryHomeScreenState extends State<LibraryHomeScreen> {
       showBackButton: false,
       isPinned: false,
       extendBody: false,
-      appBarBackground: const Color(0xFF282828),
+      appBarBackground: Colors.grey,
       actions: [
         _buildAddButton(),
       ],
-      body: Container(
-        decoration: const BoxDecoration(color: Colors.white),
-        child: SingleChildScrollView(
-          child: Column(
-            mainAxisSize: MainAxisSize.max,
-            children: [
-              Column(
-                children: [
-                  Container(
-                    decoration: const BoxDecoration(
-                      gradient: LinearGradient(
-                        begin: Alignment.topCenter,
-                        end: Alignment.bottomCenter,
-                        colors: [
-                          Color(0xFF282828),
-                          Colors.white,
-                        ],
-                      ),
+      body: _buildMainLayout(),
+    );
+  }
+
+  Widget _buildMainLayout() {
+    return CustomContainer(
+      color: Colors.grey,
+      child: SingleChildScrollView(
+        child: Column(
+          mainAxisSize: MainAxisSize.max,
+          children: [
+            Column(
+              children: [
+                Column(
+                  children: [
+                    const SizedBox(
+                      height: 32,
                     ),
-                    child: Column(
-                      children: [
-                        const SizedBox(
-                          height: 32,
-                        ),
-                        _buildContinueReadingSection(),
-                        const SizedBox(height: 36.0),
-                        _buildDailyQuoteSection(),
-                        const SizedBox(height: 24.0),
-                        _buildBooksShelvesSection(),
-                      ],
-                    ),
-                  ),
-                  const SizedBox(height: 64.0),
-                  _buildReadingStatuesList(),
-                ],
-              ),
-            ],
-          ),
+                    _buildContinueReadingSection(),
+                    const SizedBox(height: 36.0),
+                    _buildDailyQuoteSection(),
+                    const SizedBox(height: 24.0),
+                    _buildBooksShelvesSection(),
+                  ],
+                ),
+                const SizedBox(height: 64.0),
+                _buildBooksOverviewList(),
+              ],
+            ),
+          ],
         ),
       ),
     );
@@ -141,7 +132,7 @@ class _LibraryHomeScreenState extends State<LibraryHomeScreen> {
       BottomSheetItem(
         icon: const Icon(Icons.search),
         label: 'Search',
-        borderColor: AppColors.lightGrey.withOpacity(0.4),
+        borderColor: Colors.grey.withOpacity(0.4),
         onTap: () {
           // close the bottom sheet
           Navigator.pop(context);
@@ -153,7 +144,7 @@ class _LibraryHomeScreenState extends State<LibraryHomeScreen> {
       BottomSheetItem(
         icon: const Icon(Icons.qr_code_scanner_outlined),
         label: 'Scan ISBN',
-        borderColor: AppColors.lightGrey.withOpacity(0.3),
+        borderColor: Colors.grey.withOpacity(0.3),
         onTap: () {
           // close the bottom sheet
           Navigator.pop(context);
@@ -162,7 +153,7 @@ class _LibraryHomeScreenState extends State<LibraryHomeScreen> {
       BottomSheetItem(
         icon: const Icon(Icons.edit_note_outlined),
         label: 'Add manually',
-        borderColor: AppColors.lightGrey.withOpacity(0.4),
+        borderColor: Colors.grey.withOpacity(0.4),
         onTap: () {
           // Handle add manually
         },
@@ -235,16 +226,16 @@ class _LibraryHomeScreenState extends State<LibraryHomeScreen> {
       padding: const EdgeInsets.all(10.0),
       child: Stack(
         children: [
-          RotationTransition(
-            turns: const AlwaysStoppedAnimation(-2.6 / 360),
+          const RotationTransition(
+            turns: AlwaysStoppedAnimation(-2.6 / 360),
             child: CustomContainer(
-              color: AppColors.lightWhite.withOpacity(0.5),
+              color: Colors.white,
             ),
           ),
           CustomContainer(
             width: double.infinity,
             height: double.infinity,
-            color: AppColors.lightWhite,
+            color: Colors.white,
             child: ConditionalBuilder(
               condition: isEmpty == false,
               builder: (context) => Row(
@@ -284,14 +275,14 @@ class _LibraryHomeScreenState extends State<LibraryHomeScreen> {
                               ),
                               CustomContainer(
                                 padding: const EdgeInsets.all(6.0),
-                                color: AppColors.lightGrey,
+                                color: Colors.grey,
                                 borderRadius: 12.0,
                                 child: LinearPercentIndicator(
                                   lineHeight: 8.0,
                                   percent: 0.63,
                                   barRadius: const Radius.circular(4.0),
                                   backgroundColor: Colors.white,
-                                  progressColor: AppColors.grey,
+                                  progressColor: Colors.grey,
                                   padding: EdgeInsets.zero,
                                 ),
                               ),
@@ -341,7 +332,7 @@ class _LibraryHomeScreenState extends State<LibraryHomeScreen> {
                         height: 120,
                         width: 120,
                         borderRadius: 60,
-                        color: AppColors.lightGrey,
+                        color: Colors.grey,
                         onPressed: () {
                           CustomBottomSheet.show(
                             context: context,
@@ -352,7 +343,7 @@ class _LibraryHomeScreenState extends State<LibraryHomeScreen> {
                           AppIcons.addOutline,
                           width: 54,
                           colorFilter: const ColorFilter.mode(
-                            AppColors.grey,
+                            Colors.grey,
                             BlendMode.srcIn,
                           ),
                         )),
@@ -378,7 +369,6 @@ class _LibraryHomeScreenState extends State<LibraryHomeScreen> {
               CustomContainer(
                 color: Colors.white,
                 width: double.infinity,
-                height: 160,
                 padding: const EdgeInsets.symmetric(
                     horizontal: 36.0, vertical: 24.0),
                 child: Column(
@@ -386,13 +376,13 @@ class _LibraryHomeScreenState extends State<LibraryHomeScreen> {
                   children: [
                     const CustomText(
                       'They are many names for the future; weak call it impossible, afraid people call it  unknown. but for braves it’s the ...',
-                      color: AppColors.grey,
+                      color: Colors.grey,
                       textAlign: TextAlign.center,
                       maxLines: 10,
                     ),
                     CustomText(
                       '- Plato',
-                      color: AppColors.grey.withOpacity(0.6),
+                      color: Colors.grey.withOpacity(0.6),
                     ),
                   ],
                 ),
@@ -487,7 +477,7 @@ class _LibraryHomeScreenState extends State<LibraryHomeScreen> {
     );
   }
 
-  Widget _buildReadingStatuesList() {
+  Widget _buildBooksOverviewList() {
     List<Map<String, dynamic>> readingStatus = [
       {
         'label': 'Want to read',
@@ -519,7 +509,7 @@ class _LibraryHomeScreenState extends State<LibraryHomeScreen> {
     return CustomContainer(
       margin: const EdgeInsets.symmetric(horizontal: 12.0, vertical: 16),
       padding: const EdgeInsets.symmetric(horizontal: 2.0, vertical: 4.0),
-      borderColor: AppColors.lightGrey.withOpacity(0.8),
+      borderColor: Colors.grey.withOpacity(0.8),
       borderWidth: 1,
       color: Colors.white,
       borderRadius: 8,
@@ -533,7 +523,7 @@ class _LibraryHomeScreenState extends State<LibraryHomeScreen> {
                 const EdgeInsets.symmetric(vertical: 8.0, horizontal: 12.0),
             icon: Icon(
               readingStatus[index]['icon'],
-              color: AppColors.grey,
+              color: Colors.grey,
             ),
             backgroundColor: Colors.transparent,
             textStyle: const TextStyle(color: Colors.black),
@@ -544,7 +534,7 @@ class _LibraryHomeScreenState extends State<LibraryHomeScreen> {
         separatorBuilder: (context, index) {
           return index != readingStatus.length - 1
               ? Container(
-                  color: AppColors.lightGrey.withOpacity(0.6),
+                  color: Colors.grey.withOpacity(0.6),
                   margin: const EdgeInsets.symmetric(horizontal: 24.0),
                   height: 1,
                 )
@@ -574,7 +564,7 @@ class _LibraryHomeScreenState extends State<LibraryHomeScreen> {
               ),
               CustomText(
                 shelf['totalBooks'].toString(),
-                color: AppColors.grey,
+                color: Colors.grey,
               ),
             ],
           ),
@@ -583,43 +573,28 @@ class _LibraryHomeScreenState extends State<LibraryHomeScreen> {
           width: 150,
           height: 200,
           padding: const EdgeInsets.only(right: 12.0),
-          child: Stack(
+          child: const Stack(
             alignment: Alignment.center,
             children: [
               Positioned(
                 left: 0,
                 top: 40,
-                child: ClipRRect(
-                  borderRadius: BorderRadius.circular(8.0),
-                  child: Image.network(
-                    'https://images-na.ssl-images-amazon.com/images/S/compressed.photo.goodreads.com/books/1654371463i/18144590.jpg',
-                    width: 60,
-                    height: 90,
-                    fit: BoxFit.cover,
-                  ),
+                child: BookBox(
+                  width: 60,
+                  height: 90,
                 ),
               ),
               Positioned(
                 right: 0,
                 top: 40,
-                child: ClipRRect(
-                  borderRadius: BorderRadius.circular(8.0),
-                  child: Image.network(
-                    'https://images-na.ssl-images-amazon.com/images/S/compressed.photo.goodreads.com/books/1654371463i/18144590.jpg',
-                    width: 60,
-                    height: 90,
-                    fit: BoxFit.cover,
-                  ),
+                child: BookBox(
+                  width: 60,
+                  height: 90,
                 ),
               ),
-              ClipRRect(
-                borderRadius: BorderRadius.circular(8.0),
-                child: Image.network(
-                  'https://images-na.ssl-images-amazon.com/images/S/compressed.photo.goodreads.com/books/1654371463i/18144590.jpg',
-                  width: 70,
-                  height: 105,
-                  fit: BoxFit.cover,
-                ),
+              BookBox(
+                width: 70,
+                height: 105,
               ),
             ],
           ),
@@ -632,6 +607,7 @@ class _LibraryHomeScreenState extends State<LibraryHomeScreen> {
   void _buildListener(BuildContext context, state) {
     if (state is LibraryFetchedReadingListState) {
       readingList = state.books;
+      print(state.books[1].coverURI);
     }
 
     if (state is LibraryShelvesListLoaded) {

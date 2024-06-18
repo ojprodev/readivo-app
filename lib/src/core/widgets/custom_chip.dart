@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:readivo_app/src/core/constants/colors.dart';
 
 class CustomChip extends StatelessWidget {
   final String text;
@@ -39,7 +38,7 @@ class CustomChip extends StatelessWidget {
       label: Text(
         text,
         style: TextStyle(
-          color: textColor ?? AppColors.grey,
+          color: textColor ?? Colors.grey,
         ),
       ),
       avatar: icon != null

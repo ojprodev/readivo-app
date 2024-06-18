@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:readivo_app/src/core/bloc/app_cubit.dart';
-import 'package:readivo_app/src/core/constants/constants.dart';
+import 'package:readivo_app/src/core/constants/icons.dart';
 import 'package:readivo_app/src/core/constants/images.dart';
 import 'package:readivo_app/src/core/enums/enums.dart';
 import 'package:readivo_app/src/core/layouts/basic_layout.dart';
@@ -84,7 +84,7 @@ class _LibrarySearchScreenState extends State<LibrarySearchScreen>
         controller: searchBooksController,
         placeholder: "Search for a book",
         textInputAction: TextInputAction.search,
-        fillColor: AppColors.lightWhite.withOpacity(0.2),
+        fillColor: Colors.white,
         endIcon: _buildSearchIcon(),
         maxLines: 1,
         onChanged: (value) {
@@ -141,7 +141,7 @@ class _LibrarySearchScreenState extends State<LibrarySearchScreen>
                   return RefreshIndicator(
                     strokeWidth: 3,
                     displacement: 0,
-                    color: AppColors.grey,
+                    color: Colors.grey,
                     backgroundColor: Colors.white,
                     onRefresh: () async {
                       if (libraryCubit.bookSource == BookSourceEnums.local) {
@@ -180,7 +180,7 @@ class _LibrarySearchScreenState extends State<LibrarySearchScreen>
             child: SvgPicture.asset(
               AppIcons.reload,
               colorFilter: ColorFilter.mode(
-                AppColors.grey.withOpacity(0.4),
+                Colors.grey.withOpacity(0.4),
                 BlendMode.srcIn,
               ),
             ),
@@ -288,7 +288,7 @@ class _LibrarySearchScreenState extends State<LibrarySearchScreen>
             const CustomButton(
               text: 'Add it Manually',
               width: 200,
-              color: AppColors.grey,
+              color: Colors.grey,
             )
           ],
         ),
@@ -313,7 +313,7 @@ class _LibrarySearchScreenState extends State<LibrarySearchScreen>
                   styleType: libraryCubit.bookSource == BookSourceEnums.online
                       ? ButtonStyleType.filled
                       : ButtonStyleType.outline,
-                  color: AppColors.grey,
+                  color: Colors.grey,
                   text: 'Online',
                   onPressed: () {
                     setState(() {
@@ -330,7 +330,7 @@ class _LibrarySearchScreenState extends State<LibrarySearchScreen>
                   styleType: libraryCubit.bookSource == BookSourceEnums.local
                       ? ButtonStyleType.filled
                       : ButtonStyleType.outline,
-                  color: AppColors.grey,
+                  color: Colors.grey,
                   text: 'Local',
                   onPressed: () {
                     setState(() {

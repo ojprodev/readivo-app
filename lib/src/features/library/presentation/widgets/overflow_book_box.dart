@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:percent_indicator/linear_percent_indicator.dart';
-import 'package:readivo_app/src/core/constants/colors.dart';
 import 'package:readivo_app/src/core/widgets/custom_button.dart';
 
 class OverflowBookBox extends StatelessWidget {
@@ -51,7 +50,7 @@ class OverflowBookBox extends StatelessWidget {
               borderRadius: BorderRadius.circular(12),
               boxShadow: const [
                 BoxShadow(
-                  color: AppColors.lightGrey,
+                  color: Colors.grey,
                   blurRadius: 8,
                   offset: Offset(0, 2),
                 ),
@@ -123,7 +122,7 @@ class OverflowBookBox extends StatelessWidget {
         borderRadius: BorderRadius.circular(12),
         boxShadow: const [
           BoxShadow(
-            color: AppColors.lightGrey,
+            color: Colors.grey,
             blurRadius: 8,
             offset: Offset(0, 2),
           ),
@@ -179,7 +178,7 @@ class OverflowBookBox extends StatelessWidget {
                         maxLines: 1,
                         style: const TextStyle(
                           fontSize: 16,
-                          color: AppColors.grey,
+                          color: Colors.grey,
                           overflow: TextOverflow.ellipsis,
                         ),
                       ),],
@@ -196,8 +195,8 @@ class OverflowBookBox extends StatelessWidget {
                         animation: true,
                         animationDuration: 800,
                         barRadius: const Radius.circular(8.0),
-                        backgroundColor: AppColors.lightGrey,
-                        progressColor: AppColors.green,
+                        backgroundColor: Colors.grey,
+                        progressColor: Colors.green,
                       ),
                       const SizedBox(width: 8.0),
                       const Text('35%', textAlign: TextAlign.right),
@@ -210,7 +209,7 @@ class OverflowBookBox extends StatelessWidget {
                       const CustomButton(
                         width: 180,
                         text: 'Continue Reading',
-                        color: AppColors.grey,
+                        color: Colors.grey,
                       ),
                       IconButton(
                         onPressed: () {},

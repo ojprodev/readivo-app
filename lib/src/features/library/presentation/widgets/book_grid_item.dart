@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
-import 'package:readivo_app/src/core/constants/constants.dart';
+import 'package:readivo_app/src/core/constants/icons.dart';
 import 'package:readivo_app/src/core/widgets/custom_text.dart';
 import 'package:readivo_app/src/features/library/domain/entities/book.dart';
 
@@ -47,7 +47,7 @@ class BookGridItem extends StatelessWidget {
               '${book.author}',
               maxLines: 1,
               overflow: TextOverflow.ellipsis,
-              color: AppColors.grey,
+              color: Colors.grey,
               fontSize: authorFontSize,
             ),
         ],
@@ -62,7 +62,7 @@ class BookGridItem extends StatelessWidget {
         BookBox(
           width: coverWidth,
           height: coverHeight,
-          background: AppColors.lightGrey,
+          background: Colors.grey,
           coverUri: book.coverURI ?? '',
         ),
         if (showInfo && book.globalRating != null)
@@ -71,7 +71,7 @@ class BookGridItem extends StatelessWidget {
             width: 60,
             height: 24,
             decoration: const BoxDecoration(
-              color: AppColors.white,
+              color: Colors.white,
               borderRadius: BorderRadius.only(
                 topLeft: Radius.circular(12.0),
                 bottomLeft: Radius.circular(12.0),
@@ -83,7 +83,7 @@ class BookGridItem extends StatelessWidget {
                 SvgPicture.asset(
                   AppIcons.microStar,
                   colorFilter: const ColorFilter.mode(
-                    AppColors.goldenYellow,
+                    Colors.orange,
                     BlendMode.srcIn,
                   ),
                 ),

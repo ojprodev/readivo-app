@@ -1,6 +1,5 @@
 // bottom_sheet_widget.dart
 import 'package:flutter/material.dart';
-import 'package:readivo_app/src/core/constants/colors.dart';
 import 'package:readivo_app/src/core/widgets/partials/bottom_sheet_item.dart';
 
 /// Widget for displaying a bottom sheet with options.
@@ -22,7 +21,7 @@ class CustomBottomSheet {
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(top: Radius.circular(12.0)),
       ),
-      backgroundColor: AppColors.white,
+      backgroundColor: Colors.white,
       builder: (BuildContext context) {
         return StatefulBuilder(
           builder: (BuildContext context, StateSetter setState) => _container(
@@ -57,7 +56,7 @@ class CustomBottomSheet {
           : const EdgeInsets.only(bottom: 8.0, left: 12.0, right: 12.0),
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(12.0),
-        color: AppColors.white,
+        color: Colors.white,
       ),
       child: Column(
         mainAxisSize: MainAxisSize.min,
@@ -98,7 +97,7 @@ class _CustomDragHandle extends StatelessWidget {
       width: 40.0,
       margin: const EdgeInsets.symmetric(vertical: 8.0),
       decoration: BoxDecoration(
-        color: AppColors.grey,
+        color: Colors.grey,
         borderRadius: BorderRadius.circular(12.0),
       ),
     );

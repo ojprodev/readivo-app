@@ -1,6 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:readivo_app/src/core/constants/colors.dart';
-import 'package:readivo_app/src/core/constants/constants.dart';
 import 'package:readivo_app/src/core/widgets/custom_text.dart';
 import 'package:readivo_app/src/features/library/domain/entities/book.dart';
 import 'package:readivo_app/src/features/library/presentation/widgets/book_box.dart';
@@ -20,11 +18,11 @@ class BookListItem extends StatelessWidget {
       margin: const EdgeInsets.symmetric(vertical: 6.0, horizontal: 8.0),
       height: 130,
       decoration: BoxDecoration(
-        color: AppColors.white,
+        color: Colors.white,
         borderRadius: BorderRadius.circular(8.0),
         boxShadow: [
           BoxShadow(
-            color: AppColors.lightGrey.withOpacity(0.6),
+            color: Colors.grey.withOpacity(0.6),
             spreadRadius: 1,
             blurRadius: 4,
           ),
@@ -38,7 +36,7 @@ class BookListItem extends StatelessWidget {
             height: 120,
             width: 80,
             decoration: BoxDecoration(
-              border: Border.all(color: AppColors.lightGrey),
+              border: Border.all(color: Colors.grey),
               borderRadius: const BorderRadius.all(Radius.circular(4.0)),
             ),
             child: BookBox(
@@ -65,7 +63,7 @@ class BookListItem extends StatelessWidget {
                     CustomText(
                       '${book.author}',
                       fontSize: 16.0,
-                      color: AppColors.grey,
+                      color: Colors.grey,
                       maxLines: 1,
                     ),
                   ],
@@ -78,7 +76,7 @@ class BookListItem extends StatelessWidget {
                       children: [
                         const Icon(
                           Icons.star,
-                          color: AppColors.goldenYellow,
+                          color: Colors.orange,
                           size: 20.0,
                         ),
                         Text(
@@ -91,7 +89,7 @@ class BookListItem extends StatelessWidget {
                       '${book.publishDate}',
                       style: const TextStyle(
                         fontSize: 14.0,
-                        color: AppColors.grey,
+                        color: Colors.grey,
                       ),
                     ),
                   ],

@@ -1,7 +1,6 @@
 import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
 import 'package:readivo_app/src/core/bloc/app_cubit.dart';
-import 'package:readivo_app/src/core/constants/constants.dart';
 import 'package:readivo_app/src/core/enums/enums.dart';
 import 'package:readivo_app/src/core/utils/utils.dart';
 import 'package:readivo_app/src/core/widgets/bottom_sheet.dart';
@@ -156,7 +155,7 @@ class _LibraryEditBookScreenState extends State<LibraryEditBookScreen> {
           Container(
             padding: const EdgeInsets.all(6.0),
             decoration: BoxDecoration(
-                color: AppColors.lightGrey.withOpacity(0.4),
+                color: Colors.grey.withOpacity(0.4),
                 borderRadius: BorderRadius.circular(8.0)),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceAround,
@@ -192,7 +191,7 @@ class _LibraryEditBookScreenState extends State<LibraryEditBookScreen> {
           boxShadow: [
             if (isSelected)
               BoxShadow(
-                  color: AppColors.lightGrey.withOpacity(0.4),
+                  color: Colors.grey.withOpacity(0.4),
                   blurRadius: 4,
                   spreadRadius: 2)
           ],
@@ -206,7 +205,7 @@ class _LibraryEditBookScreenState extends State<LibraryEditBookScreen> {
             style: TextStyle(
                 color: isSelected
                     ? Colors.black
-                    : AppColors.grey // Lighter text color for unselected tabs
+                    : Colors.grey // Lighter text color for unselected tabs
                 ),
           ),
         ),
@@ -247,8 +246,8 @@ class _LibraryEditBookScreenState extends State<LibraryEditBookScreen> {
                       CustomChip(
                         text: tag.name,
                         icon: Icons.tag,
-                        iconColor: AppColors.grey,
-                        backgroundColor: AppColors.lightGrey,
+                        iconColor: Colors.grey,
+                        backgroundColor: Colors.grey,
                         deleteIcon: CustomButton(
                           text: 'remove $tag',
                           borderRadius: 18,
@@ -302,12 +301,12 @@ class _LibraryEditBookScreenState extends State<LibraryEditBookScreen> {
                 text: tag.name,
                 textColor: tempSelectedTags.contains(tag) ? Colors.white : null,
                 backgroundColor: tempSelectedTags.contains(tag)
-                    ? AppColors.grey
-                    : AppColors.lightGrey.withOpacity(0.4),
+                    ? Colors.grey
+                    : Colors.grey.withOpacity(0.4),
                 icon: Icons.local_offer_rounded,
                 iconColor: tempSelectedTags.contains(tag)
-                    ? AppColors.lightGrey
-                    : AppColors.grey.withOpacity(0.6),
+                    ? Colors.grey
+                    : Colors.grey.withOpacity(0.6),
               ),
             ),
         ],
@@ -546,7 +545,7 @@ class _LibraryEditBookScreenState extends State<LibraryEditBookScreen> {
       },
       child: const Icon(
         Icons.create_new_folder,
-        color: AppColors.goldenYellow,
+        color: Colors.orange,
       ),
     );
   }
@@ -613,7 +612,7 @@ class _LibraryEditBookScreenState extends State<LibraryEditBookScreen> {
           padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 6.0),
           child: CustomButton(
             text: 'clear search',
-            color: AppColors.grey.withOpacity(0.6),
+            color: Colors.grey.withOpacity(0.6),
             width: 24,
             height: 24,
             borderRadius: 8,
@@ -650,25 +649,25 @@ class _LibraryEditBookScreenState extends State<LibraryEditBookScreen> {
                     horizontal: 12.0, vertical: 18.0),
                 label: booksShelves[index].name,
                 iconBackground: isSelected
-                    ? AppColors.lighterGreen
-                    : AppColors.lightGrey.withOpacity(0.4),
+                    ? Colors.grey
+                    : Colors.grey.withOpacity(0.4),
                 appendIcon: const Text('12'),
                 borderColor: isSelected
-                    ? AppColors.lightGreen
-                    : AppColors.lightGrey.withOpacity(0.5),
+                    ? Colors.lightGreen
+                    : Colors.grey.withOpacity(0.5),
                 borderRadius: 12.0,
                 backgroundColor:
-                    isSelected ? AppColors.extraLightGreen : Colors.white,
+                    isSelected ? Colors.grey : Colors.white,
                 textStyle: const TextStyle(
                   fontSize: 18,
                   fontWeight: FontWeight.w400,
-                  color: AppColors.grey,
+                  color: Colors.grey,
                 ),
                 shadow: [
                   BoxShadow(
                     color: isSelected
-                        ? AppColors.extraLightGreen.withOpacity(0.2)
-                        : AppColors.lightGrey.withOpacity(0.2),
+                        ? Colors.grey.withOpacity(0.2)
+                        : Colors.grey.withOpacity(0.2),
                     blurRadius: 8,
                     spreadRadius: 4,
                   )
@@ -699,7 +698,7 @@ class _LibraryEditBookScreenState extends State<LibraryEditBookScreen> {
         color: Colors.grey[50],
         borderRadius: BorderRadius.circular(4.0),
         border: Border.all(
-          color: AppColors.lightGrey.withOpacity(0.4),
+          color: Colors.grey.withOpacity(0.4),
           width: 2,
         ),
       ),
@@ -709,7 +708,7 @@ class _LibraryEditBookScreenState extends State<LibraryEditBookScreen> {
         children: booksShelves.map((chip) {
           return CustomChip(
             text: chip.name,
-            backgroundColor: AppColors.lightGrey.withOpacity(0.6),
+            backgroundColor: Colors.grey.withOpacity(0.6),
             borderRadius: 4.0,
           );
         }).toList(),

@@ -1,6 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:readivo_app/src/core/constants/colors.dart';
-import 'package:readivo_app/src/core/constants/constants.dart';
 
 import 'custom_text.dart';
 
@@ -50,7 +48,7 @@ class CustomInputField extends StatefulWidget {
     this.borderRadius = 8.0,
     this.filled = true,
     this.fillColor = Colors.white,
-    this.borderColor = AppColors.lightGrey,
+    this.borderColor = Colors.grey,
     this.borderWidth = 1.0,
     this.startIconColor = Colors.grey,
     this.endIconColor = Colors.grey,
@@ -121,7 +119,7 @@ class _CustomInputFieldState extends State<CustomInputField> {
               borderRadius: BorderRadius.circular(widget.borderRadius),
               color: widget.filled ? widget.fillColor : Colors.transparent,
               border: Border.all(
-                color: _errorText != null ? AppColors.lightRed :widget.borderColor,
+                color: _errorText != null ? Colors.red :widget.borderColor,
                 width: widget.borderWidth,
               ),
             ),

@@ -1,6 +1,5 @@
 import 'package:conditional_builder_null_safety/conditional_builder_null_safety.dart';
 import 'package:flutter/material.dart';
-import 'package:readivo_app/src/core/constants/colors.dart';
 
 /// An enum representing different styles for the CustomButton.
 enum ButtonStyleType {
@@ -144,7 +143,7 @@ class CustomButton extends StatelessWidget {
   Color _getTextColor(ThemeData theme) {
     switch (styleType) {
       case ButtonStyleType.filled:
-        return textColor ?? AppColors.white;
+        return textColor ?? Colors.white;
       case ButtonStyleType.outline:
         return textColor ?? (color ?? theme.primaryColor);
       case ButtonStyleType.ghost:

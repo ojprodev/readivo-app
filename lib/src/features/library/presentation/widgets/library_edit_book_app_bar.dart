@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:readivo_app/src/core/constants/constants.dart';
+import 'package:readivo_app/src/core/constants/icons.dart';
 import 'package:readivo_app/src/core/utils/utils.dart';
 import 'package:readivo_app/src/core/widgets/bottom_sheet.dart';
 import 'package:readivo_app/src/core/widgets/custom_alert.dart';
@@ -109,7 +109,7 @@ class _LibraryEditBookAppBarState extends State<LibraryEditBookAppBar> {
                           BottomSheetItem(
                             icon: SvgPicture.asset(AppIcons.image),
                             label: 'Select an Image',
-                            borderColor: AppColors.lightGrey.withOpacity(0.4),
+                            borderColor: Colors.grey.withOpacity(0.4),
                             onTap: () {
                               _pickBookThumbnail(source: ImageSource.gallery);
 
@@ -120,7 +120,7 @@ class _LibraryEditBookAppBarState extends State<LibraryEditBookAppBar> {
                           BottomSheetItem(
                             icon: SvgPicture.asset(AppIcons.link),
                             label: 'Use a URL',
-                            borderColor: AppColors.lightGrey.withOpacity(0.4),
+                            borderColor: Colors.grey.withOpacity(0.4),
                             onTap: () {
                               // close the bottom sheet
                               Navigator.pop(context);
@@ -131,7 +131,7 @@ class _LibraryEditBookAppBarState extends State<LibraryEditBookAppBar> {
                           BottomSheetItem(
                             icon: SvgPicture.asset(AppIcons.camera),
                             label: 'Take a Picture',
-                            borderColor: AppColors.lightGrey.withOpacity(0.4),
+                            borderColor: Colors.grey.withOpacity(0.4),
                             onTap: () {
                               _pickBookThumbnail(source: ImageSource.camera);
 
@@ -175,7 +175,7 @@ class _LibraryEditBookAppBarState extends State<LibraryEditBookAppBar> {
             width: 48,
             height: 4,
             borderRadius: 2,
-            color: AppColors.grey,
+            color: Colors.grey,
           ),
         ),
       ),

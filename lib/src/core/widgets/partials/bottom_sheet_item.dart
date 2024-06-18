@@ -1,8 +1,6 @@
 // bottom_sheet_item.dart
 
 import 'package:flutter/material.dart';
-import 'package:readivo_app/src/core/constants/colors.dart';
-import 'package:readivo_app/src/core/constants/constants.dart';
 import 'package:readivo_app/src/core/widgets/custom_list_item.dart';
 
 /// Model for an item in the bottom sheet.
@@ -24,7 +22,7 @@ class BottomSheetItem {
     required this.label,
     required this.onTap,
     this.backgroundColor = Colors.white,
-    this.borderColor = AppColors.lightGrey,
+    this.borderColor = Colors.grey,
     this.borderRadius = 6.0,
     this.textColor = Colors.black,
     this.textSize = 16.0,

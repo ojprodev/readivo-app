@@ -6,7 +6,6 @@ import 'package:flutter_datetime_picker_plus/flutter_datetime_picker_plus.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:readivo_app/src/core/bloc/app_cubit.dart';
-import 'package:readivo_app/src/core/constants/colors.dart';
 import 'package:readivo_app/src/core/constants/icons.dart';
 import 'package:readivo_app/src/core/enums/enums.dart';
 import 'package:readivo_app/src/core/layouts/basic_layout.dart';
@@ -193,7 +192,7 @@ class _LibraryAddBookScreenState extends State<LibraryAddBookScreen> {
           const SizedBox(height: 4),
           CustomText(
             widget.book.author ?? 'unknown',
-            color: AppColors.grey,
+            color: Colors.grey,
           ),
           const SizedBox(height: 6.0),
           if (widget.book.globalRating != null)
@@ -279,12 +278,12 @@ class _LibraryAddBookScreenState extends State<LibraryAddBookScreen> {
             Toast.show(
                 context: context,
                 message: 'Book added to $readingStatus list',
-                backgroundColor: AppColors.grey);
+                backgroundColor: Colors.grey);
           } else {
             Toast.show(
                 context: context,
                 message: 'Book removed from the $readingStatus list',
-                backgroundColor: AppColors.grey);
+                backgroundColor: Colors.grey);
           }
         },
       ),
@@ -296,7 +295,7 @@ class _LibraryAddBookScreenState extends State<LibraryAddBookScreen> {
       return BottomSheetItem(
         borderColor: status == selectedReadingStatus
             ? Colors.black
-            : AppColors.lightGrey.withOpacity(0.4),
+            : Colors.grey.withOpacity(0.4),
         icon: _getReadingStatusIcon(status),
         label: getReadingStatusAsString(status),
         appendIcon: _getReadingBottomSheetSelectedItemIcon(status),
@@ -314,7 +313,7 @@ class _LibraryAddBookScreenState extends State<LibraryAddBookScreen> {
           Toast.show(
               context: context,
               message: 'Book added to ${getReadingStatusAsString(selectedReadingStatus)} list',
-              backgroundColor: AppColors.grey);
+              backgroundColor: Colors.grey);
 
 
           Navigator.of(context).pop();
@@ -328,32 +327,32 @@ class _LibraryAddBookScreenState extends State<LibraryAddBookScreen> {
       case ReadingStatus.wantToRead:
         return const Icon(
           Icons.library_add_outlined,
-          color: AppColors.grey,
+          color: Colors.grey,
         );
       case ReadingStatus.paused:
         return const Icon(
           Icons.pause_rounded,
-          color: AppColors.grey,
+          color: Colors.grey,
         );
       case ReadingStatus.reading:
         return const Icon(
           Icons.local_library_outlined,
-          color: AppColors.grey,
+          color: Colors.grey,
         );
       case ReadingStatus.finished:
         return const Icon(
           Icons.library_add_check_outlined,
-          color: AppColors.grey,
+          color: Colors.grey,
         );
       case ReadingStatus.gaveUp:
         return const Icon(
           Icons.flag_outlined,
-          color: AppColors.grey,
+          color: Colors.grey,
         );
       default:
         return const Icon(
           Icons.circle_outlined,
-          color: AppColors.grey,
+          color: Colors.grey,
         );
     }
   }
@@ -365,7 +364,7 @@ class _LibraryAddBookScreenState extends State<LibraryAddBookScreen> {
           : Icons.circle_outlined,
       color: selectedReadingStatus == status
           ? Colors.black
-          : AppColors.lightGrey.withOpacity(0.4),
+          : Colors.grey.withOpacity(0.4),
     );
   }
 
@@ -384,12 +383,12 @@ class _LibraryAddBookScreenState extends State<LibraryAddBookScreen> {
               margin: const EdgeInsets.only(
                   top: 24.0, left: 24.0, bottom: 4.0, right: 24.0),
               decoration: BoxDecoration(
-                color: AppColors.lightGrey.withOpacity(0.2),
+                color: Colors.grey.withOpacity(0.2),
                 borderRadius: BorderRadius.circular(4.0),
                 border: Border.all(
                   color: invalidStartDate || invalidFinishDate
-                      ? AppColors.lightRed.withOpacity(0.4)
-                      : AppColors.lightGrey.withOpacity(0.6),
+                      ? Colors.red.withOpacity(0.4)
+                      : Colors.grey.withOpacity(0.6),
                   width: 1,
                 ),
               ),
@@ -420,7 +419,7 @@ class _LibraryAddBookScreenState extends State<LibraryAddBookScreen> {
                         height: 64,
                         color: selectedReadingStatus != ReadingStatus.reading &&
                                 selectedReadingStatus != ReadingStatus.paused
-                            ? AppColors.lightGrey.withOpacity(0.4)
+                            ? Colors.grey.withOpacity(0.4)
                             : Colors.transparent,
                       ),
                       if (selectedReadingStatus != ReadingStatus.wantToRead &&
@@ -458,13 +457,13 @@ class _LibraryAddBookScreenState extends State<LibraryAddBookScreen> {
             if (invalidStartDate)
               const CustomText(
                 'Start date should be older than finish date.',
-                color: AppColors.lightRed,
+                color: Colors.red,
                 fontSize: 14,
               ),
             if (invalidFinishDate)
               const CustomText(
                 'Finish date should be more recent than start date.',
-                color: AppColors.lightRed,
+                color: Colors.red,
                 fontSize: 14,
               ),
           ],
@@ -495,18 +494,18 @@ class _LibraryAddBookScreenState extends State<LibraryAddBookScreen> {
               builder: (context) => Text(
                 Utils.formatDate(date!),
                 textAlign: TextAlign.center,
-                style: const TextStyle(color: AppColors.grey, fontSize: 20),
+                style: const TextStyle(color: Colors.grey, fontSize: 20),
               ),
               fallback: (context) => const Row(
                 mainAxisAlignment: MainAxisAlignment.spaceAround,
                 children: [
                   Icon(
                     Icons.calendar_today,
-                    color: AppColors.grey,
+                    color: Colors.grey,
                   ),
                   Text(
                     'Add Date',
-                    style: TextStyle(color: AppColors.grey),
+                    style: TextStyle(color: Colors.grey),
                   ),
                 ],
               ),
@@ -534,8 +533,8 @@ class _LibraryAddBookScreenState extends State<LibraryAddBookScreen> {
       text: 'Add Book Review',
       width: 160,
       styleType: ButtonStyleType.outline,
-      borderColor: AppColors.grey.withOpacity(0.6),
-      color: AppColors.grey,
+      borderColor: Colors.grey.withOpacity(0.6),
+      color: Colors.grey,
       onPressed: () {
         _showAddReviewBottomSheet();
       },
@@ -581,7 +580,7 @@ class _LibraryAddBookScreenState extends State<LibraryAddBookScreen> {
                   ),
                   const CustomText(
                     'By sharing your inshight about this book you are giving your self what you get out of it, and telling other what they could excpect',
-                    color: AppColors.grey,
+                    color: Colors.grey,
                     maxLines: 5,
                   ),
                   const SizedBox(height: 24.0),
@@ -596,13 +595,13 @@ class _LibraryAddBookScreenState extends State<LibraryAddBookScreen> {
                       direction: Axis.horizontal,
                       allowHalfRating: true,
                       itemSize: 48,
-                      glowColor: AppColors.lightGrey.withOpacity(0.4),
-                      unratedColor: AppColors.lightGrey,
+                      glowColor: Colors.grey.withOpacity(0.4),
+                      unratedColor: Colors.grey,
                       itemCount: 5,
                       itemPadding: const EdgeInsets.symmetric(horizontal: 4.0),
                       itemBuilder: (context, _) => const Icon(
                         Icons.star_rounded,
-                        color: AppColors.goldenYellow,
+                        color: Colors.orange,
                       ),
                       onRatingUpdate: (rating) {
                         print(rating);
@@ -641,11 +640,11 @@ class _LibraryAddBookScreenState extends State<LibraryAddBookScreen> {
   Widget _buildBookInfoCard() {
     return CustomContainer(
       margin: const EdgeInsets.symmetric(horizontal: 12.0),
-      borderColor: AppColors.lightGrey.withOpacity(0.6),
+      borderColor: Colors.grey.withOpacity(0.6),
       borderWidth: 1,
       borderRadius: 6,
       boxShadow: BoxShadow(
-        color: AppColors.lightGrey.withOpacity(0.2),
+        color: Colors.grey.withOpacity(0.2),
         blurRadius: 4,
         spreadRadius: 1,
         offset: const Offset(0, 0),
@@ -658,7 +657,7 @@ class _LibraryAddBookScreenState extends State<LibraryAddBookScreen> {
             children: [
               const CustomText(
                 'Pages',
-                color: AppColors.grey,
+                color: Colors.grey,
               ),
               CustomText(
                 '${widget.book.totalPages ?? '-'}',
@@ -669,14 +668,14 @@ class _LibraryAddBookScreenState extends State<LibraryAddBookScreen> {
           Container(
             width: 1,
             height: 24,
-            color: AppColors.lightGrey,
+            color: Colors.grey,
           ),
           Column(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               const CustomText(
                 'Publish',
-                color: AppColors.grey,
+                color: Colors.grey,
               ),
               CustomText(
                 widget.book.publishYear ?? '-',
@@ -687,14 +686,14 @@ class _LibraryAddBookScreenState extends State<LibraryAddBookScreen> {
           Container(
             width: 1,
             height: 24,
-            color: AppColors.lightGrey,
+            color: Colors.grey,
           ),
           Column(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               const CustomText(
                 'Language',
-                color: AppColors.grey,
+                color: Colors.grey,
               ),
               CustomText(
                 widget.book.language ?? '-',
@@ -729,7 +728,7 @@ class _LibraryAddBookScreenState extends State<LibraryAddBookScreen> {
               widget.book.description ?? '-',
               textAlign: TextAlign.start,
               maxLines: showFullDescription ? 1000 : 8,
-              color: AppColors.grey,
+              color: Colors.grey,
             ),
           ),
         ],

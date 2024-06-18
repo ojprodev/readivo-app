@@ -1,6 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:readivo_app/src/core/constants/colors.dart';
-import 'package:readivo_app/src/core/constants/constants.dart';
 
 class CustomListItem extends StatelessWidget {
   final VoidCallback? onTap;
@@ -22,7 +20,7 @@ class CustomListItem extends StatelessWidget {
     super.key,
     this.onTap,
     this.backgroundColor = Colors.white,
-    this.borderColor = AppColors.lightGrey,
+    this.borderColor = Colors.grey,
     this.borderRadius = 8.0,
     this.icon,
     required this.label,

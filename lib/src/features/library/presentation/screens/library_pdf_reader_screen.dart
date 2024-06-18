@@ -25,7 +25,7 @@ class LibraryPdfReaderScreen extends StatelessWidget {
           ),
         ),
       ),
-      fallback: (context) => Text('Invalud'),
+      fallback: (context) => const Text('Invalid'),
     );
   }
 

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:readivo_app/src/core/constants/constants.dart';
+import 'package:readivo_app/src/core/constants/icons.dart';
 import 'package:readivo_app/src/core/widgets/bottom_sheet.dart';
 import 'package:readivo_app/src/core/widgets/custom_button.dart';
 import 'package:readivo_app/src/core/widgets/custom_chip.dart';
@@ -159,7 +159,7 @@ class _AddNoteScreenState extends State<AddNoteScreen> {
           child: CustomChip(
             text: Note.getNoteCategoryAsString(selectedCategory),
             padding: const EdgeInsets.symmetric(horizontal: 12.0),
-            backgroundColor: AppColors.lightGrey,
+            backgroundColor: Colors.grey,
           ),
         ),
         CustomContainer(

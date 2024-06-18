@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:readivo_app/src/core/constants/colors.dart';
 
 class CustomDropDown<T> extends StatefulWidget {
   final List<CustomDropdownMenuItem<T>> items;
@@ -29,7 +28,7 @@ class CustomDropDown<T> extends StatefulWidget {
     this.defaultSelectedIndex = -1,
     this.enabled = true,
     this.width = 200,
-    this.borderColor = AppColors.lightGrey,
+    this.borderColor = Colors.grey,
     this.backgroundColor = Colors.white,
     this.elevation = 0,
     this.icon = const Icon(Icons.arrow_drop_down),
@@ -177,7 +176,7 @@ class _CustomDropDownState<T> extends State<CustomDropDown<T>>
       borderRadius: BorderRadius.circular(widget.borderRadius),
       boxShadow: const [
         BoxShadow(
-          color: AppColors.lightGrey,
+          color: Colors.grey,
           blurRadius: 4,
           spreadRadius: 1,
           offset: Offset(0, 1),
@@ -194,7 +193,7 @@ class _CustomDropDownState<T> extends State<CustomDropDown<T>>
       boxShadow: _isOpen
           ? [
               const BoxShadow(
-                color: AppColors.lightGrey,
+                color: Colors.grey,
                 blurRadius: 4,
                 spreadRadius: 0,
                 offset: Offset(0, 1),
