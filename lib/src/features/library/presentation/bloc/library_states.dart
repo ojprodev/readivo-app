@@ -70,7 +70,7 @@ class LibraryNewNoteAddedState extends LibraryStates {
 }
 
 class LibraryShelvesListLoaded extends LibraryStates{
-  final List<dynamic> shelves;
+  final List<Shelf> shelves;
 
   LibraryShelvesListLoaded({required this.shelves});
 

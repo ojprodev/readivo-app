@@ -9,6 +9,7 @@ part 'shelf.g.dart';
 class Shelf{
   Id id = Isar.autoIncrement;
   late String name;
+  late int totalBooks = 0;
   late String? description;
   late DateTime? updatedAt;
   late DateTime createdAt;

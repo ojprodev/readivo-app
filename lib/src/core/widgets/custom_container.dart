@@ -41,7 +41,7 @@ class CustomContainer extends StatelessWidget {
     return Container(
       width: width,
       height: height,
-      padding: padding ?? const EdgeInsets.all(10.0),
+      padding: padding,
       margin: margin,
       clipBehavior: clipBehavior,
       decoration: boxDecoration ??

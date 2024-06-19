@@ -15,6 +15,7 @@ import 'package:readivo_app/src/core/widgets/custom_list_item.dart';
 import 'package:readivo_app/src/core/widgets/custom_text.dart';
 import 'package:readivo_app/src/core/widgets/partials/bottom_sheet_item.dart';
 import 'package:readivo_app/src/features/library/domain/entities/book.dart';
+import 'package:readivo_app/src/features/library/domain/entities/shelf.dart';
 import 'package:readivo_app/src/features/library/presentation/bloc/library_cubit.dart';
 import 'package:readivo_app/src/features/library/presentation/screens/library_add_book_screen.dart';
 import 'package:readivo_app/src/features/library/presentation/screens/library_pdf_reader_screen.dart';
@@ -33,7 +34,7 @@ class _LibraryHomeScreenState extends State<LibraryHomeScreen> {
   late AppCubit appCubit;
   late LibraryCubit libraryCubit;
   List<Book> readingList = [];
-  List<Map<String, dynamic>> shelvesItems = [];
+  List<Shelf> shelvesItems = [];
 
   @override
   void initState() {
@@ -84,18 +85,12 @@ class _LibraryHomeScreenState extends State<LibraryHomeScreen> {
           children: [
             Column(
               children: [
-                Column(
-                  children: [
-                    const SizedBox(
-                      height: 32,
-                    ),
-                    _buildContinueReadingSection(),
-                    const SizedBox(height: 36.0),
-                    _buildDailyQuoteSection(),
-                    const SizedBox(height: 24.0),
-                    _buildBooksShelvesSection(),
-                  ],
-                ),
+                const SizedBox(height: 24.0),
+                _buildContinueReadingSection(),
+                const SizedBox(height: 64.0),
+                _buildDailyQuoteSection(),
+                const SizedBox(height: 36.0),
+                _buildBooksShelvesSection(),
                 const SizedBox(height: 64.0),
                 _buildBooksOverviewList(),
               ],
@@ -199,7 +194,7 @@ class _LibraryHomeScreenState extends State<LibraryHomeScreen> {
 
   Widget _buildContinueReadingList() {
     return Container(
-      padding: const EdgeInsets.all(4.0),
+      padding: const EdgeInsets.all(10.0),
       height: 240,
       width: MediaQuery.sizeOf(context).width,
       child: ConditionalBuilder(
@@ -322,39 +317,41 @@ class _LibraryHomeScreenState extends State<LibraryHomeScreen> {
                   )
                 ],
               ),
-              fallback: (context) {
-                return Column(
-                  mainAxisSize: MainAxisSize.max,
-                  mainAxisAlignment: MainAxisAlignment.spaceAround,
-                  children: [
-                    CustomButton(
-                        text: 'Add a Book',
-                        height: 120,
-                        width: 120,
-                        borderRadius: 60,
-                        color: Colors.grey,
-                        onPressed: () {
-                          CustomBottomSheet.show(
-                            context: context,
-                            bottomSheetItems: homeScreenBottomSheetItems(),
-                          );
-                        },
-                        child: SvgPicture.asset(
-                          AppIcons.addOutline,
-                          width: 54,
-                          colorFilter: const ColorFilter.mode(
-                            Colors.grey,
-                            BlendMode.srcIn,
-                          ),
-                        )),
-                    const Text('Add books you are reading'),
-                  ],
-                );
-              },
+              fallback: (context) => _buildContinueReadingEmptyCard(),
             ),
           ),
         ],
       ),
+    );
+  }
+
+  Widget _buildContinueReadingEmptyCard() {
+    return Column(
+      mainAxisSize: MainAxisSize.max,
+      mainAxisAlignment: MainAxisAlignment.spaceAround,
+      children: [
+        CustomButton(
+            text: 'Add a Book',
+            height: 120,
+            width: 120,
+            borderRadius: 60,
+            color: Colors.grey,
+            onPressed: () {
+              CustomBottomSheet.show(
+                context: context,
+                bottomSheetItems: homeScreenBottomSheetItems(),
+              );
+            },
+            child: SvgPicture.asset(
+              AppIcons.addOutline,
+              width: 54,
+              colorFilter: const ColorFilter.mode(
+                Colors.white,
+                BlendMode.srcIn,
+              ),
+            )),
+        const Text('Add books you are reading'),
+      ],
     );
   }
 
@@ -366,23 +363,45 @@ class _LibraryHomeScreenState extends State<LibraryHomeScreen> {
           padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
           child: Stack(
             children: [
-              CustomContainer(
+              const CustomContainer(
                 color: Colors.white,
                 width: double.infinity,
-                padding: const EdgeInsets.symmetric(
-                    horizontal: 36.0, vertical: 24.0),
+                padding: EdgeInsets.symmetric(vertical: 10.0, horizontal: 6.0),
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    const CustomText(
-                      'They are many names for the future; weak call it impossible, afraid people call it  unknown. but for braves it’s the ...',
-                      color: Colors.grey,
-                      textAlign: TextAlign.center,
-                      maxLines: 10,
+                    Padding(
+                      padding: EdgeInsets.only(
+                        right: 16.0,
+                        left: 16.0,
+                        top: 36.0,
+                        bottom: 16.0,
+                      ),
+                      child: CustomText(
+                        'They are many names for the future; weak call it impossible, afraid people call it  unknown. but for braves it’s the truth.',
+                        color: Colors.black87,
+                        textAlign: TextAlign.center,
+                        maxLines: 10,
+                      ),
                     ),
-                    CustomText(
-                      '- Plato',
-                      color: Colors.grey.withOpacity(0.6),
+                    Padding(
+                      padding: EdgeInsets.all(8.0),
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          CustomText(
+                            'Money Master the Game / 201',
+                            color: Colors.black54,
+                            maxLines: 1,
+                          ),
+                          SizedBox(height: 4.0),
+                          CustomText(
+                            '- Plato',
+                            color: Colors.black,
+                            maxLines: 1,
+                          ),
+                        ],
+                      ),
                     ),
                   ],
                 ),
@@ -398,6 +417,7 @@ class _LibraryHomeScreenState extends State<LibraryHomeScreen> {
             ],
           ),
         ),
+        const SizedBox(height: 8.0),
         const CustomButton(
           text: 'View all',
           textColor: Colors.white,
@@ -413,24 +433,27 @@ class _LibraryHomeScreenState extends State<LibraryHomeScreen> {
         Column(
           children: [
             const Padding(
-              padding: EdgeInsets.all(12),
+              padding: EdgeInsets.all(16),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  CustomText('Books Shelves',
-                      fontSize: 20, fontWeight: FontWeight.w500),
+                  CustomText(
+                    'Books Shelves',
+                    color: Colors.white,
+                    fontSize: 20,
+                    fontWeight: FontWeight.w500,
+                  ),
                   CustomText(
                     'Browse all',
-                    color: Colors.black,
+                    color: Colors.white,
                   ),
                 ],
               ),
             ),
-            const SizedBox(height: 8.0),
             ConditionalBuilder(
               condition: shelvesItems.isNotEmpty,
               builder: (context) => _buildShelvesItems(),
-              fallback: (context) => _buildEmptyShelvesList(),
+              fallback: (context) => _buildEmptyShelvesCard(),
             ),
           ],
         ),
@@ -450,27 +473,28 @@ class _LibraryHomeScreenState extends State<LibraryHomeScreen> {
     );
   }
 
-  Widget _buildEmptyShelvesList() {
+  Widget _buildEmptyShelvesCard() {
     return CustomContainer(
       color: Colors.white,
       height: 120,
-      borderRadius: 8.0,
+      borderRadius: 6.0,
       width: MediaQuery.sizeOf(context).width,
-      margin: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 16.0),
+      margin: const EdgeInsets.symmetric(vertical: 4.0, horizontal: 16.0),
       padding: const EdgeInsets.symmetric(vertical: 16.0),
       child: const Column(
         mainAxisSize: MainAxisSize.max,
         mainAxisAlignment: MainAxisAlignment.spaceAround,
         children: [
           CustomText(
-            'Your library of books is empty.',
+            'No Books Shelves found.',
             fontSize: 16,
           ),
           SizedBox(height: 8.0),
           CustomButton(
             width: 160,
-            text: 'Add new books',
-            color: Colors.black,
+            text: 'Add a Shelf',
+            borderRadius: 6.0,
+            color: Colors.grey,
           ),
         ],
       ),
@@ -545,7 +569,7 @@ class _LibraryHomeScreenState extends State<LibraryHomeScreen> {
     );
   }
 
-  Widget _buildShelfItem(Map<String, dynamic> shelf) {
+  Widget _buildShelfItem(Shelf shelf) {
     return Stack(
       alignment: Alignment.centerRight,
       children: [
@@ -559,11 +583,11 @@ class _LibraryHomeScreenState extends State<LibraryHomeScreen> {
             mainAxisSize: MainAxisSize.max,
             children: [
               CustomText(
-                shelf['name'],
+                shelf.name,
                 fontSize: 18,
               ),
               CustomText(
-                shelf['totalBooks'].toString(),
+                shelf.totalBooks.toString(),
                 color: Colors.grey,
               ),
             ],
@@ -607,11 +631,10 @@ class _LibraryHomeScreenState extends State<LibraryHomeScreen> {
   void _buildListener(BuildContext context, state) {
     if (state is LibraryFetchedReadingListState) {
       readingList = state.books;
-      print(state.books[1].coverURI);
     }
 
     if (state is LibraryShelvesListLoaded) {
-      shelvesItems = state.shelves as List<Map<String, dynamic>>;
+      shelvesItems = state.shelves;
     }
   }
 }
