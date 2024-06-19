@@ -27,6 +27,7 @@ import 'package:readivo_app/src/features/library/presentation/widgets/book_cover
 class LibraryAddBookScreen extends StatefulWidget {
   final Book book;
   final TextEditingController reviewController = TextEditingController();
+
   LibraryAddBookScreen({super.key, required this.book});
 
   @override
@@ -52,7 +53,8 @@ class _LibraryAddBookScreenState extends State<LibraryAddBookScreen> {
     libraryCubit = LibraryCubit.get(context);
 
     // init vars
-    selectedReadingStatus = widget.book.readingStatus ?? ReadingStatus.wantToRead;
+    selectedReadingStatus =
+        widget.book.readingStatus ?? ReadingStatus.wantToRead;
     isReadingStatusActive = widget.book.readingStatus != null;
   }
 
@@ -92,7 +94,8 @@ class _LibraryAddBookScreenState extends State<LibraryAddBookScreen> {
             borderRadius: 30,
             color: Colors.black.withOpacity(0.3),
             onPressed: () {
-              appCubit.changeScreen(LibraryEditBookScreen(book: widget.book), enableBack: false);
+              appCubit.changeScreen(LibraryEditBookScreen(book: widget.book),
+                  enableBack: false);
             },
             child: SvgPicture.asset(
               AppIcons.edit,
@@ -113,15 +116,25 @@ class _LibraryAddBookScreenState extends State<LibraryAddBookScreen> {
               _buildBookTitleAndAuthor(),
               const SizedBox(height: 16.0),
               _buildReadingStatusButton(),
-              _buildReadingDateRange(),
-              const SizedBox(height: 16.0),
-              if (selectedReadingStatus == ReadingStatus.finished ||
-                  selectedReadingStatus == ReadingStatus.gaveUp)
-                _buildAddRatingButton(),
-              const SizedBox(height: 16.0),
+              CustomContainer(
+                color: Colors.grey.withOpacity(0.15),
+                padding: const EdgeInsets.only(top: 8.0, bottom: 18.0),
+                margin: const EdgeInsets.symmetric(vertical: 24.0),
+                child: Column(
+                  children: [
+                    _buildReadingDateRange(),
+                    const SizedBox(height: 16.0),
+                    if (selectedReadingStatus == ReadingStatus.finished ||
+                        selectedReadingStatus == ReadingStatus.gaveUp)
+                      _buildAddRatingButton(),
+                  ],
+                ),
+              ),
               _buildBookInfoCard(),
               const SizedBox(height: 24),
-              _buildBookDescription(),
+              if (widget.book.description != null &&
+                  widget.book.description!.isNotEmpty)
+                _buildBookDescription(),
             ],
           ),
         ),
@@ -302,7 +315,7 @@ class _LibraryAddBookScreenState extends State<LibraryAddBookScreen> {
         onTap: () {
           setState(() {
             selectedReadingStatus = status;
-            if(isReadingStatusActive == false){
+            if (isReadingStatusActive == false) {
               isReadingStatusActive = true;
             }
 
@@ -312,9 +325,9 @@ class _LibraryAddBookScreenState extends State<LibraryAddBookScreen> {
 
           Toast.show(
               context: context,
-              message: 'Book added to ${getReadingStatusAsString(selectedReadingStatus)} list',
+              message:
+                  'Book added to ${getReadingStatusAsString(selectedReadingStatus)} list',
               backgroundColor: Colors.grey);
-
 
           Navigator.of(context).pop();
         },
@@ -397,7 +410,7 @@ class _LibraryAddBookScreenState extends State<LibraryAddBookScreen> {
                   Row(
                     children: [
                       _buildDateColumn(
-                        title: 'Started',
+                        title: 'Start Date',
                         date: startDate,
                         buttonText: 'Start Date',
                         onPressed: () => _pickDate(context, startDate, (date) {
@@ -426,7 +439,7 @@ class _LibraryAddBookScreenState extends State<LibraryAddBookScreen> {
                           selectedReadingStatus != ReadingStatus.reading &&
                           selectedReadingStatus != ReadingStatus.paused)
                         _buildDateColumn(
-                          title: 'Finished',
+                          title: 'Finish Date',
                           date: finishDate,
                           buttonText: 'Finish Date',
                           onPressed: () => _pickDate(
@@ -579,7 +592,7 @@ class _LibraryAddBookScreenState extends State<LibraryAddBookScreen> {
                     fontSize: 20,
                   ),
                   const CustomText(
-                    'By sharing your inshight about this book you are giving your self what you get out of it, and telling other what they could excpect',
+                    'By sharing your insight about this book you are giving your self what you get out of it, and telling other what they could excpect',
                     color: Colors.grey,
                     maxLines: 5,
                   ),
@@ -639,16 +652,11 @@ class _LibraryAddBookScreenState extends State<LibraryAddBookScreen> {
 
   Widget _buildBookInfoCard() {
     return CustomContainer(
-      margin: const EdgeInsets.symmetric(horizontal: 12.0),
+      margin: const EdgeInsets.symmetric(horizontal: 16.0),
+      padding: const EdgeInsets.symmetric(vertical: 12.0, horizontal: 6.0),
       borderColor: Colors.grey.withOpacity(0.6),
       borderWidth: 1,
       borderRadius: 6,
-      boxShadow: BoxShadow(
-        color: Colors.grey.withOpacity(0.2),
-        blurRadius: 4,
-        spreadRadius: 1,
-        offset: const Offset(0, 0),
-      ),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceAround,
         children: [
