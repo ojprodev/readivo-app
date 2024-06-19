@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 class CustomAlertDialog extends StatelessWidget {
   final String title;
   final Widget? content;
-  final List<Widget> actions;
+  final Widget? actions;
   final Color backgroundColor;
   final ShapeBorder shape;
   final EdgeInsets insetPadding;
@@ -20,7 +20,7 @@ class CustomAlertDialog extends StatelessWidget {
     super.key,
     required this.title,
     required this.content,
-    this.actions = const [],
+    this.actions,
     this.backgroundColor = Colors.white,
     this.shape = const RoundedRectangleBorder(
         borderRadius: BorderRadius.all(Radius.circular(4.0))),
@@ -75,11 +75,7 @@ class CustomAlertDialog extends StatelessWidget {
           ),
           Container(
             padding: actionsPadding,
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              mainAxisSize: MainAxisSize.max,
-              children: actions,
-            ),
+            child: actions,
           ),
         ],
       ),

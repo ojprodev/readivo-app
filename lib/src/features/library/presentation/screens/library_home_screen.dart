@@ -113,11 +113,16 @@ class _LibraryHomeScreenState extends State<LibraryHomeScreen> {
         colorFilter: const ColorFilter.mode(Colors.white, BlendMode.srcIn),
       ),
       onPressed: () {
-        CustomBottomSheet.show(
-          context: context,
-          bottomSheetItems: homeScreenBottomSheetItems(),
-        );
+        _showAddBookBottomSheet();
       },
+    );
+  }
+
+  void _showAddBookBottomSheet() {
+    CustomBottomSheet.show(
+      context: context,
+      height: 200,
+      bottomSheetItems: homeScreenBottomSheetItems(),
     );
   }
 
@@ -337,10 +342,7 @@ class _LibraryHomeScreenState extends State<LibraryHomeScreen> {
             borderRadius: 60,
             color: Colors.grey,
             onPressed: () {
-              CustomBottomSheet.show(
-                context: context,
-                bottomSheetItems: homeScreenBottomSheetItems(),
-              );
+              _showAddBookBottomSheet();
             },
             child: SvgPicture.asset(
               AppIcons.addOutline,

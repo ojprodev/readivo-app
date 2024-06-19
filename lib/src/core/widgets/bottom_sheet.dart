@@ -12,14 +12,15 @@ class CustomBottomSheet {
     bool? showDragHandle = true,
     double? topPadding,
     double dragHandleHeight = 4.0,
+    double borderRadius = 8.0,
   }) {
     showModalBottomSheet<void>(
       context: context,
       useSafeArea: true,
       enableDrag: true,
       isScrollControlled: true,
-      shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(12.0)),
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(borderRadius)),
       ),
       backgroundColor: Colors.white,
       builder: (BuildContext context) {

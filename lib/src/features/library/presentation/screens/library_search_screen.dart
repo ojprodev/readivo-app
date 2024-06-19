@@ -82,7 +82,7 @@ class _LibrarySearchScreenState extends State<LibrarySearchScreen>
       titleWidget: CustomInputField(
         autoFocus: true,
         controller: searchBooksController,
-        placeholder: "Search for a book",
+        placeholder: "Search by Title, Author, ISBN",
         textInputAction: TextInputAction.search,
         fillColor: Colors.white,
         endIcon: _buildSearchIcon(),
@@ -116,7 +116,7 @@ class _LibrarySearchScreenState extends State<LibrarySearchScreen>
           onPressed: () {
             CustomBottomSheet.show(
               context: context,
-              height: 90,
+              height: 110,
               child: _buildSearchAdjustements(),
             );
           },
@@ -278,15 +278,16 @@ class _LibrarySearchScreenState extends State<LibrarySearchScreen>
               fontWeight: FontWeight.w500,
             ),
             const Padding(
-              padding: EdgeInsets.symmetric(horizontal: 64.0, vertical: 12.0),
-              child: Text(
+              padding: EdgeInsets.symmetric(horizontal: 24.0, vertical: 12.0),
+              child: CustomText(
                 'Unfortunately we could not find the book you are looking for, would you like to add it?.',
                 textAlign: TextAlign.center,
+                maxLines: 10,
               ),
             ),
             const SizedBox(height: 24.0),
             const CustomButton(
-              text: 'Add it Manually',
+              text: 'Add Manually',
               width: 200,
               color: Colors.grey,
             )
@@ -356,7 +357,7 @@ class _LibrarySearchScreenState extends State<LibrarySearchScreen>
         physics: const NeverScrollableScrollPhysics(),
         gridDelegate: const SliverGridDelegateWithMaxCrossAxisExtent(
           maxCrossAxisExtent: 240,
-          mainAxisSpacing: 8.0,
+          mainAxisSpacing: 0,
           crossAxisSpacing: 8.0,
           mainAxisExtent: 310,
         ),
@@ -383,44 +384,64 @@ class _LibrarySearchScreenState extends State<LibrarySearchScreen>
   void _showStoragePermissionDialog() {
     showDialog(
       context: context,
-      builder: (context) => CustomAlertDialog(
-        showTitle: false,
-        title: 'Storage Permission Needed',
-        contentPadding: EdgeInsets.zero,
-        content: const Column(
-          children: [
-            Text('Storage Permission'),
-            Text(
-                'We need you to grant storage permission in order to perform a scan for books available in your device'),
-          ],
-        ),
-        actions: [
-          Expanded(
-            child: CustomButton(
-              text: 'Cancel',
-              styleType: ButtonStyleType.ghost,
-              onPressed: () {
-                Navigator.pop(context);
-              },
-            ),
+      builder: (context) => Padding(
+        padding: const EdgeInsets.all(8.0),
+        child: CustomAlertDialog(
+          showTitle: false,
+          title: 'Storage Permission Needed',
+          contentPadding: EdgeInsets.zero,
+          content: const Column(
+            children: [
+              CustomText(
+                'Storage Permission',
+                fontSize: 18,
+                fontWeight: FontWeight.w500,
+              ),
+              SizedBox(height: 8.0),
+              Padding(
+                padding: EdgeInsets.symmetric(vertical: 8.0, horizontal: 16.0),
+                child: CustomText(
+                  'We need you to grant storage permission in order to perform a scan for books available in your device',
+                  fontSize: 17,
+                  maxLines: 3,
+                ),
+              ),
+              SizedBox(height: 16.0),
+            ],
           ),
-          const SizedBox(
-            width: 6.0,
-          ),
-          Expanded(
-            child: CustomButton(
-              text: 'Grant Permission',
-              onPressed: () {
-                // redirect to the storage permission setting
-                libraryCubit.handleStoragePermission(
-                    action: PermissionAction.request);
+          actions: Padding(
+            padding: const EdgeInsets.all(4.0),
+            child: Row(
+              children: [
+                Expanded(
+                  child: CustomButton(
+                    text: 'Cancel',
+                    styleType: ButtonStyleType.ghost,
+                    onPressed: () {
+                      Navigator.pop(context);
+                    },
+                  ),
+                ),
+                const SizedBox(
+                  width: 6.0,
+                ),
+                Expanded(
+                  child: CustomButton(
+                    text: 'Grant Permission',
+                    onPressed: () {
+                      // close the alert
+                      Navigator.pop(context);
 
-                // close the alert
-                Navigator.pop(context);
-              },
+                      // redirect to the storage permission setting
+                      libraryCubit.handleStoragePermission(
+                          action: PermissionAction.request);
+                    },
+                  ),
+                ),
+              ],
             ),
           ),
-        ],
+        ),
       ),
     );
   }

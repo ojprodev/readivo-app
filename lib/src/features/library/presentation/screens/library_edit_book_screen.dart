@@ -366,34 +366,39 @@ class _LibraryEditBookScreenState extends State<LibraryEditBookScreen> {
               contentPadding:
                   const EdgeInsets.symmetric(horizontal: 6.0, vertical: 14.0),
             ),
-            actions: [
-              Expanded(
-                child: CustomButton(
-                  styleType: ButtonStyleType.ghost,
-                  text: 'Close',
-                  onPressed: () {
-                    Navigator.pop(context);
-                  },
-                ),
-              ),
-              const SizedBox(width: 8.0),
-              Expanded(
-                child: CustomButton(
-                  text: 'Save',
-                  onPressed: () {
-                    libraryCubit.newTag(tagController.text);
+            actions: Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: Row(
+                children: [
+                  Expanded(
+                    child: CustomButton(
+                      styleType: ButtonStyleType.ghost,
+                      text: 'Close',
+                      onPressed: () {
+                        Navigator.pop(context);
+                      },
+                    ),
+                  ),
+                  const SizedBox(width: 8.0),
+                  Expanded(
+                    child: CustomButton(
+                      text: 'Save',
+                      onPressed: () {
+                        libraryCubit.newTag(tagController.text);
 
-                    libraryCubit.fetchTags().then((_) {
-                      setState(() {
-                        tagsList = libraryCubit.tagsList;
-                      });
-                    });
+                        libraryCubit.fetchTags().then((_) {
+                          setState(() {
+                            tagsList = libraryCubit.tagsList;
+                          });
+                        });
 
-                    Navigator.pop(context);
-                  },
-                ),
+                        Navigator.pop(context);
+                      },
+                    ),
+                  ),
+                ],
               ),
-            ],
+            ),
           ),
         );
       },
@@ -734,29 +739,31 @@ class _LibraryEditBookScreenState extends State<LibraryEditBookScreen> {
               contentPadding:
                   const EdgeInsets.symmetric(horizontal: 6.0, vertical: 14.0),
             ),
-            actions: [
-              Expanded(
-                child: CustomButton(
-                  styleType: ButtonStyleType.ghost,
-                  text: 'Close',
-                  onPressed: () {
-                    Navigator.of(context).pop();
-                  },
+            actions: Row(
+              children: [
+                Expanded(
+                  child: CustomButton(
+                    styleType: ButtonStyleType.ghost,
+                    text: 'Close',
+                    onPressed: () {
+                      Navigator.of(context).pop();
+                    },
+                  ),
                 ),
-              ),
-              const SizedBox(width: 8.0),
-              Expanded(
-                child: CustomButton(
-                  text: 'Save',
-                  onPressed: () {
-                    if (bookShelfController.text.isNotEmpty) {
-                      libraryCubit.newShelf(bookShelfController.text);
-                    }
-                    Navigator.pop(context);
-                  },
+                const SizedBox(width: 8.0),
+                Expanded(
+                  child: CustomButton(
+                    text: 'Save',
+                    onPressed: () {
+                      if (bookShelfController.text.isNotEmpty) {
+                        libraryCubit.newShelf(bookShelfController.text);
+                      }
+                      Navigator.pop(context);
+                    },
+                  ),
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
         );
       },
