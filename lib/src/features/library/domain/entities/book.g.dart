@@ -38,90 +38,95 @@ const BookSchema = CollectionSchema(
       name: r'createdAt',
       type: IsarType.dateTime,
     ),
-    r'description': PropertySchema(
+    r'currentPage': PropertySchema(
       id: 4,
+      name: r'currentPage',
+      type: IsarType.long,
+    ),
+    r'description': PropertySchema(
+      id: 5,
       name: r'description',
       type: IsarType.string,
     ),
     r'fileSize': PropertySchema(
-      id: 5,
+      id: 6,
       name: r'fileSize',
       type: IsarType.long,
     ),
     r'globalRating': PropertySchema(
-      id: 6,
+      id: 7,
       name: r'globalRating',
       type: IsarType.double,
     ),
     r'isbn': PropertySchema(
-      id: 7,
+      id: 8,
       name: r'isbn',
       type: IsarType.string,
     ),
     r'language': PropertySchema(
-      id: 8,
+      id: 9,
       name: r'language',
       type: IsarType.string,
     ),
     r'lastTimeOpened': PropertySchema(
-      id: 9,
+      id: 10,
       name: r'lastTimeOpened',
       type: IsarType.dateTime,
     ),
     r'path': PropertySchema(
-      id: 10,
+      id: 11,
       name: r'path',
       type: IsarType.string,
     ),
     r'publishDate': PropertySchema(
-      id: 11,
+      id: 12,
       name: r'publishDate',
       type: IsarType.dateTime,
     ),
     r'publishYear': PropertySchema(
-      id: 12,
+      id: 13,
       name: r'publishYear',
       type: IsarType.string,
     ),
     r'ratingCount': PropertySchema(
-      id: 13,
+      id: 14,
       name: r'ratingCount',
       type: IsarType.long,
     ),
     r'readCount': PropertySchema(
-      id: 14,
+      id: 15,
       name: r'readCount',
       type: IsarType.long,
     ),
     r'readingStatus': PropertySchema(
-      id: 15,
+      id: 16,
       name: r'readingStatus',
       type: IsarType.string,
       enumMap: _BookreadingStatusEnumValueMap,
     ),
     r'source': PropertySchema(
-      id: 16,
+      id: 17,
       name: r'source',
       type: IsarType.string,
       enumMap: _BooksourceEnumValueMap,
     ),
     r'title': PropertySchema(
-      id: 17,
+      id: 18,
       name: r'title',
       type: IsarType.string,
     ),
     r'totalPages': PropertySchema(
-      id: 18,
+      id: 19,
       name: r'totalPages',
       type: IsarType.long,
     ),
     r'uid': PropertySchema(
-      id: 19,
+      id: 20,
       name: r'uid',
       type: IsarType.string,
     ),
     r'updatedAt': PropertySchema(
-      id: 20,
+      id: 21,
       name: r'updatedAt',
       type: IsarType.dateTime,
     )
@@ -252,23 +257,24 @@ void _bookSerialize(
   writer.writeString(offsets[1], object.bookType?.name);
   writer.writeString(offsets[2], object.coverURI);
   writer.writeDateTime(offsets[3], object.createdAt);
-  writer.writeString(offsets[4], object.description);
-  writer.writeLong(offsets[5], object.fileSize);
-  writer.writeDouble(offsets[6], object.globalRating);
-  writer.writeString(offsets[7], object.isbn);
-  writer.writeString(offsets[8], object.language);
-  writer.writeDateTime(offsets[9], object.lastTimeOpened);
-  writer.writeString(offsets[10], object.path);
-  writer.writeDateTime(offsets[11], object.publishDate);
-  writer.writeString(offsets[12], object.publishYear);
-  writer.writeLong(offsets[13], object.ratingCount);
-  writer.writeLong(offsets[14], object.readCount);
-  writer.writeString(offsets[15], object.readingStatus?.name);
-  writer.writeString(offsets[16], object.source.name);
-  writer.writeString(offsets[17], object.title);
-  writer.writeLong(offsets[18], object.totalPages);
-  writer.writeString(offsets[19], object.uid);
-  writer.writeDateTime(offsets[20], object.updatedAt);
+  writer.writeLong(offsets[4], object.currentPage);
+  writer.writeString(offsets[5], object.description);
+  writer.writeLong(offsets[6], object.fileSize);
+  writer.writeDouble(offsets[7], object.globalRating);
+  writer.writeString(offsets[8], object.isbn);
+  writer.writeString(offsets[9], object.language);
+  writer.writeDateTime(offsets[10], object.lastTimeOpened);
+  writer.writeString(offsets[11], object.path);
+  writer.writeDateTime(offsets[12], object.publishDate);
+  writer.writeString(offsets[13], object.publishYear);
+  writer.writeLong(offsets[14], object.ratingCount);
+  writer.writeLong(offsets[15], object.readCount);
+  writer.writeString(offsets[16], object.readingStatus?.name);
+  writer.writeString(offsets[17], object.source.name);
+  writer.writeString(offsets[18], object.title);
+  writer.writeLong(offsets[19], object.totalPages);
+  writer.writeString(offsets[20], object.uid);
+  writer.writeDateTime(offsets[21], object.updatedAt);
 }
 
 Book _bookDeserialize(
@@ -282,25 +288,26 @@ Book _bookDeserialize(
     bookType: _BookbookTypeValueEnumMap[reader.readStringOrNull(offsets[1])],
     coverURI: reader.readStringOrNull(offsets[2]),
     createdAt: reader.readDateTime(offsets[3]),
-    description: reader.readStringOrNull(offsets[4]),
-    fileSize: reader.readLongOrNull(offsets[5]),
-    globalRating: reader.readDoubleOrNull(offsets[6]),
-    isbn: reader.readStringOrNull(offsets[7]),
-    language: reader.readStringOrNull(offsets[8]),
-    lastTimeOpened: reader.readDateTimeOrNull(offsets[9]),
-    path: reader.readStringOrNull(offsets[10]),
-    publishDate: reader.readDateTimeOrNull(offsets[11]),
-    publishYear: reader.readStringOrNull(offsets[12]),
-    ratingCount: reader.readLongOrNull(offsets[13]),
-    readCount: reader.readLongOrNull(offsets[14]),
+    currentPage: reader.readLongOrNull(offsets[4]),
+    description: reader.readStringOrNull(offsets[5]),
+    fileSize: reader.readLongOrNull(offsets[6]),
+    globalRating: reader.readDoubleOrNull(offsets[7]),
+    isbn: reader.readStringOrNull(offsets[8]),
+    language: reader.readStringOrNull(offsets[9]),
+    lastTimeOpened: reader.readDateTimeOrNull(offsets[10]),
+    path: reader.readStringOrNull(offsets[11]),
+    publishDate: reader.readDateTimeOrNull(offsets[12]),
+    publishYear: reader.readStringOrNull(offsets[13]),
+    ratingCount: reader.readLongOrNull(offsets[14]),
+    readCount: reader.readLongOrNull(offsets[15]),
     readingStatus:
-        _BookreadingStatusValueEnumMap[reader.readStringOrNull(offsets[15])],
-    source: _BooksourceValueEnumMap[reader.readStringOrNull(offsets[16])] ??
+        _BookreadingStatusValueEnumMap[reader.readStringOrNull(offsets[16])],
+    source: _BooksourceValueEnumMap[reader.readStringOrNull(offsets[17])] ??
         BookSourceEnums.online,
-    title: reader.readString(offsets[17]),
-    totalPages: reader.readLongOrNull(offsets[18]),
-    uid: reader.readStringOrNull(offsets[19]),
-    updatedAt: reader.readDateTimeOrNull(offsets[20]),
+    title: reader.readString(offsets[18]),
+    totalPages: reader.readLongOrNull(offsets[19]),
+    uid: reader.readStringOrNull(offsets[20]),
+    updatedAt: reader.readDateTimeOrNull(offsets[21]),
   );
   object.id = id;
   return object;
@@ -322,40 +329,42 @@ P _bookDeserializeProp<P>(
     case 3:
       return (reader.readDateTime(offset)) as P;
     case 4:
-      return (reader.readStringOrNull(offset)) as P;
-    case 5:
       return (reader.readLongOrNull(offset)) as P;
-    case 6:
-      return (reader.readDoubleOrNull(offset)) as P;
-    case 7:
+    case 5:
       return (reader.readStringOrNull(offset)) as P;
+    case 6:
+      return (reader.readLongOrNull(offset)) as P;
+    case 7:
+      return (reader.readDoubleOrNull(offset)) as P;
     case 8:
       return (reader.readStringOrNull(offset)) as P;
     case 9:
-      return (reader.readDateTimeOrNull(offset)) as P;
+      return (reader.readStringOrNull(offset)) as P;
     case 10:
-      return (reader.readStringOrNull(offset)) as P;
-    case 11:
       return (reader.readDateTimeOrNull(offset)) as P;
-    case 12:
+    case 11:
       return (reader.readStringOrNull(offset)) as P;
+    case 12:
+      return (reader.readDateTimeOrNull(offset)) as P;
     case 13:
-      return (reader.readLongOrNull(offset)) as P;
+      return (reader.readStringOrNull(offset)) as P;
     case 14:
       return (reader.readLongOrNull(offset)) as P;
     case 15:
+      return (reader.readLongOrNull(offset)) as P;
+    case 16:
       return (_BookreadingStatusValueEnumMap[reader.readStringOrNull(offset)])
           as P;
-    case 16:
+    case 17:
       return (_BooksourceValueEnumMap[reader.readStringOrNull(offset)] ??
           BookSourceEnums.online) as P;
-    case 17:
-      return (reader.readString(offset)) as P;
     case 18:
-      return (reader.readLongOrNull(offset)) as P;
+      return (reader.readString(offset)) as P;
     case 19:
-      return (reader.readStringOrNull(offset)) as P;
+      return (reader.readLongOrNull(offset)) as P;
     case 20:
+      return (reader.readStringOrNull(offset)) as P;
+    case 21:
       return (reader.readDateTimeOrNull(offset)) as P;
     default:
       throw IsarError('Unknown property with id $propertyId');
@@ -974,6 +983,75 @@ extension BookQueryFilter on QueryBuilder<Book, Book, QFilterCondition> {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.between(
         property: r'createdAt',
+        lower: lower,
+        includeLower: includeLower,
+        upper: upper,
+        includeUpper: includeUpper,
+      ));
+    });
+  }
+
+  QueryBuilder<Book, Book, QAfterFilterCondition> currentPageIsNull() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(const FilterCondition.isNull(
+        property: r'currentPage',
+      ));
+    });
+  }
+
+  QueryBuilder<Book, Book, QAfterFilterCondition> currentPageIsNotNull() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(const FilterCondition.isNotNull(
+        property: r'currentPage',
+      ));
+    });
+  }
+
+  QueryBuilder<Book, Book, QAfterFilterCondition> currentPageEqualTo(
+      int? value) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.equalTo(
+        property: r'currentPage',
+        value: value,
+      ));
+    });
+  }
+
+  QueryBuilder<Book, Book, QAfterFilterCondition> currentPageGreaterThan(
+    int? value, {
+    bool include = false,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.greaterThan(
+        include: include,
+        property: r'currentPage',
+        value: value,
+      ));
+    });
+  }
+
+  QueryBuilder<Book, Book, QAfterFilterCondition> currentPageLessThan(
+    int? value, {
+    bool include = false,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.lessThan(
+        include: include,
+        property: r'currentPage',
+        value: value,
+      ));
+    });
+  }
+
+  QueryBuilder<Book, Book, QAfterFilterCondition> currentPageBetween(
+    int? lower,
+    int? upper, {
+    bool includeLower = true,
+    bool includeUpper = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.between(
+        property: r'currentPage',
         lower: lower,
         includeLower: includeLower,
         upper: upper,
@@ -3155,6 +3233,18 @@ extension BookQuerySortBy on QueryBuilder<Book, Book, QSortBy> {
     });
   }
 
+  QueryBuilder<Book, Book, QAfterSortBy> sortByCurrentPage() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'currentPage', Sort.asc);
+    });
+  }
+
+  QueryBuilder<Book, Book, QAfterSortBy> sortByCurrentPageDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'currentPage', Sort.desc);
+    });
+  }
+
   QueryBuilder<Book, Book, QAfterSortBy> sortByDescription() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'description', Sort.asc);
@@ -3409,6 +3499,18 @@ extension BookQuerySortThenBy on QueryBuilder<Book, Book, QSortThenBy> {
     });
   }
 
+  QueryBuilder<Book, Book, QAfterSortBy> thenByCurrentPage() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'currentPage', Sort.asc);
+    });
+  }
+
+  QueryBuilder<Book, Book, QAfterSortBy> thenByCurrentPageDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'currentPage', Sort.desc);
+    });
+  }
+
   QueryBuilder<Book, Book, QAfterSortBy> thenByDescription() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'description', Sort.asc);
@@ -3654,6 +3756,12 @@ extension BookQueryWhereDistinct on QueryBuilder<Book, Book, QDistinct> {
     });
   }
 
+  QueryBuilder<Book, Book, QDistinct> distinctByCurrentPage() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addDistinctBy(r'currentPage');
+    });
+  }
+
   QueryBuilder<Book, Book, QDistinct> distinctByDescription(
       {bool caseSensitive = true}) {
     return QueryBuilder.apply(this, (query) {
@@ -3795,6 +3903,12 @@ extension BookQueryProperty on QueryBuilder<Book, Book, QQueryProperty> {
   QueryBuilder<Book, DateTime, QQueryOperations> createdAtProperty() {
     return QueryBuilder.apply(this, (query) {
       return query.addPropertyName(r'createdAt');
+    });
+  }
+
+  QueryBuilder<Book, int?, QQueryOperations> currentPageProperty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addPropertyName(r'currentPage');
     });
   }
 

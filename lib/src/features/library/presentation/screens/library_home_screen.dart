@@ -8,6 +8,7 @@ import 'package:percent_indicator/linear_percent_indicator.dart';
 import 'package:readivo_app/src/core/bloc/app_cubit.dart';
 import 'package:readivo_app/src/core/constants/icons.dart';
 import 'package:readivo_app/src/core/layouts/basic_layout.dart';
+import 'package:readivo_app/src/core/utils/utils.dart';
 import 'package:readivo_app/src/core/widgets/bottom_sheet.dart';
 import 'package:readivo_app/src/core/widgets/custom_button.dart';
 import 'package:readivo_app/src/core/widgets/custom_container.dart';
@@ -224,7 +225,7 @@ class _LibraryHomeScreenState extends State<LibraryHomeScreen> {
 
   Widget _buildReadingBookCard(Book? book, {bool isEmpty = false}) {
     double readingProgress =
-        ((book?.currentPage ?? 0) * (book?.totalPages ?? 0)) / 100;
+        ((book?.currentPage ?? 0) * 100 ) / (book?.totalPages ?? 0);
     return Container(
       padding: const EdgeInsets.all(12.0),
       margin: const EdgeInsets.symmetric(horizontal: 6.0),
@@ -284,7 +285,7 @@ class _LibraryHomeScreenState extends State<LibraryHomeScreen> {
                                 children: [
                                   CustomText(
                                       'page ${book.currentPage ?? 0} of ${book.totalPages ?? '-'}'),
-                                  CustomText('$readingProgress %'),
+                                  CustomText('${readingProgress.toStringAsFixed(1)} %'),
                                 ],
                               ),
                               const SizedBox(

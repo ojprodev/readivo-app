@@ -225,6 +225,9 @@ class LibraryCubit extends Cubit<LibraryStates> {
     required ReadingSession readingSession,
     required Book book,
   }) async {
+
+    booksUseCase.updateBook(book).then((_) => print('book updated'));
+
     await readingSessionUseCase.linkToBook(readingSession, book: book);
   }
 }

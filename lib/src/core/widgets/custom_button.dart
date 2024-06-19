@@ -48,6 +48,9 @@ class CustomButton extends StatelessWidget {
   /// The border width
   final double borderWidth;
 
+  /// Enabled
+  final bool enabled;
+
   /// Creates a customizable button widget.
   ///
   /// The [text] parameter is required and specifies the text displayed on the button.
@@ -69,6 +72,8 @@ class CustomButton extends StatelessWidget {
   /// The [borderColor] parameter specifies the button's border Color, Default is transparent
   ///
   /// The [borderWidth] parameter specifies the button's border width, Default is 2.0
+  ///
+  /// The [enabled] parameter set the enabled state of the button, default is true
 
   const CustomButton({
     super.key,
@@ -82,6 +87,7 @@ class CustomButton extends StatelessWidget {
     this.borderRadius = 4.0,
     this.borderWidth = 2.0,
     this.borderColor = Colors.transparent,
+    this.enabled = true,
     this.child,
   });
 
@@ -95,6 +101,7 @@ class CustomButton extends StatelessWidget {
       child: ElevatedButton(
         onPressed: onPressed,
         style: ButtonStyle(
+          enableFeedback: enabled,
           elevation: WidgetStateProperty.all(0),
           padding: WidgetStateProperty.all<EdgeInsets>(EdgeInsets.zero),
           backgroundColor:

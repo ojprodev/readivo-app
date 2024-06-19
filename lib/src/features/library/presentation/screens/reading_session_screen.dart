@@ -38,6 +38,7 @@ class _ReadingSessionScreenState extends State<ReadingSessionScreen> {
   Timer? timer;
   List<Note> notes = [];
   late ReadingSession readingSession;
+  bool invalid = false;
 
   @override
   void initState() {
@@ -150,7 +151,8 @@ class _ReadingSessionScreenState extends State<ReadingSessionScreen> {
                   ),
                 ],
               ),
-              fallback: (context) => const CustomText('Add notes from your reading'),
+              fallback: (context) =>
+                  const CustomText('Add notes from your reading'),
             ),
           ],
         );
@@ -286,12 +288,27 @@ class _ReadingSessionScreenState extends State<ReadingSessionScreen> {
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                CustomText('Current Page (between ${widget.book.currentPage ?? 0} - ${widget.book.totalPages ?? 0})'),
+                CustomText(
+                    'Current Page (between ${widget.book.currentPage ?? 0} - ${widget.book.totalPages ?? 0})'),
                 const SizedBox(height: 4.0),
                 CustomInputField(
                   controller: pageController,
                   placeholder: 'Enter page number',
                   keyboardType: 'number',
+                  validator: (value) {
+                    if (value == null ||
+                        value.isEmpty ||
+                        int.parse(value) > (widget.book.totalPages ?? 0)) {
+                      setState(() {
+                        invalid = true;
+                      });
+                      return 'Invalid Page Number';
+                    }
+                    setState(() {
+                      invalid = false;
+                    });
+                    return null;
+                  },
                   onChanged: (value) {
                     setState(() {
                       pageController.text = value;
@@ -305,21 +322,27 @@ class _ReadingSessionScreenState extends State<ReadingSessionScreen> {
               height: 48,
               child: CustomButton(
                 text: 'Save',
+                enabled: !invalid,
                 onPressed: () async {
-                  readingSession.notes.addAll(notes);
-                  readingSession.endTime ??= DateTime.now();
-                  readingSession.timeSpent = duration.inSeconds;
-                  if (pageController.text.isNotEmpty) {
-                    readingSession.endPage = int.parse(pageController.text);
-                    widget.book.currentPage = readingSession.endPage;
+                  if (invalid == false) {
+                    readingSession.notes.addAll(notes);
+                    readingSession.endTime ??= DateTime.now();
+                    readingSession.timeSpent = duration.inSeconds;
+
+                    if (pageController.text.isNotEmpty &&
+                        int.parse(pageController.text) <=
+                            (widget.book.totalPages ?? 0)) {
+                      readingSession.endPage = int.parse(pageController.text);
+                      widget.book.currentPage = readingSession.endPage;
+                    }
+
+                    await libraryCubit.addReadingSession(
+                      readingSession: readingSession,
+                      book: widget.book,
+                    );
+
+                    appCubit.previousScreen();
                   }
-
-                  await libraryCubit.addReadingSession(
-                    readingSession: readingSession,
-                    book: widget.book,
-                  );
-
-                  appCubit.previousScreen();
                 },
               ),
             ),

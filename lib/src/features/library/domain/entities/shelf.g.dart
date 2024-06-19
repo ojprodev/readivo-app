@@ -32,8 +32,13 @@ const ShelfSchema = CollectionSchema(
       name: r'name',
       type: IsarType.string,
     ),
-    r'updatedAt': PropertySchema(
+    r'totalBooks': PropertySchema(
       id: 3,
+      name: r'totalBooks',
+      type: IsarType.long,
+    ),
+    r'updatedAt': PropertySchema(
+      id: 4,
       name: r'updatedAt',
       type: IsarType.dateTime,
     )
@@ -85,7 +90,8 @@ void _shelfSerialize(
   writer.writeDateTime(offsets[0], object.createdAt);
   writer.writeString(offsets[1], object.description);
   writer.writeString(offsets[2], object.name);
-  writer.writeDateTime(offsets[3], object.updatedAt);
+  writer.writeLong(offsets[3], object.totalBooks);
+  writer.writeDateTime(offsets[4], object.updatedAt);
 }
 
 Shelf _shelfDeserialize(
@@ -98,9 +104,10 @@ Shelf _shelfDeserialize(
     createdAt: reader.readDateTime(offsets[0]),
     description: reader.readStringOrNull(offsets[1]),
     name: reader.readString(offsets[2]),
-    updatedAt: reader.readDateTimeOrNull(offsets[3]),
+    updatedAt: reader.readDateTimeOrNull(offsets[4]),
   );
   object.id = id;
+  object.totalBooks = reader.readLong(offsets[3]);
   return object;
 }
 
@@ -118,6 +125,8 @@ P _shelfDeserializeProp<P>(
     case 2:
       return (reader.readString(offset)) as P;
     case 3:
+      return (reader.readLong(offset)) as P;
+    case 4:
       return (reader.readDateTimeOrNull(offset)) as P;
     default:
       throw IsarError('Unknown property with id $propertyId');
@@ -592,6 +601,59 @@ extension ShelfQueryFilter on QueryBuilder<Shelf, Shelf, QFilterCondition> {
     });
   }
 
+  QueryBuilder<Shelf, Shelf, QAfterFilterCondition> totalBooksEqualTo(
+      int value) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.equalTo(
+        property: r'totalBooks',
+        value: value,
+      ));
+    });
+  }
+
+  QueryBuilder<Shelf, Shelf, QAfterFilterCondition> totalBooksGreaterThan(
+    int value, {
+    bool include = false,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.greaterThan(
+        include: include,
+        property: r'totalBooks',
+        value: value,
+      ));
+    });
+  }
+
+  QueryBuilder<Shelf, Shelf, QAfterFilterCondition> totalBooksLessThan(
+    int value, {
+    bool include = false,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.lessThan(
+        include: include,
+        property: r'totalBooks',
+        value: value,
+      ));
+    });
+  }
+
+  QueryBuilder<Shelf, Shelf, QAfterFilterCondition> totalBooksBetween(
+    int lower,
+    int upper, {
+    bool includeLower = true,
+    bool includeUpper = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.between(
+        property: r'totalBooks',
+        lower: lower,
+        includeLower: includeLower,
+        upper: upper,
+        includeUpper: includeUpper,
+      ));
+    });
+  }
+
   QueryBuilder<Shelf, Shelf, QAfterFilterCondition> updatedAtIsNull() {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(const FilterCondition.isNull(
@@ -758,6 +820,18 @@ extension ShelfQuerySortBy on QueryBuilder<Shelf, Shelf, QSortBy> {
     });
   }
 
+  QueryBuilder<Shelf, Shelf, QAfterSortBy> sortByTotalBooks() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'totalBooks', Sort.asc);
+    });
+  }
+
+  QueryBuilder<Shelf, Shelf, QAfterSortBy> sortByTotalBooksDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'totalBooks', Sort.desc);
+    });
+  }
+
   QueryBuilder<Shelf, Shelf, QAfterSortBy> sortByUpdatedAt() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'updatedAt', Sort.asc);
@@ -820,6 +894,18 @@ extension ShelfQuerySortThenBy on QueryBuilder<Shelf, Shelf, QSortThenBy> {
     });
   }
 
+  QueryBuilder<Shelf, Shelf, QAfterSortBy> thenByTotalBooks() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'totalBooks', Sort.asc);
+    });
+  }
+
+  QueryBuilder<Shelf, Shelf, QAfterSortBy> thenByTotalBooksDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'totalBooks', Sort.desc);
+    });
+  }
+
   QueryBuilder<Shelf, Shelf, QAfterSortBy> thenByUpdatedAt() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'updatedAt', Sort.asc);
@@ -854,6 +940,12 @@ extension ShelfQueryWhereDistinct on QueryBuilder<Shelf, Shelf, QDistinct> {
     });
   }
 
+  QueryBuilder<Shelf, Shelf, QDistinct> distinctByTotalBooks() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addDistinctBy(r'totalBooks');
+    });
+  }
+
   QueryBuilder<Shelf, Shelf, QDistinct> distinctByUpdatedAt() {
     return QueryBuilder.apply(this, (query) {
       return query.addDistinctBy(r'updatedAt');
@@ -883,6 +975,12 @@ extension ShelfQueryProperty on QueryBuilder<Shelf, Shelf, QQueryProperty> {
   QueryBuilder<Shelf, String, QQueryOperations> nameProperty() {
     return QueryBuilder.apply(this, (query) {
       return query.addPropertyName(r'name');
+    });
+  }
+
+  QueryBuilder<Shelf, int, QQueryOperations> totalBooksProperty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addPropertyName(r'totalBooks');
     });
   }
 
