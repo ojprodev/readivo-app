@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:readivo_app/src/core/constants/colors.dart';
 import 'package:readivo_app/src/core/constants/icons.dart';
 
 /// Widget representing a book box cover.
@@ -44,7 +45,7 @@ class BookBox extends StatelessWidget {
     this.icon,
     this.borderRadius = 8.0,
     this.iconSize = 40.0,
-    this.borderColor = Colors.grey,
+    this.borderColor = AppColors.lightGrey,
   });
 
   @override

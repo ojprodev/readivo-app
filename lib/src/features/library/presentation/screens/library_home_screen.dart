@@ -384,18 +384,19 @@ class _LibraryHomeScreenState extends State<LibraryHomeScreen> {
                       padding: EdgeInsets.only(
                         right: 16.0,
                         left: 16.0,
-                        top: 36.0,
-                        bottom: 16.0,
+                        top: 54.0,
+                        bottom: 36.0,
                       ),
                       child: CustomText(
                         'They are many names for the future; weak call it impossible, afraid people call it  unknown. but for braves it’s the truth.',
                         color: Colors.black87,
+                        lineHeight: 1.8,
                         textAlign: TextAlign.center,
                         maxLines: 10,
                       ),
                     ),
                     Padding(
-                      padding: EdgeInsets.all(8.0),
+                      padding: EdgeInsets.all(4.0),
                       child: Column(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
@@ -434,32 +435,28 @@ class _LibraryHomeScreenState extends State<LibraryHomeScreen> {
   Widget _buildBooksShelvesSection() {
     return Column(
       children: [
-        Column(
-          children: [
-            const Padding(
-              padding: EdgeInsets.all(18.0),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  CustomText(
-                    'Books Shelves',
-                    color: Colors.white,
-                    fontSize: 20,
-                    fontWeight: FontWeight.w500,
-                  ),
-                  CustomText(
-                    'All Shelves',
-                    color: Colors.white,
-                  ),
-                ],
+        const Padding(
+          padding: EdgeInsets.all(18.0),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              CustomText(
+                'Books Shelves',
+                color: Colors.white,
+                fontSize: 20,
+                fontWeight: FontWeight.w500,
               ),
-            ),
-            ConditionalBuilder(
-              condition: shelvesItems.isNotEmpty,
-              builder: (context) => _buildShelvesItems(),
-              fallback: (context) => _buildEmptyShelvesCard(),
-            ),
-          ],
+              CustomText(
+                'All Shelves',
+                color: Colors.white,
+              ),
+            ],
+          ),
+        ),
+        ConditionalBuilder(
+          condition: shelvesItems.isNotEmpty,
+          builder: (context) => _buildShelvesItems(),
+          fallback: (context) => _buildEmptyShelvesCard(),
         ),
       ],
     );
@@ -467,7 +464,7 @@ class _LibraryHomeScreenState extends State<LibraryHomeScreen> {
 
   Widget _buildShelvesItems() {
     return SizedBox(
-      height: 140,
+      height: 160,
       child: Swiper(
         itemCount: shelvesItems.length,
         scale: 0.9,
@@ -481,7 +478,7 @@ class _LibraryHomeScreenState extends State<LibraryHomeScreen> {
   Widget _buildEmptyShelvesCard() {
     return CustomContainer(
       color: Colors.white,
-      height: 120,
+      height: 160,
       borderRadius: 6.0,
       width: MediaQuery.sizeOf(context).width,
       margin: const EdgeInsets.symmetric(vertical: 4.0, horizontal: 16.0),
@@ -536,31 +533,31 @@ class _LibraryHomeScreenState extends State<LibraryHomeScreen> {
           ),
         ),
         Container(
-          width: 160,
-          height: 200,
-          padding: const EdgeInsets.only(right: 16.0, bottom: 8.0),
+          width: 170,
+          height: 220,
+          padding: const EdgeInsets.only(right: 24.0, top: 12.0),
           child: const Stack(
             alignment: Alignment.center,
             children: [
               Positioned(
                 left: 0,
-                top: 22,
+                top: 24,
                 child: BookBox(
-                  width: 60,
-                  height: 90,
+                  width: 55,
+                  height: 80,
                 ),
               ),
               Positioned(
                 right: 0,
-                top: 22,
+                top: 24,
                 child: BookBox(
-                  width: 60,
-                  height: 90,
+                  width: 55,
+                  height: 80,
                 ),
               ),
               BookBox(
-                width: 70,
-                height: 105,
+                width: 65,
+                height: 90,
               ),
             ],
           ),

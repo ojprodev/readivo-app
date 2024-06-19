@@ -18,6 +18,7 @@ class CustomText extends StatelessWidget {
   final bool? softWrap;
   final TextOverflow? overflow;
   final int? maxLines;
+  final double? lineHeight;
 
   const CustomText(
     this.text, {
@@ -38,6 +39,7 @@ class CustomText extends StatelessWidget {
     this.softWrap,
     this.overflow = TextOverflow.ellipsis,
     this.maxLines,
+    this.lineHeight,
   });
 
   @override
@@ -45,6 +47,7 @@ class CustomText extends StatelessWidget {
     return Text(
       text,
       style: TextStyle(
+        height: lineHeight,
         fontSize: fontSize,
         fontWeight: fontWeight,
         color: color,
