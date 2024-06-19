@@ -7,8 +7,10 @@ import 'package:readivo_app/src/core/widgets/bottom_sheet.dart';
 import 'package:readivo_app/src/core/widgets/custom_alert.dart';
 import 'package:readivo_app/src/core/widgets/custom_button.dart';
 import 'package:readivo_app/src/core/widgets/custom_chip.dart';
+import 'package:readivo_app/src/core/widgets/custom_container.dart';
 import 'package:readivo_app/src/core/widgets/custom_input_field.dart';
 import 'package:readivo_app/src/core/widgets/custom_list_item.dart';
+import 'package:readivo_app/src/core/widgets/custom_text.dart';
 import 'package:readivo_app/src/features/library/domain/entities/book.dart';
 import 'package:readivo_app/src/features/library/domain/entities/shelf.dart';
 import 'package:readivo_app/src/features/library/domain/entities/tag.dart';
@@ -28,8 +30,6 @@ class LibraryEditBookScreen extends StatefulWidget {
 class _LibraryEditBookScreenState extends State<LibraryEditBookScreen> {
   late AppCubit appCubit;
   late LibraryCubit libraryCubit;
-
-  BookType selectedBookType = BookType.paperBook;
   List<Shelf> selectedBooksShelves = [];
   late List<Tag> selectedTags;
   List<Tag> tempSelectedTags = [];
@@ -107,7 +107,6 @@ class _LibraryEditBookScreenState extends State<LibraryEditBookScreen> {
               onSave: (coverUri) {
                 widget.book.title = titleController.text;
                 widget.book.author = authorController.text;
-                widget.book.bookType = selectedBookType;
                 widget.book.totalPages = int.parse(totalPagesController.text);
                 widget.book.isbn = isbnController.text;
                 widget.book.publishYear = publishedAtController.text;
@@ -131,8 +130,11 @@ class _LibraryEditBookScreenState extends State<LibraryEditBookScreen> {
                 child: Column(
                   children: [
                     _buildBookTypeTabs(),
-                    _buildBookTagsSection(),
+                    const SizedBox(height: 16.0),
                     _buildAddToBooksShelvesSection(),
+                    const SizedBox(height: 16.0),
+                    _buildBookTagsSection(),
+                    const SizedBox(height: 24.0),
                     _buildBookInfoFields(),
                   ],
                 ),
@@ -163,7 +165,7 @@ class _LibraryEditBookScreenState extends State<LibraryEditBookScreen> {
                   .map((status) => Expanded(
                         child: _buildTab(
                           getBookTypeAsString(status),
-                          isSelected: status == selectedBookType,
+                          isSelected: status == widget.book.bookType,
                         ),
                       ))
                   .toList(),
@@ -177,9 +179,9 @@ class _LibraryEditBookScreenState extends State<LibraryEditBookScreen> {
   Widget _buildTab(String type, {bool isSelected = false}) {
     return GestureDetector(
       onTap: () {
-        if (getBookType(type) != selectedBookType) {
+        if (getBookType(type) != widget.book.bookType) {
           setState(() {
-            selectedBookType = getBookType(type);
+            widget.book.bookType = getBookType(type);
           });
         }
       },
@@ -215,65 +217,84 @@ class _LibraryEditBookScreenState extends State<LibraryEditBookScreen> {
 
   Widget _buildBookTagsSection() {
     return Container(
-      margin: const EdgeInsets.symmetric(horizontal: 16.0),
+      margin: const EdgeInsets.symmetric(horizontal: 12.0),
+      padding: const EdgeInsets.all(4.0),
       child: Column(
-        mainAxisAlignment: MainAxisAlignment.start,
-        crossAxisAlignment: CrossAxisAlignment.start,
+        mainAxisAlignment: MainAxisAlignment.center,
+        crossAxisAlignment: CrossAxisAlignment.center,
         children: [
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            mainAxisSize: MainAxisSize.max,
-            children: [
-              _buildInputLabel('Add tags'),
-              CustomButton(
-                text: 'Add Tags',
-                width: 30,
-                height: 30,
-                styleType: ButtonStyleType.ghost,
-                borderRadius: 15,
-                onPressed: () {
-                  _showAddTagsBottomSheet(context);
-                },
-                child: const Icon(Icons.add),
-              ),
-            ],
+          Container(
+            padding: const EdgeInsets.symmetric(horizontal: 6.0, vertical: 4.0),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              mainAxisSize: MainAxisSize.max,
+              children: [
+                const CustomText(
+                  'Add tags',
+                ),
+                CustomButton(
+                  text: 'Add Tags',
+                  width: 30,
+                  height: 30,
+                  styleType: ButtonStyleType.ghost,
+                  borderRadius: 15,
+                  onPressed: () {
+                    _showAddTagsBottomSheet(context);
+                  },
+                  child: const Icon(Icons.add),
+                ),
+              ],
+            ),
           ),
           selectedTags.isNotEmpty
-              ? Wrap(
-                  spacing: 6.0,
-                  children: [
-                    for (Tag tag in selectedTags)
-                      CustomChip(
-                        text: tag.name,
-                        icon: Icons.tag,
-                        iconColor: Colors.grey,
-                        backgroundColor: Colors.grey,
-                        deleteIcon: CustomButton(
-                          text: 'remove $tag',
-                          borderRadius: 18,
-                          width: 20,
-                          height: 20,
-                          color: Colors.redAccent.withOpacity(0.8),
-                          child: const Icon(
-                            Icons.clear_rounded,
-                            size: 18,
-                          ),
-                        ),
-                        onDeleted: () {
-                          setState(() {
-                            if (selectedTags.contains(tag)) {
-                              selectedTags.remove(tag);
-
-                              libraryCubit.unassignTags(widget.book, [tag]);
-                            }
-                          });
-                        },
-                      )
-                  ],
+              ? CustomContainer(
+                  width: double.infinity,
+                  borderColor: Colors.grey.withOpacity(0.6),
+                  borderWidth: 2,
+                  padding: const EdgeInsets.symmetric(
+                      horizontal: 6.0, vertical: 4.0),
+                  margin: const EdgeInsets.symmetric(horizontal: 2.0),
+                  child: Wrap(
+                    spacing: 6.0,
+                    children: [
+                      for (Tag tag in selectedTags) _buildTagChip(tag)
+                    ],
+                  ),
                 )
               : const SizedBox(),
         ],
       ),
+    );
+  }
+
+  Widget _buildTagChip(Tag tag) {
+    return CustomChip(
+      text: tag.name,
+      icon: Icons.tag,
+      iconColor: Colors.black,
+      textColor: Colors.black,
+      backgroundColor: Colors.grey,
+      deleteIcon: CustomButton(
+        text: 'remove $tag',
+        borderRadius: 18,
+        width: 20,
+        height: 20,
+        color: Colors.redAccent.withOpacity(0.8),
+        child: const Icon(
+          Icons.clear_rounded,
+          size: 18,
+        ),
+      ),
+      onDeleted: () {
+        setState(() {
+          if (selectedTags.contains(tag)) {
+            selectedTags.remove(tag);
+
+            libraryCubit.unassignTags(widget.book, [tag]);
+          }
+        });
+      },
     );
   }
 
@@ -519,12 +540,24 @@ class _LibraryEditBookScreenState extends State<LibraryEditBookScreen> {
         mainAxisAlignment: MainAxisAlignment.start,
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              _buildInputLabel('Add to a Books Shelves'),
-              _buildAddToBookShelfButton(),
-            ],
+          Container(
+            padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 6.0),
+            decoration: BoxDecoration(
+              color: selectedBooksShelves.isNotEmpty
+                  ? Colors.grey
+                  : Colors.transparent,
+              borderRadius: const BorderRadius.only(
+                topLeft: Radius.circular(4.0),
+                topRight: Radius.circular(4.0),
+              ),
+            ),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                const CustomText('Add to a Books Shelves'),
+                _buildAddToBookShelfButton(),
+              ],
+            ),
           ),
           selectedBooksShelves.isNotEmpty
               ? _buildBooksShelvesContainer(selectedBooksShelves)
@@ -653,16 +686,14 @@ class _LibraryEditBookScreenState extends State<LibraryEditBookScreen> {
                 padding: const EdgeInsets.symmetric(
                     horizontal: 12.0, vertical: 18.0),
                 label: booksShelves[index].name,
-                iconBackground: isSelected
-                    ? Colors.grey
-                    : Colors.grey.withOpacity(0.4),
+                iconBackground:
+                    isSelected ? Colors.grey : Colors.grey.withOpacity(0.4),
                 appendIcon: const Text('12'),
                 borderColor: isSelected
                     ? Colors.lightGreen
                     : Colors.grey.withOpacity(0.5),
                 borderRadius: 12.0,
-                backgroundColor:
-                    isSelected ? Colors.grey : Colors.white,
+                backgroundColor: isSelected ? Colors.grey : Colors.white,
                 textStyle: const TextStyle(
                   fontSize: 18,
                   fontWeight: FontWeight.w400,
@@ -698,13 +729,12 @@ class _LibraryEditBookScreenState extends State<LibraryEditBookScreen> {
   Widget _buildBooksShelvesContainer(List<Shelf> booksShelves) {
     return Container(
       width: double.infinity,
-      padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 2.0),
+      padding: const EdgeInsets.symmetric(horizontal: 10.0, vertical: 8.0),
       decoration: BoxDecoration(
-        color: Colors.grey[50],
-        borderRadius: BorderRadius.circular(4.0),
-        border: Border.all(
-          color: Colors.grey.withOpacity(0.4),
-          width: 2,
+        color: Colors.grey.withOpacity(0.6),
+        borderRadius: const BorderRadius.only(
+          bottomRight: Radius.circular(4.0),
+          bottomLeft: Radius.circular(4.0),
         ),
       ),
       child: Wrap(
@@ -713,7 +743,8 @@ class _LibraryEditBookScreenState extends State<LibraryEditBookScreen> {
         children: booksShelves.map((chip) {
           return CustomChip(
             text: chip.name,
-            backgroundColor: Colors.grey.withOpacity(0.6),
+            textColor: Colors.white,
+            backgroundColor: Colors.grey,
             borderRadius: 4.0,
           );
         }).toList(),
@@ -796,7 +827,7 @@ class _LibraryEditBookScreenState extends State<LibraryEditBookScreen> {
       },
       {
         "label": "Publish Year",
-        "value": widget.book.publishYear,
+        "value": widget.book.publishYear ?? '',
         "type": 'number',
         "controller": publishedAtController,
       },

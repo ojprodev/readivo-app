@@ -116,6 +116,7 @@ class _LibraryAddBookScreenState extends State<LibraryAddBookScreen> {
               _buildBookTitleAndAuthor(),
               const SizedBox(height: 16.0),
               _buildReadingStatusButton(),
+              if(selectedReadingStatus != ReadingStatus.wantToRead)
               CustomContainer(
                 color: Colors.grey.withOpacity(0.15),
                 padding: const EdgeInsets.only(top: 8.0, bottom: 18.0),
@@ -130,6 +131,7 @@ class _LibraryAddBookScreenState extends State<LibraryAddBookScreen> {
                   ],
                 ),
               ),
+              const SizedBox(height: 24.0),
               _buildBookInfoCard(),
               const SizedBox(height: 24),
               if (widget.book.description != null &&

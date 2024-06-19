@@ -47,7 +47,7 @@ class LocalBookRepositoryImpl extends LocalBookRepository {
           .findAll();
     } else {
       if (status != null) {
-        return await isar.books.filter().readingStatusEqualTo(status).limit(3).findAll();
+        return await isar.books.filter().readingStatusEqualTo(status).findAll();
       } else {
         return await isar.books.where().findAll();
       }
