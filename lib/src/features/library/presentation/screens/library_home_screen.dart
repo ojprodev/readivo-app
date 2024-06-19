@@ -3,6 +3,7 @@ import 'package:conditional_builder_null_safety/conditional_builder_null_safety.
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:intl/intl.dart';
 import 'package:percent_indicator/linear_percent_indicator.dart';
 import 'package:readivo_app/src/core/bloc/app_cubit.dart';
 import 'package:readivo_app/src/core/constants/icons.dart';
@@ -79,6 +80,7 @@ class _LibraryHomeScreenState extends State<LibraryHomeScreen> {
   Widget _buildMainLayout() {
     return CustomContainer(
       color: Colors.grey,
+      borderRadius: 0,
       child: SingleChildScrollView(
         child: Column(
           mainAxisSize: MainAxisSize.max,
@@ -229,13 +231,14 @@ class _LibraryHomeScreenState extends State<LibraryHomeScreen> {
           const RotationTransition(
             turns: AlwaysStoppedAnimation(-2.6 / 360),
             child: CustomContainer(
-              color: Colors.white,
+              color: Colors.white60,
             ),
           ),
           CustomContainer(
             width: double.infinity,
             height: double.infinity,
             color: Colors.white,
+            padding: const EdgeInsets.all(12.0),
             child: ConditionalBuilder(
               condition: isEmpty == false,
               builder: (context) => Row(
@@ -273,18 +276,13 @@ class _LibraryHomeScreenState extends State<LibraryHomeScreen> {
                               const SizedBox(
                                 height: 8.0,
                               ),
-                              CustomContainer(
-                                padding: const EdgeInsets.all(6.0),
-                                color: Colors.grey,
-                                borderRadius: 12.0,
-                                child: LinearPercentIndicator(
-                                  lineHeight: 8.0,
-                                  percent: 0.63,
-                                  barRadius: const Radius.circular(4.0),
-                                  backgroundColor: Colors.white,
-                                  progressColor: Colors.grey,
-                                  padding: EdgeInsets.zero,
-                                ),
+                              LinearPercentIndicator(
+                                lineHeight: 8.0,
+                                percent: 0.63,
+                                barRadius: const Radius.circular(4.0),
+                                backgroundColor: Colors.grey[300],
+                                progressColor: Colors.grey,
+                                padding: EdgeInsets.zero,
                               ),
                             ],
                           ),
@@ -419,12 +417,6 @@ class _LibraryHomeScreenState extends State<LibraryHomeScreen> {
             ],
           ),
         ),
-        const SizedBox(height: 8.0),
-        const CustomButton(
-          text: 'View all',
-          textColor: Colors.white,
-          styleType: ButtonStyleType.ghost,
-        ),
       ],
     );
   }
@@ -435,7 +427,7 @@ class _LibraryHomeScreenState extends State<LibraryHomeScreen> {
         Column(
           children: [
             const Padding(
-              padding: EdgeInsets.all(16),
+              padding: EdgeInsets.all(18.0),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
@@ -469,7 +461,8 @@ class _LibraryHomeScreenState extends State<LibraryHomeScreen> {
       child: Swiper(
         itemCount: shelvesItems.length,
         scale: 0.9,
-        viewportFraction: 0.85,
+        loop: false,
+        viewportFraction: 0.9,
         itemBuilder: (context, index) => _buildShelfItem(shelvesItems[index]),
       ),
     );
@@ -500,6 +493,69 @@ class _LibraryHomeScreenState extends State<LibraryHomeScreen> {
           ),
         ],
       ),
+    );
+  }
+
+  Widget _buildShelfItem(Shelf shelf) {
+    // show number of books on this shelf
+    String totalBooks = '${shelf.totalBooks} ';
+    totalBooks += Intl.plural(shelf.totalBooks, other: 'books', one: 'book');
+
+    return Stack(
+      alignment: Alignment.centerRight,
+      children: [
+        CustomContainer(
+          color: Colors.white,
+          width: MediaQuery.sizeOf(context).width,
+          padding: const EdgeInsets.all(16.0),
+          borderRadius: 6.0,
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisSize: MainAxisSize.max,
+            children: [
+              CustomText(
+                shelf.name,
+                fontSize: 18,
+              ),
+              CustomText(
+                totalBooks,
+                color: Colors.grey,
+              ),
+            ],
+          ),
+        ),
+        Container(
+          width: 160,
+          height: 200,
+          padding: const EdgeInsets.only(right: 16.0, bottom: 8.0),
+          child: const Stack(
+            alignment: Alignment.center,
+            children: [
+              Positioned(
+                left: 0,
+                top: 22,
+                child: BookBox(
+                  width: 60,
+                  height: 90,
+                ),
+              ),
+              Positioned(
+                right: 0,
+                top: 22,
+                child: BookBox(
+                  width: 60,
+                  height: 90,
+                ),
+              ),
+              BookBox(
+                width: 70,
+                height: 105,
+              ),
+            ],
+          ),
+        ),
+      ],
     );
   }
 
@@ -546,7 +602,7 @@ class _LibraryHomeScreenState extends State<LibraryHomeScreen> {
           return CustomListItem(
             label: readingStatus[index]['label'],
             padding:
-                const EdgeInsets.symmetric(vertical: 8.0, horizontal: 12.0),
+            const EdgeInsets.symmetric(vertical: 8.0, horizontal: 12.0),
             icon: Icon(
               readingStatus[index]['icon'],
               color: Colors.grey,
@@ -560,72 +616,14 @@ class _LibraryHomeScreenState extends State<LibraryHomeScreen> {
         separatorBuilder: (context, index) {
           return index != readingStatus.length - 1
               ? Container(
-                  color: Colors.grey.withOpacity(0.6),
-                  margin: const EdgeInsets.symmetric(horizontal: 24.0),
-                  height: 1,
-                )
+            color: Colors.grey.withOpacity(0.6),
+            margin: const EdgeInsets.symmetric(horizontal: 24.0),
+            height: 1,
+          )
               : const SizedBox();
         },
         itemCount: readingStatus.length,
       ),
-    );
-  }
-
-  Widget _buildShelfItem(Shelf shelf) {
-    return Stack(
-      alignment: Alignment.centerRight,
-      children: [
-        CustomContainer(
-          color: Colors.white,
-          width: MediaQuery.sizeOf(context).width,
-          borderRadius: 6.0,
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            mainAxisSize: MainAxisSize.max,
-            children: [
-              CustomText(
-                shelf.name,
-                fontSize: 18,
-              ),
-              CustomText(
-                shelf.totalBooks.toString(),
-                color: Colors.grey,
-              ),
-            ],
-          ),
-        ),
-        Container(
-          width: 150,
-          height: 200,
-          padding: const EdgeInsets.only(right: 12.0),
-          child: const Stack(
-            alignment: Alignment.center,
-            children: [
-              Positioned(
-                left: 0,
-                top: 40,
-                child: BookBox(
-                  width: 60,
-                  height: 90,
-                ),
-              ),
-              Positioned(
-                right: 0,
-                top: 40,
-                child: BookBox(
-                  width: 60,
-                  height: 90,
-                ),
-              ),
-              BookBox(
-                width: 70,
-                height: 105,
-              ),
-            ],
-          ),
-        ),
-      ],
     );
   }
 

@@ -231,7 +231,7 @@ class _LibraryEditBookScreenState extends State<LibraryEditBookScreen> {
               mainAxisSize: MainAxisSize.max,
               children: [
                 const CustomText(
-                  'Add tags',
+                  'Add Tags',
                 ),
                 CustomButton(
                   text: 'Add Tags',
@@ -517,7 +517,7 @@ class _LibraryEditBookScreenState extends State<LibraryEditBookScreen> {
             children: [
               _buildBottomSheetHeader(
                 context: context,
-                title: 'Add to BooksShelves',
+                title: 'Select Shelves',
                 tempSelectedList: tempSelectedBooksShelves,
                 updateFinalSelectedList: (List<dynamic> updatedList) {
                   selectedBooksShelves = updatedList as List<Shelf>;
@@ -583,7 +583,7 @@ class _LibraryEditBookScreenState extends State<LibraryEditBookScreen> {
       },
       child: const Icon(
         Icons.create_new_folder,
-        color: Colors.orange,
+        color: Colors.black,
       ),
     );
   }
@@ -607,7 +607,7 @@ class _LibraryEditBookScreenState extends State<LibraryEditBookScreen> {
                 Expanded(
                   child: _buildSearchField(
                     controller: searchBooksShelvesController,
-                    placeholder: 'Search for tags',
+                    placeholder: 'Search for Shelves',
                     onChanged: (value) {
                       updateState(() {
                         if (value.isEmpty) {
@@ -644,26 +644,31 @@ class _LibraryEditBookScreenState extends State<LibraryEditBookScreen> {
         controller: controller,
         placeholder: placeholder,
         borderRadius: 8,
+        borderWidth: 2,
+        borderColor: Colors.grey.withOpacity(0.4),
         contentPadding:
-            const EdgeInsets.symmetric(horizontal: 8.0, vertical: 14.0),
-        suffix: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 6.0),
-          child: CustomButton(
-            text: 'clear search',
-            color: Colors.grey.withOpacity(0.6),
-            width: 24,
-            height: 24,
-            borderRadius: 8,
-            child: const Icon(
-              Icons.clear_rounded,
-              size: 18,
-            ),
-            onPressed: () {
-              controller.clear();
-              onChanged('');
-            },
-          ),
-        ),
+            const EdgeInsets.symmetric(horizontal: 8.0, vertical: 12.0),
+        suffix: controller.text.isNotEmpty
+            ? Padding(
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 8.0, vertical: 6.0),
+                child: CustomButton(
+                  text: 'clear search',
+                  color: Colors.grey.withOpacity(0.6),
+                  width: 24,
+                  height: 24,
+                  borderRadius: 8,
+                  child: const Icon(
+                    Icons.clear_rounded,
+                    size: 18,
+                  ),
+                  onPressed: () {
+                    controller.clear();
+                    onChanged('');
+                  },
+                ),
+              )
+            : const SizedBox(),
         onChanged: onChanged,
       ),
     );
@@ -681,33 +686,24 @@ class _LibraryEditBookScreenState extends State<LibraryEditBookScreen> {
             bool isSelected =
                 tempSelectedBooksShelves.contains(booksShelves[index]);
             return Container(
-              margin: const EdgeInsets.symmetric(horizontal: 8.0),
+              margin: const EdgeInsets.symmetric(horizontal: 10.0),
               child: CustomListItem(
                 padding: const EdgeInsets.symmetric(
-                    horizontal: 12.0, vertical: 18.0),
+                    horizontal: 12.0, vertical: 14.0),
                 label: booksShelves[index].name,
                 iconBackground:
                     isSelected ? Colors.grey : Colors.grey.withOpacity(0.4),
                 appendIcon: const Text('12'),
                 borderColor: isSelected
-                    ? Colors.lightGreen
-                    : Colors.grey.withOpacity(0.5),
+                    ? Colors.black
+                    : Colors.grey.withOpacity(0.2),
                 borderRadius: 12.0,
-                backgroundColor: isSelected ? Colors.grey : Colors.white,
+                backgroundColor: Colors.white,
                 textStyle: const TextStyle(
                   fontSize: 18,
                   fontWeight: FontWeight.w400,
-                  color: Colors.grey,
+                  color: Colors.black,
                 ),
-                shadow: [
-                  BoxShadow(
-                    color: isSelected
-                        ? Colors.grey.withOpacity(0.2)
-                        : Colors.grey.withOpacity(0.2),
-                    blurRadius: 8,
-                    spreadRadius: 4,
-                  )
-                ],
                 onTap: () {
                   updateState(() {
                     if (!tempSelectedBooksShelves

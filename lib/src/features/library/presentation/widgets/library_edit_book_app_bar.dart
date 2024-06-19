@@ -105,6 +105,7 @@ class _LibraryEditBookAppBarState extends State<LibraryEditBookAppBar> {
                     onPressed: () {
                       CustomBottomSheet.show(
                         context: context,
+                        height: 200,
                         bottomSheetItems: [
                           BottomSheetItem(
                             icon: SvgPicture.asset(AppIcons.image),
