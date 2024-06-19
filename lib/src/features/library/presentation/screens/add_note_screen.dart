@@ -87,7 +87,7 @@ class _AddNoteScreenState extends State<AddNoteScreen> {
               Expanded(
                 child: CustomInputField(
                   controller: authorController,
-                  placeholder: widget.book.author,
+                  placeholder: 'Unknown',
                   contentPadding: EdgeInsets.zero,
                   borderColor: Colors.transparent,
                   onChanged: (value) {
@@ -158,6 +158,7 @@ class _AddNoteScreenState extends State<AddNoteScreen> {
           },
           child: CustomChip(
             text: Note.getNoteCategoryAsString(selectedCategory),
+            textColor: Colors.white,
             padding: const EdgeInsets.symmetric(horizontal: 12.0),
             backgroundColor: Colors.grey,
           ),

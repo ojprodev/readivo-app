@@ -24,6 +24,7 @@ class Book {
   @Enumerated(EnumType.name)
   late BookSourceEnums source;
   late int? totalPages;
+  late int? currentPage = 0;
   late String? description;
   late DateTime? publishDate;
   late int? readCount;
@@ -62,6 +63,7 @@ class Book {
     this.language,
     this.globalRating,
     this.ratingCount,
+    this.currentPage,
     this.bookType,
     this.readCount,
     this.updatedAt,

@@ -7,7 +7,6 @@ import 'package:intl/intl.dart';
 import 'package:percent_indicator/linear_percent_indicator.dart';
 import 'package:readivo_app/src/core/bloc/app_cubit.dart';
 import 'package:readivo_app/src/core/constants/icons.dart';
-import 'package:readivo_app/src/core/enums/enums.dart';
 import 'package:readivo_app/src/core/layouts/basic_layout.dart';
 import 'package:readivo_app/src/core/widgets/bottom_sheet.dart';
 import 'package:readivo_app/src/core/widgets/custom_button.dart';
@@ -19,7 +18,6 @@ import 'package:readivo_app/src/features/library/domain/entities/book.dart';
 import 'package:readivo_app/src/features/library/domain/entities/shelf.dart';
 import 'package:readivo_app/src/features/library/presentation/bloc/library_cubit.dart';
 import 'package:readivo_app/src/features/library/presentation/screens/library_add_book_screen.dart';
-import 'package:readivo_app/src/features/library/presentation/screens/library_pdf_reader_screen.dart';
 import 'package:readivo_app/src/features/library/presentation/screens/library_search_screen.dart';
 import 'package:readivo_app/src/features/library/presentation/screens/reading_session_screen.dart';
 import 'package:readivo_app/src/features/library/presentation/widgets/book_box.dart';
@@ -64,6 +62,7 @@ class _LibraryHomeScreenState extends State<LibraryHomeScreen> {
       title: 'Home Screen',
       titleWidget: const CustomText(
         'Good morning',
+        fontSize: 18,
         color: Colors.white,
       ),
       showBackButton: false,
@@ -89,7 +88,7 @@ class _LibraryHomeScreenState extends State<LibraryHomeScreen> {
               children: [
                 const SizedBox(height: 24.0),
                 _buildContinueReadingSection(),
-                const SizedBox(height: 64.0),
+                const SizedBox(height: 48.0),
                 _buildDailyQuoteSection(),
                 const SizedBox(height: 36.0),
                 _buildBooksShelvesSection(),
@@ -169,7 +168,7 @@ class _LibraryHomeScreenState extends State<LibraryHomeScreen> {
       child: Column(
         children: [
           _buildContinueReadingHeader(),
-          const SizedBox(height: 16.0),
+          const SizedBox(height: 8.0),
           _buildContinueReadingList(),
         ],
       ),
@@ -178,7 +177,7 @@ class _LibraryHomeScreenState extends State<LibraryHomeScreen> {
 
   Widget _buildContinueReadingHeader() {
     return const Padding(
-      padding: EdgeInsets.symmetric(vertical: 6.0, horizontal: 16.0),
+      padding: EdgeInsets.symmetric(horizontal: 16.0),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         crossAxisAlignment: CrossAxisAlignment.center,
@@ -201,7 +200,7 @@ class _LibraryHomeScreenState extends State<LibraryHomeScreen> {
 
   Widget _buildContinueReadingList() {
     return Container(
-      padding: const EdgeInsets.all(10.0),
+      padding: const EdgeInsets.symmetric( vertical: 8.0),
       height: 240,
       width: MediaQuery.sizeOf(context).width,
       child: ConditionalBuilder(
@@ -224,8 +223,11 @@ class _LibraryHomeScreenState extends State<LibraryHomeScreen> {
   }
 
   Widget _buildReadingBookCard(Book? book, {bool isEmpty = false}) {
-    return Padding(
-      padding: const EdgeInsets.all(10.0),
+    double readingProgress =
+        ((book?.currentPage ?? 0) * (book?.totalPages ?? 0)) / 100;
+    return Container(
+      padding: const EdgeInsets.all(12.0),
+      margin: const EdgeInsets.symmetric(horizontal: 6.0),
       child: Stack(
         children: [
           const RotationTransition(
@@ -257,9 +259,21 @@ class _LibraryHomeScreenState extends State<LibraryHomeScreen> {
                         mainAxisAlignment: MainAxisAlignment.spaceAround,
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          CustomText(
-                            book.title,
-                            maxLines: 2,
+                          Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            mainAxisAlignment: MainAxisAlignment.spaceAround,
+                            children: [
+                              CustomText(
+                                book.title,
+                                fontSize: 18,
+                                maxLines: 2,
+                              ),
+                              CustomText(
+                                book.author ?? '',
+                                color: Colors.grey,
+                                maxLines: 1,
+                              ),
+                            ],
                           ),
                           Column(
                             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
@@ -269,8 +283,8 @@ class _LibraryHomeScreenState extends State<LibraryHomeScreen> {
                                     MainAxisAlignment.spaceBetween,
                                 children: [
                                   CustomText(
-                                      'page 230 of ${book.totalPages ?? '-'}'),
-                                  const CustomText('63%'),
+                                      'page ${book.currentPage ?? 0} of ${book.totalPages ?? '-'}'),
+                                  CustomText('$readingProgress %'),
                                 ],
                               ),
                               const SizedBox(
@@ -278,7 +292,7 @@ class _LibraryHomeScreenState extends State<LibraryHomeScreen> {
                               ),
                               LinearPercentIndicator(
                                 lineHeight: 8.0,
-                                percent: 0.63,
+                                percent: readingProgress / 100,
                                 barRadius: const Radius.circular(4.0),
                                 backgroundColor: Colors.grey[300],
                                 progressColor: Colors.grey,
@@ -286,34 +300,7 @@ class _LibraryHomeScreenState extends State<LibraryHomeScreen> {
                               ),
                             ],
                           ),
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.end,
-                            crossAxisAlignment: CrossAxisAlignment.end,
-                            children: [
-                              CustomButton(
-                                text: 'Start Reading',
-                                styleType: ButtonStyleType.ghost,
-                                width: 140,
-                                onPressed: () {
-                                  if (book.source == BookSourceEnums.local) {
-                                    // open the pdf reader screen
-                                    appCubit.changeScreen(
-                                        LibraryPdfReaderScreen(book: book));
-                                  } else {
-                                    appCubit.changeScreen(
-                                        ReadingSessionScreen(book: book));
-                                  }
-                                },
-                                child: CustomText(
-                                  book.source == BookSourceEnums.local
-                                      ? 'Continue Reading'
-                                      : 'Start a Session',
-                                  textAlign: TextAlign.end,
-                                  color: Colors.black,
-                                ),
-                              )
-                            ],
-                          ),
+                          _buildContinueReadingButton(book),
                         ],
                       ),
                     ),
@@ -325,6 +312,28 @@ class _LibraryHomeScreenState extends State<LibraryHomeScreen> {
           ),
         ],
       ),
+    );
+  }
+
+  Widget _buildContinueReadingButton(Book book) {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.end,
+      crossAxisAlignment: CrossAxisAlignment.end,
+      children: [
+        CustomButton(
+          text: 'Start Reading',
+          styleType: ButtonStyleType.ghost,
+          width: 140,
+          onPressed: () {
+            appCubit.changeScreen(ReadingSessionScreen(book: book));
+          },
+          child: const CustomText(
+            'Start a Session',
+            textAlign: TextAlign.end,
+            color: Colors.black,
+          ),
+        )
+      ],
     );
   }
 
@@ -438,7 +447,7 @@ class _LibraryHomeScreenState extends State<LibraryHomeScreen> {
                     fontWeight: FontWeight.w500,
                   ),
                   CustomText(
-                    'Browse all',
+                    'All Shelves',
                     color: Colors.white,
                   ),
                 ],
@@ -602,7 +611,7 @@ class _LibraryHomeScreenState extends State<LibraryHomeScreen> {
           return CustomListItem(
             label: readingStatus[index]['label'],
             padding:
-            const EdgeInsets.symmetric(vertical: 8.0, horizontal: 12.0),
+                const EdgeInsets.symmetric(vertical: 8.0, horizontal: 12.0),
             icon: Icon(
               readingStatus[index]['icon'],
               color: Colors.grey,
@@ -616,10 +625,10 @@ class _LibraryHomeScreenState extends State<LibraryHomeScreen> {
         separatorBuilder: (context, index) {
           return index != readingStatus.length - 1
               ? Container(
-            color: Colors.grey.withOpacity(0.6),
-            margin: const EdgeInsets.symmetric(horizontal: 24.0),
-            height: 1,
-          )
+                  color: Colors.grey.withOpacity(0.6),
+                  margin: const EdgeInsets.symmetric(horizontal: 24.0),
+                  height: 1,
+                )
               : const SizedBox();
         },
         itemCount: readingStatus.length,

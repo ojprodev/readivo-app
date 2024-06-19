@@ -66,6 +66,20 @@ class _ReadingSessionScreenState extends State<ReadingSessionScreen> {
     });
   }
 
+  void toggleTimer() {
+    if (timerOn) {
+      timer?.cancel();
+
+      readingSession.endTime = DateTime.now();
+
+      timerOn = false;
+    } else {
+      startTimer();
+
+      timerOn = true;
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return BasicLayout(
@@ -105,29 +119,40 @@ class _ReadingSessionScreenState extends State<ReadingSessionScreen> {
 
   Widget _buildContent(BuildContext context, state) {
     return ConditionalBuilder(
-      condition: notes.isEmpty,
-      builder: (context) => Container(
-        margin: const EdgeInsets.only(top: 48.0),
-        padding: const EdgeInsets.all(24.0),
-        child: Column(
-          mainAxisSize: MainAxisSize.max,
-          mainAxisAlignment: MainAxisAlignment.start,
-          children: [
-            SvgPicture.asset(
-              AppImages.readingSession,
-              height: 300,
-            ),
-            const SizedBox(height: 16.0),
-            const CustomText('Start a reading session'),
-          ],
-        ),
+      condition: notes.isNotEmpty,
+      builder: (context) => ListView.builder(
+        itemCount: notes.length,
+        itemBuilder: (context, index) {
+          return _buildQuoteCard(notes[index]);
+        },
       ),
       fallback: (context) {
-        return ListView.builder(
-          itemCount: notes.length,
-          itemBuilder: (context, index) {
-            return _buildQuoteCard(notes[index]);
-          },
+        return Column(
+          children: [
+            Container(
+              margin: const EdgeInsets.only(top: 48.0),
+              padding: const EdgeInsets.symmetric(horizontal: 64.0),
+              child: SvgPicture.asset(
+                AppImages.readingSession,
+                height: 300,
+              ),
+            ),
+            ConditionalBuilder(
+              condition: duration.inMilliseconds == 0,
+              builder: (context) => Column(
+                children: [
+                  const SizedBox(height: 4.0),
+                  const CustomText('Start a reading session'),
+                  const SizedBox(height: 16.0),
+                  CustomButton(
+                    text: 'Start Timer',
+                    onPressed: () => startTimer(),
+                  ),
+                ],
+              ),
+              fallback: (context) => const CustomText('Add notes from your reading'),
+            ),
+          ],
         );
       },
     );
@@ -147,17 +172,7 @@ class _ReadingSessionScreenState extends State<ReadingSessionScreen> {
           // set start time if null
           readingSession.startTime ??= DateTime.now();
 
-          if (timerOn) {
-            timer?.cancel();
-
-            timerOn = false;
-          } else {
-            startTimer();
-
-            readingSession.endTime = DateTime.now();
-
-            timerOn = !timerOn;
-          }
+          toggleTimer();
         });
       },
       child: Row(
@@ -271,7 +286,7 @@ class _ReadingSessionScreenState extends State<ReadingSessionScreen> {
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const CustomText('Current Page (between 12-341)'),
+                CustomText('Current Page (between ${widget.book.currentPage ?? 0} - ${widget.book.totalPages ?? 0})'),
                 const SizedBox(height: 4.0),
                 CustomInputField(
                   controller: pageController,
@@ -296,6 +311,7 @@ class _ReadingSessionScreenState extends State<ReadingSessionScreen> {
                   readingSession.timeSpent = duration.inSeconds;
                   if (pageController.text.isNotEmpty) {
                     readingSession.endPage = int.parse(pageController.text);
+                    widget.book.currentPage = readingSession.endPage;
                   }
 
                   await libraryCubit.addReadingSession(
@@ -319,7 +335,6 @@ class _ReadingSessionScreenState extends State<ReadingSessionScreen> {
       width: 52,
       height: 52,
       borderRadius: 26,
-      color: Colors.lightBlue,
       onPressed: () {
         CustomBottomSheet.show(
           context: context,
