@@ -1,4 +1,5 @@
 import 'dart:io';
+
 import 'package:equatable/equatable.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -159,9 +160,9 @@ class LibraryCubit extends Cubit<LibraryStates> {
     }
   }
 
-  Future<void> getReadingBooks() async {
-    List<Book> readingList =
-        await booksUseCase.getBooks(status: ReadingStatus.reading);
+  Future<void> getBooks(
+      {ReadingStatus readingStatus = ReadingStatus.reading}) async {
+    List<Book> readingList = await booksUseCase.getBooks(status: readingStatus);
     emit(LibraryFetchedReadingListState(readingList));
   }
 
@@ -200,7 +201,7 @@ class LibraryCubit extends Cubit<LibraryStates> {
   Future<List<Shelf>> fetchShelvesWithBooks() async {
     List<Shelf> shelves = await fetchShelves();
     // 2. fetch total books linked to each one
-    shelves.forEach((shelf) async{
+    shelves.forEach((shelf) async {
       shelf.totalBooks = await getShelfTotalBooks(shelf);
     });
 
@@ -225,7 +226,6 @@ class LibraryCubit extends Cubit<LibraryStates> {
     required ReadingSession readingSession,
     required Book book,
   }) async {
-
     booksUseCase.updateBook(book).then((_) => print('book updated'));
 
     await readingSessionUseCase.linkToBook(readingSession, book: book);

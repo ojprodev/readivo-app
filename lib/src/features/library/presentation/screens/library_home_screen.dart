@@ -7,8 +7,8 @@ import 'package:intl/intl.dart';
 import 'package:percent_indicator/linear_percent_indicator.dart';
 import 'package:readivo_app/src/core/bloc/app_cubit.dart';
 import 'package:readivo_app/src/core/constants/icons.dart';
+import 'package:readivo_app/src/core/enums/enums.dart';
 import 'package:readivo_app/src/core/layouts/basic_layout.dart';
-import 'package:readivo_app/src/core/utils/utils.dart';
 import 'package:readivo_app/src/core/widgets/bottom_sheet.dart';
 import 'package:readivo_app/src/core/widgets/custom_button.dart';
 import 'package:readivo_app/src/core/widgets/custom_container.dart';
@@ -19,6 +19,7 @@ import 'package:readivo_app/src/features/library/domain/entities/book.dart';
 import 'package:readivo_app/src/features/library/domain/entities/shelf.dart';
 import 'package:readivo_app/src/features/library/presentation/bloc/library_cubit.dart';
 import 'package:readivo_app/src/features/library/presentation/screens/library_add_book_screen.dart';
+import 'package:readivo_app/src/features/library/presentation/screens/library_books_list_screen.dart';
 import 'package:readivo_app/src/features/library/presentation/screens/library_search_screen.dart';
 import 'package:readivo_app/src/features/library/presentation/screens/reading_session_screen.dart';
 import 'package:readivo_app/src/features/library/presentation/widgets/book_box.dart';
@@ -42,7 +43,8 @@ class _LibraryHomeScreenState extends State<LibraryHomeScreen> {
     appCubit = AppCubit.get(context);
     libraryCubit = LibraryCubit.get(context);
 
-    libraryCubit.getReadingBooks();
+    libraryCubit.getBooks();
+
     libraryCubit
         .fetchShelvesWithBooks()
         .whenComplete(() => null)
@@ -177,22 +179,30 @@ class _LibraryHomeScreenState extends State<LibraryHomeScreen> {
   }
 
   Widget _buildContinueReadingHeader() {
-    return const Padding(
-      padding: EdgeInsets.symmetric(horizontal: 16.0),
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 16.0),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
-          CustomText(
+          const CustomText(
             'Continue Reading',
             fontSize: 20,
             color: Colors.white,
             fontWeight: FontWeight.w500,
           ),
-          CustomText(
-            'See all',
-            fontSize: 16,
-            color: Colors.white,
+          CustomButton(
+            text: 'See Reading Books',
+            styleType: ButtonStyleType.ghost,
+            onPressed: () {
+              appCubit.changeScreen(
+                  const LibraryBooksListScreen(status: ReadingStatus.reading));
+            },
+            child: const CustomText(
+              'See all',
+              fontSize: 16,
+              color: Colors.white,
+            ),
           ),
         ],
       ),
@@ -201,7 +211,7 @@ class _LibraryHomeScreenState extends State<LibraryHomeScreen> {
 
   Widget _buildContinueReadingList() {
     return Container(
-      padding: const EdgeInsets.symmetric( vertical: 8.0),
+      padding: const EdgeInsets.symmetric(vertical: 8.0),
       height: 240,
       width: MediaQuery.sizeOf(context).width,
       child: ConditionalBuilder(
@@ -225,7 +235,7 @@ class _LibraryHomeScreenState extends State<LibraryHomeScreen> {
 
   Widget _buildReadingBookCard(Book? book, {bool isEmpty = false}) {
     double readingProgress =
-        ((book?.currentPage ?? 0) * 100 ) / (book?.totalPages ?? 0);
+        ((book?.currentPage ?? 0) * 100) / (book?.totalPages ?? 0);
     return Container(
       padding: const EdgeInsets.all(12.0),
       margin: const EdgeInsets.symmetric(horizontal: 6.0),
@@ -285,7 +295,8 @@ class _LibraryHomeScreenState extends State<LibraryHomeScreen> {
                                 children: [
                                   CustomText(
                                       'page ${book.currentPage ?? 0} of ${book.totalPages ?? '-'}'),
-                                  CustomText('${readingProgress.toStringAsFixed(1)} %'),
+                                  CustomText(
+                                      '${readingProgress.toStringAsFixed(1)} %'),
                                 ],
                               ),
                               const SizedBox(
@@ -569,27 +580,27 @@ class _LibraryHomeScreenState extends State<LibraryHomeScreen> {
   Widget _buildBooksOverviewList() {
     List<Map<String, dynamic>> readingStatus = [
       {
-        'label': 'Want to read',
+        'label': ReadingStatus.wantToRead,
         'icon': Icons.bookmark,
         'count': '51',
       },
       {
-        'label': 'Reading',
+        'label': ReadingStatus.reading,
         'icon': Icons.local_library,
         'count': '3',
       },
       {
-        'label': 'Paused',
+        'label': ReadingStatus.paused,
         'icon': Icons.pause_circle_filled_rounded,
         'count': '1',
       },
       {
-        'label': 'Finished',
+        'label': ReadingStatus.finished,
         'icon': Icons.bookmark_added,
         'count': '21',
       },
       {
-        'label': 'Gave Up',
+        'label': ReadingStatus.gaveUp,
         'icon': Icons.flag,
         'count': '2',
       },
@@ -606,18 +617,25 @@ class _LibraryHomeScreenState extends State<LibraryHomeScreen> {
         shrinkWrap: true,
         physics: const NeverScrollableScrollPhysics(),
         itemBuilder: (context, index) {
-          return CustomListItem(
-            label: readingStatus[index]['label'],
-            padding:
-                const EdgeInsets.symmetric(vertical: 8.0, horizontal: 12.0),
-            icon: Icon(
-              readingStatus[index]['icon'],
-              color: Colors.grey,
+          return GestureDetector(
+            onTap: () {
+              appCubit.changeScreen(
+                LibraryBooksListScreen(status: readingStatus[index]['label']),
+              );
+            },
+            child: CustomListItem(
+              label: getReadingStatusAsString(readingStatus[index]['label']),
+              padding:
+                  const EdgeInsets.symmetric(vertical: 8.0, horizontal: 12.0),
+              icon: Icon(
+                readingStatus[index]['icon'],
+                color: Colors.grey,
+              ),
+              backgroundColor: Colors.transparent,
+              textStyle: const TextStyle(color: Colors.black),
+              borderColor: Colors.transparent,
+              appendIcon: Text(readingStatus[index]['count']),
             ),
-            backgroundColor: Colors.transparent,
-            textStyle: const TextStyle(color: Colors.black),
-            borderColor: Colors.transparent,
-            appendIcon: Text(readingStatus[index]['count']),
           );
         },
         separatorBuilder: (context, index) {
