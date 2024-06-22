@@ -21,6 +21,7 @@ import 'package:readivo_app/src/features/library/presentation/bloc/library_cubit
 import 'package:readivo_app/src/features/library/presentation/screens/library_add_book_screen.dart';
 import 'package:readivo_app/src/features/library/presentation/screens/library_books_list_screen.dart';
 import 'package:readivo_app/src/features/library/presentation/screens/library_search_screen.dart';
+import 'package:readivo_app/src/features/library/presentation/screens/library_shelf_screen.dart';
 import 'package:readivo_app/src/features/library/presentation/screens/reading_session_screen.dart';
 import 'package:readivo_app/src/features/library/presentation/widgets/book_box.dart';
 
@@ -446,20 +447,27 @@ class _LibraryHomeScreenState extends State<LibraryHomeScreen> {
   Widget _buildBooksShelvesSection() {
     return Column(
       children: [
-        const Padding(
-          padding: EdgeInsets.all(18.0),
+        Padding(
+          padding: const EdgeInsets.all(18.0),
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              CustomText(
+              const CustomText(
                 'Books Shelves',
                 color: Colors.white,
                 fontSize: 20,
                 fontWeight: FontWeight.w500,
               ),
-              CustomText(
-                'All Shelves',
-                color: Colors.white,
+              CustomButton(
+                text: 'All Shelves',
+                styleType: ButtonStyleType.ghost,
+                onPressed: () {
+                  // TODO: create shelves screen
+                },
+                child: const CustomText(
+                  'All Shelves',
+                  color: Colors.white,
+                ),
               ),
             ],
           ),
@@ -481,7 +489,14 @@ class _LibraryHomeScreenState extends State<LibraryHomeScreen> {
         scale: 0.9,
         loop: false,
         viewportFraction: 0.9,
-        itemBuilder: (context, index) => _buildShelfItem(shelvesItems[index]),
+        itemBuilder: (context, index) {
+          return GestureDetector(
+            onTap: () {
+              appCubit.changeScreen(LibraryShelfScreen(shelf: shelvesItems[index]));
+            },
+            child: _buildShelfItem(shelvesItems[index]),
+          );
+        },
       ),
     );
   }
