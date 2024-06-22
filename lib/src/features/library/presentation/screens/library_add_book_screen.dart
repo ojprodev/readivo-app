@@ -268,6 +268,7 @@ class _LibraryAddBookScreenState extends State<LibraryAddBookScreen> {
               onPressed: () {
                 CustomBottomSheet.show(
                   context: context,
+                  height: 310,
                   bottomSheetItems: _buildReadingStatusBottomSheet(),
                 );
               },
