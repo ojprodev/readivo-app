@@ -217,7 +217,7 @@ class _ReadingSessionScreenState extends State<ReadingSessionScreen> {
     return CustomContainer(
       clipBehavior: Clip.hardEdge,
       margin: const EdgeInsets.symmetric(horizontal: 12, vertical: 12.0),
-      color: Colors.grey,
+      color: Colors.blue.withOpacity(0.1),
       child: Stack(
         clipBehavior: Clip.none,
         children: [
@@ -245,7 +245,7 @@ class _ReadingSessionScreenState extends State<ReadingSessionScreen> {
                     note.content,
                     fontStyle: FontStyle.italic,
                     fontSize: 18,
-                    color: Colors.grey.withOpacity(0.9),
+                    color: Colors.black.withOpacity(0.6),
                     textAlign: TextAlign.center,
                   ),
                 ),
@@ -255,7 +255,7 @@ class _ReadingSessionScreenState extends State<ReadingSessionScreen> {
                   children: [
                     CustomText(
                       '- ${note.author}',
-                      color: Colors.grey,
+                      color: Colors.black,
                       fontWeight: FontWeight.bold,
                     ),
                     if (note.page != null)
