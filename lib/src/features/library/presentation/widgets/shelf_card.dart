@@ -1,22 +1,27 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:readivo_app/src/core/bloc/app_cubit.dart';
 import 'package:readivo_app/src/core/constants/colors.dart';
 import 'package:readivo_app/src/core/widgets/custom_button.dart';
 import 'package:readivo_app/src/core/widgets/custom_container.dart';
 import 'package:readivo_app/src/core/widgets/custom_text.dart';
 import 'package:readivo_app/src/features/library/domain/entities/shelf.dart';
+import 'package:readivo_app/src/features/library/presentation/screens/library_shelf_screen.dart';
 import 'package:readivo_app/src/features/library/presentation/widgets/book_box.dart';
 
 class ShelfCardWidget extends StatelessWidget {
   final Shelf shelf;
-  const ShelfCardWidget({super.key, required this.shelf});
+  late AppCubit appCubit;
+  ShelfCardWidget({super.key, required this.shelf});
 
   @override
   Widget build(BuildContext context) {
+    appCubit = AppCubit.get(context);
+
     return CustomContainer(
       width: double.infinity,
       borderRadius: 6,
-      height: 240,
+      height: 184,
       child: Column(
         children: [
           _buildCardHeader(),
@@ -91,14 +96,17 @@ class ShelfCardWidget extends StatelessWidget {
                   fontSize: 20,
                 ),
               ),
-              const CustomText('12 books'),
+              CustomText(getTotalBooks(shelf.totalBooks)),
             ],
           ),
         ),
         const SizedBox(height: 24.0),
-        const CustomButton(
+        CustomButton(
           text: 'Browse',
           styleType: ButtonStyleType.ghost,
+          onPressed: (){
+            appCubit.changeScreen(LibraryShelfScreen(shelf: shelf,));
+          },
         )
       ],
     );

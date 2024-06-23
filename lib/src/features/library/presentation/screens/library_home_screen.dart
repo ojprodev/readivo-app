@@ -21,6 +21,7 @@ import 'package:readivo_app/src/features/library/presentation/screens/library_ad
 import 'package:readivo_app/src/features/library/presentation/screens/library_books_list_screen.dart';
 import 'package:readivo_app/src/features/library/presentation/screens/library_search_screen.dart';
 import 'package:readivo_app/src/features/library/presentation/screens/library_shelf_screen.dart';
+import 'package:readivo_app/src/features/library/presentation/screens/library_shelves_screen.dart';
 import 'package:readivo_app/src/features/library/presentation/screens/reading_session_screen.dart';
 import 'package:readivo_app/src/features/library/presentation/widgets/book_box.dart';
 import 'package:readivo_app/src/features/library/presentation/widgets/shelf_card.dart';
@@ -462,7 +463,7 @@ class _LibraryHomeScreenState extends State<LibraryHomeScreen> {
                 text: 'All Shelves',
                 styleType: ButtonStyleType.ghost,
                 onPressed: () {
-                  // TODO: create shelves screen
+                  appCubit.changeScreen(const LibraryShelvesScreen());
                 },
                 child: const CustomText(
                   'All Shelves',
