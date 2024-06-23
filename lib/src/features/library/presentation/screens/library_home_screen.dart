@@ -3,7 +3,6 @@ import 'package:conditional_builder_null_safety/conditional_builder_null_safety.
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:intl/intl.dart';
 import 'package:percent_indicator/linear_percent_indicator.dart';
 import 'package:readivo_app/src/core/bloc/app_cubit.dart';
 import 'package:readivo_app/src/core/constants/icons.dart';
@@ -24,6 +23,7 @@ import 'package:readivo_app/src/features/library/presentation/screens/library_se
 import 'package:readivo_app/src/features/library/presentation/screens/library_shelf_screen.dart';
 import 'package:readivo_app/src/features/library/presentation/screens/reading_session_screen.dart';
 import 'package:readivo_app/src/features/library/presentation/widgets/book_box.dart';
+import 'package:readivo_app/src/features/library/presentation/widgets/shelf_card.dart';
 
 class LibraryHomeScreen extends StatefulWidget {
   const LibraryHomeScreen({super.key});
@@ -483,7 +483,7 @@ class _LibraryHomeScreenState extends State<LibraryHomeScreen> {
 
   Widget _buildShelvesItems() {
     return SizedBox(
-      height: 160,
+      height: 180,
       child: Swiper(
         itemCount: shelvesItems.length,
         scale: 0.9,
@@ -494,7 +494,7 @@ class _LibraryHomeScreenState extends State<LibraryHomeScreen> {
             onTap: () {
               appCubit.changeScreen(LibraryShelfScreen(shelf: shelvesItems[index]));
             },
-            child: _buildShelfItem(shelvesItems[index]),
+            child: ShelfCardWidget(shelf: shelvesItems[index],),
           );
         },
       ),
@@ -526,69 +526,6 @@ class _LibraryHomeScreenState extends State<LibraryHomeScreen> {
           ),
         ],
       ),
-    );
-  }
-
-  Widget _buildShelfItem(Shelf shelf) {
-    // show number of books on this shelf
-    String totalBooks = '${shelf.totalBooks} ';
-    totalBooks += Intl.plural(shelf.totalBooks, other: 'books', one: 'book');
-
-    return Stack(
-      alignment: Alignment.centerRight,
-      children: [
-        CustomContainer(
-          color: Colors.white,
-          width: MediaQuery.sizeOf(context).width,
-          padding: const EdgeInsets.all(16.0),
-          borderRadius: 6.0,
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            mainAxisSize: MainAxisSize.max,
-            children: [
-              CustomText(
-                shelf.name,
-                fontSize: 18,
-              ),
-              CustomText(
-                totalBooks,
-                color: Colors.grey,
-              ),
-            ],
-          ),
-        ),
-        Container(
-          width: 170,
-          height: 220,
-          padding: const EdgeInsets.only(right: 24.0, top: 12.0),
-          child: const Stack(
-            alignment: Alignment.center,
-            children: [
-              Positioned(
-                left: 0,
-                top: 24,
-                child: BookBox(
-                  width: 55,
-                  height: 80,
-                ),
-              ),
-              Positioned(
-                right: 0,
-                top: 24,
-                child: BookBox(
-                  width: 55,
-                  height: 80,
-                ),
-              ),
-              BookBox(
-                width: 65,
-                height: 90,
-              ),
-            ],
-          ),
-        ),
-      ],
     );
   }
 
