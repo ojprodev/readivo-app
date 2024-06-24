@@ -17,7 +17,7 @@ import 'package:readivo_app/src/core/widgets/partials/bottom_sheet_item.dart';
 import 'package:readivo_app/src/features/library/domain/entities/book.dart';
 import 'package:readivo_app/src/features/library/domain/entities/shelf.dart';
 import 'package:readivo_app/src/features/library/presentation/bloc/library_cubit.dart';
-import 'package:readivo_app/src/features/library/presentation/screens/library_add_book_screen.dart';
+import 'package:readivo_app/src/features/library/presentation/screens/library_book_details_screen.dart';
 import 'package:readivo_app/src/features/library/presentation/screens/library_books_list_screen.dart';
 import 'package:readivo_app/src/features/library/presentation/screens/library_search_screen.dart';
 import 'package:readivo_app/src/features/library/presentation/screens/library_shelf_screen.dart';
@@ -225,7 +225,7 @@ class _LibraryHomeScreenState extends State<LibraryHomeScreen> {
           itemBuilder: (context, index) {
             return GestureDetector(
               onTap: () => appCubit
-                  .changeScreen(LibraryAddBookScreen(book: readingList[index])),
+                  .changeScreen(LibraryBookDetailsScreen(book: readingList[index])),
               child: _buildReadingBookCard(readingList[index]),
             );
           },
